@@ -1,0 +1,11 @@
+C:\Users\alejandro\trabajo\migracion_linux\Positioner\bin\Debug\net5.0\publish\Positioner.exe
+C:\Users\alejandro\trabajo\migracion_linux\Positioner\bin\Debug\net5.0\publish\appsettings.Development.json
+C:\Users\alejandro\trabajo\migracion_linux\Positioner\bin\Debug\net5.0\publish\appsettings.json
+C:\Users\alejandro\trabajo\migracion_linux\Positioner\bin\Debug\net5.0\publish\Positioner.dll
+C:\Users\alejandro\trabajo\migracion_linux\Positioner\bin\Debug\net5.0\publish\Positioner.deps.json
+C:\Users\alejandro\trabajo\migracion_linux\Positioner\bin\Debug\net5.0\publish\Positioner.runtimeconfig.json
+C:\Users\alejandro\trabajo\migracion_linux\Positioner\bin\Debug\net5.0\publish\Positioner.pdb
+C:\Users\alejandro\trabajo\migracion_linux\Positioner\bin\Debug\net5.0\publish\Microsoft.OpenApi.dll
+C:\Users\alejandro\trabajo\migracion_linux\Positioner\bin\Debug\net5.0\publish\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\alejandro\trabajo\migracion_linux\Positioner\bin\Debug\net5.0\publish\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\alejandro\trabajo\migracion_linux\Positioner\bin\Debug\net5.0\publish\Swashbuckle.AspNetCore.SwaggerUI.dll
