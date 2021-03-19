@@ -18,6 +18,11 @@ namespace Commander.Data
 
         public Command GetCommandById(int id)
         {
+            if (id <= 0)
+            {
+                return null;
+            }
+            
             return new Command { Id = 0, HowTo = "boil an egg", Line = "boil water", Platform = "kettle & pan" };
         }
     }
