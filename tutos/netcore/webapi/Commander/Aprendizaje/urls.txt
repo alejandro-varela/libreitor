@@ -1,3 +1,7 @@
++-------------------+
+| Docs de Microsoft |
++-------------------+
+
 WebApi Overview
 https://docs.microsoft.com/en-us/aspnet/core/web-api/?view=aspnetcore-5.0
 
@@ -7,3 +11,10 @@ https://docs.microsoft.com/en-us/aspnet/core/web-api/?view=aspnetcore-5.0
     Tipos de retorno de los controladores
     https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types?view=aspnetcore-5.0
 
+
++--------+
+| Videos |
++--------+
+
+.NET Core 3.1 MVC REST API - Full Course [Lee Jackson]
+https://www.youtube.com/watch?v=fmvcAzHpsk8
