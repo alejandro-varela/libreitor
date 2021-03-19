@@ -1,0 +1,8 @@
+Bajar mariadb
+-------------
+    https://mariadb.org/
+
+Instalar con:
+-------------
+    root password = __c4230yDs-@
+
