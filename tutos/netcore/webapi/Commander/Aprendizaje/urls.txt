@@ -1,0 +1,9 @@
+WebApi Overview
+https://docs.microsoft.com/en-us/aspnet/core/web-api/?view=aspnetcore-5.0
+
+    Inyección de dependecias
+    https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection?view=aspnetcore-5.0
+
+    Tipos de retorno de los controladores
+    https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types?view=aspnetcore-5.0
+
