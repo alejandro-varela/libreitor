@@ -12,6 +12,12 @@ https://docs.microsoft.com/en-us/aspnet/core/web-api/?view=aspnetcore-5.0
     https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types?view=aspnetcore-5.0
 
 
++---------+
+| EF Core |
++---------+
+https://www.c-sharpcorner.com/article/tutorial-use-entity-framework-core-5-0-in-net-core-3-1-with-mysql-database-by2/
+
+
 +--------+
 | Videos |
 +--------+

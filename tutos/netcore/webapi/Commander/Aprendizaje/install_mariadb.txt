@@ -4,5 +4,6 @@ Bajar mariadb
 
 Instalar con:
 -------------
-    root password = __c4230yDs-@
+    root            __c4230yDs-@
+    CommanderUser   LERe72
 

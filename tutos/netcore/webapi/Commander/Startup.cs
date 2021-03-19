@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Commander
 {
@@ -26,7 +27,12 @@ namespace Commander
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
+        { 
+            // "UseMySQL" está en using Microsoft.EntityFrameworkCore;
+            services.AddDbContext<CommanderContext>(o => o.UseMySQL(
+                Configuration.GetConnectionString("CommanderConnection")
+            ));
+
             services.AddControllers();
 
             services.AddSwaggerGen(c =>
