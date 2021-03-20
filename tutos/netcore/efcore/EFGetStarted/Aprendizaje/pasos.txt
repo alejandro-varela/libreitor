@@ -1,0 +1,23 @@
+https://docs.microsoft.com/en-us/ef/core/get-started/overview/first-app?tabs=netcore-cli
+
+// crear una consola
+dotnet new console -o EFGetStarted
+
+// ir al directorio creado
+cd EFGetStarted
+
+// agregar el paquete Microsoft.EntityFrameworkCore.Sqlite
+dotnet add package Microsoft.EntityFrameworkCore.Sqlite
+
+// si estamos con git:
+dotnet new gitignore
+
+// crear el modelo (en archivo Models/Model.cs)
+
+// agregar este otro paquete...
+dotnet add package Microsoft.EntityFrameworkCore.Design
+
+// migrations...
+dotnet ef migrations add InitialCreate
+dotnet ef database update
+
