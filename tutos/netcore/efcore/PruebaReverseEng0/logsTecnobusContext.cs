@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Configuration;
 
 #nullable disable
 
@@ -8,13 +9,17 @@ namespace PruebaReverseEng0
 {
     public partial class logsTecnobusContext : DbContext
     {
-        public logsTecnobusContext()
+        private readonly IConfiguration _config;
+        
+        public logsTecnobusContext(IConfiguration config)
         {
+            _config = config;
         }
 
-        public logsTecnobusContext(DbContextOptions<logsTecnobusContext> options)
+        public logsTecnobusContext(DbContextOptions<logsTecnobusContext> options, IConfiguration config)
             : base(options)
         {
+            _config = config;
         }
 
         public virtual DbSet<LogGpsSinCalculoAtrasoYexcesoVelocidad> LogGpsSinCalculoAtrasoYexcesoVelocidads { get; set; }
@@ -23,8 +28,10 @@ namespace PruebaReverseEng0
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=db-tecnobus;Initial Catalog=logsTecnobus;Integrated Security=True");
+ //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                 //optionsBuilder.UseSqlServer("Data Source=db-tecnobus;Initial Catalog=logsTecnobus;Integrated Security=True");              
+                 string connString = _config["MainConnString"];
+                 optionsBuilder.UseSqlServer(connString);
             }
         }
 

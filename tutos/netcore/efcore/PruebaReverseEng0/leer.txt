@@ -1,0 +1,1 @@
+https://pradeeploganathan.com/dotnet/configuration-in-a-net-core-console-application/

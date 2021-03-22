@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace PruebaReverseEng0
 {
@@ -8,7 +9,14 @@ namespace PruebaReverseEng0
     {
         static void Main(string[] args)
         {
-            using (logsTecnobusContext ctx = new logsTecnobusContext())
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddUserSecrets<Program>(optional: false, reloadOnChange: true)
+                // .AddJsonFile("appsettings.json")
+                // .AddEnvironmentVariables()
+                // .AddCommandLine(args)
+                .Build();
+
+            using (logsTecnobusContext ctx = new logsTecnobusContext(configuration))
             {
                 var logs = ctx.LogGpsSinCalculoAtrasoYexcesoVelocidads
                     .ToList()
