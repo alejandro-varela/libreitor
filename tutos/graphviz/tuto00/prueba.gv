@@ -7,7 +7,7 @@ graph Prueba
     Nodo2[shape=box];
     Nodo3[shape=folder,label="La carrrpetaaa",fillcolor=yellow,color=orange,style=filled];
     Nodo4[shape=trapezium];
-    Nodo5[shape=triplepentagon];
+    Nodo5[shape=pentagon];
 
     Nodo1 -- Nodo3;
     Nodo2 -- Nodo2;
