@@ -8,15 +8,34 @@ import { Component, OnInit } from '@angular/core';
 export class MapaConceptualComponent implements OnInit {
 
   constructor() { }
-
+  
   public raa : number = 5;
   public move: number = 0;
-  
+
   muevelooo(): void {
     this.move -= 5;
   }
-  
-  ngOnInit(): void {
+
+  mousedowndiv(x: number, y: number): void {
+    // guardar puntos xy  
+    console.log(x, y);
   }
 
+  mouseupdiv(): void {
+    // calcular distancia recorrida
+    console.log("mouseup");
+  }
+
+  mouseoutdiv(): void {
+    console.log("mouseout");
+  }
+
+  click_pelotita_que_se_agranda(event : Event): void {
+    event.stopPropagation();
+    console.log("click " + new Date());
+  }
+
+  ngOnInit(): void {
+    //
+  }
 }

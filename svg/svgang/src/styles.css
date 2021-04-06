@@ -8,10 +8,10 @@ body {
 }
 
 .demo1 {
-    width:600px;
+    width:100%;
     height: 335px;
     display:block;
-    background: #FFEE1F;
+    background: #202020;
     color: darkgreen;
     overflow:hidden;
     position:relative;
