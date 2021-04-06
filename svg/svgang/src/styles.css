@@ -1,0 +1,18 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* http://www.java2s.com/example/html-css/svg/svg-inside-div.html */
+
+body {
+    margin: 15px 15px 15px 15px;
+    background-color: whitesmoke;
+}
+
+.demo1 {
+    width:600px;
+    height: 335px;
+    display:block;
+    background: #FFEE1F;
+    color: darkgreen;
+    overflow:hidden;
+    position:relative;
+}
