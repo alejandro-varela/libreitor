@@ -1,3 +1,5 @@
+// para leer https://medium.com/angular-in-depth/creating-reusable-angular-components-how-to-avoid-the-painful-trap-most-go-in-d531761d6c7a#:~:text=There%20are%20two%20main%20ways,how%20to%20render%20the%20data.
+
 import { Component, OnInit } from '@angular/core';
 
 @Component({
