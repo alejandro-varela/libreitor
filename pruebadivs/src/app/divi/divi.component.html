@@ -1,20 +1,18 @@
-<p>divi works!</p>
-
 <div class="prueba0">
   <img 
-   (mousedown)="mdown($event)"
-   (mouseup)="mup($event)"
-   (mousemove)="mmove($event)"
-   (wheel)="mwheel($event)"
+    class="img0"
 
-   class="img0" 
+    (mousedown)="mdown($event)"
+    (mouseup)="mup($event)"
+    (mousemove)="mmove($event)"
+    (wheel)="mwheel($event)"
 
-   src="assets/images/budaviejo.jpg" 
-   alt="buda viejo" 
-   [attr.width] ="imgw + 'px'" 
-   [attr.height]="imgw + 'px'" 
+    src="assets/images/budaviejo.jpg" 
+    alt="buda viejo" 
+    [attr.width]="imgw + 'px'" 
+    [attr.height]="imgh + 'px'" 
 
-   [style.top]  ="imgy + 'px'"
-   [style.left] ="imgx + 'px'"
-   />
+    [style.top]="imgy + 'px'"
+    [style.left]="imgx + 'px'"
+  />
 </div>
