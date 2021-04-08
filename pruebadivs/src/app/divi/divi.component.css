@@ -1,0 +1,18 @@
+.prueba0 {
+    position: relative;
+    /*left: 50px;*/
+    display : block;
+    height  : 500px;
+    width   : 600px;
+    overflow: hidden;
+    border-radius:50%;
+}
+
+.img0 {
+    position: relative;
+
+    min-height: 100%;
+    width: auto;
+
+    overflow: hidden;
+}

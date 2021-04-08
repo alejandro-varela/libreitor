@@ -1,0 +1,20 @@
+<p>divi works!</p>
+
+<div class="prueba0">
+  <img 
+   (mousedown)="mdown($event)"
+   (mouseup)="mup($event)"
+   (mousemove)="mmove($event)"
+   (wheel)="mwheel($event)"
+
+   class="img0" 
+
+   src="assets/images/budaviejo.jpg" 
+   alt="buda viejo" 
+   [attr.width] ="imgw + 'px'" 
+   [attr.height]="imgw + 'px'" 
+
+   [style.top]  ="imgy + 'px'"
+   [style.left] ="imgx + 'px'"
+   />
+</div>
