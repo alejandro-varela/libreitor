@@ -1,3 +1,5 @@
+// esto es el modelo
+
 namespace Commander.Models
 {
     public class Command
