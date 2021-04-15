@@ -16,3 +16,12 @@ body {
     overflow:hidden;
     position:relative;
 }
+
+.botonera {
+    width:100%;
+    display:block;
+    background: #202020;
+    overflow:hidden;
+    position:relative;
+    text-align: center;
+}
