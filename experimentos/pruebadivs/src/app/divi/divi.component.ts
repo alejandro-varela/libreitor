@@ -38,9 +38,9 @@ export class DiviComponent implements OnInit {
   mmove(event : MouseEvent): void{
     if (this.down)
     {
-      this.imgx += event.movementX;
-      this.imgy += event.movementY;
-      //console.log(event.movementX, event.movementY, this.down, this.imgx, this.imgy);
+      this.imgx += event.movementX / 2;
+      this.imgy += event.movementY / 2;
+      console.log(event.movementX, event.movementY /*, this.down, this.imgx, this.imgy*/);
     }
   }
 
@@ -57,8 +57,8 @@ export class DiviComponent implements OnInit {
     let newimgh = this.cheight * this.size;
     let newimgw = this.cwidth  * this.size;
 
-    let despx = (newimgh - this.imgh) / 12;
-    let despy = (newimgw - this.imgw) / 8;
+    let despx = (newimgh - this.imgh);
+    let despy = (newimgw - this.imgw);
 
     this.imgh = newimgh;
     this.imgw = newimgw;
