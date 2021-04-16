@@ -13,8 +13,20 @@
   (mouseup)="mouseupdiv()" 
   (mousedown)="mousedowndiv($event.offsetX, $event.offsetY)" 
   (mouseout)="mouseoutdiv()" 
+  (wheel)="mousewheeldiv($event)"
+  (touchstart)="tocastart($event)"
+  (touchend)="tocaend($event)"
 >
-<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="500"  [attr.transform]="'translate('+ move + ')'" >
+<!-- <svg xmlns="http://www.w3.org/2000/svg" width="1000" height="500" [attr.transform]="'translate(' + move + ')'" > -->
+<!-- <svg xmlns="http://www.w3.org/2000/svg" width="1000" height="500" [attr.transform]="'scale(' + size + ')'" > -->
+<svg
+      xmlns="http://www.w3.org/2000/svg" 
+      width="1000" 
+      height="500" 
+      [attr.viewbox]="vbx + ' ' + vby + ' 2000 1000'"  
+      [attr.transform]="' scale(' + size + ')' + ' translate(' + movex + ',' +  movey + ')'"
+>
+
     <rect x="0" y ="0" width="100%" height="200" style="fill:rgb(165, 165, 170);stroke-width:0;stroke:rgb(0,0,0)" />
     
     <line x1= "64" y1="100" x2="200" y2="100" style="stroke:rgb(255,0,0);stroke-width:20;opacity:50%;" stroke-linecap="round" />
@@ -40,3 +52,20 @@
     Su navegador no soporta SVG :( basuuu
 </svg>
 </div>
+
+<div class="botonera">
+  <button (click)="movey = movey - 1">Arriba</button>
+</div>
+<div class="botonera">
+  <button (click)="movex = movex - 1">Izquierda</button>
+  <button (click)="movex = movex + 1">Derecha</button>
+</div>
+<div class="botonera">
+  <button (click)="movey = movey + 1">Abajo</button>
+</div>
+
+<ul>
+  <li *ngFor="let evento of eventos.reverse(); let i = index">
+    {{ i + 1 }} - {{ evento }}
+  </li>
+</ul>
