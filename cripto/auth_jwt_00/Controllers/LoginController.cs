@@ -30,7 +30,7 @@ namespace auth_jwt_00.Controllers
             return Ok($" IPrincipal-user: {identity.Name} - IsAuthenticated: {identity.IsAuthenticated}");
         }
 
-        // curl https://localhost:5001/Login/authenticate -X POST -d '{\"Username\":\"paula\",\"Password\":\"123456\"}' -H "Content-Type: application/json" --ssl-no-revoke  -v
+        // curl https://localhost:5001/Login/authenticate -k -X POST -d '{\"Username\":\"paula\",\"Password\":\"123456\"}' -H "Content-Type: application/json" --ssl-no-revoke  -v
         [HttpPost]
         [Route("authenticate")]
         public IActionResult Authenticate([FromBody] LoginRequest login)
