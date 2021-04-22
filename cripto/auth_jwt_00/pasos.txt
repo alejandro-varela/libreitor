@@ -1,0 +1,17 @@
+agrego el paquete (para poder hacer un using a Microsoft.IdentityModel...)
+    dotnet add package System.Configuration.ConfigurationManager
+    dotnet add package System.IdentityModel.Tokens.Jwt
+
+lecturitas:
+    enmilocalfunciona:
+        https://enmilocalfunciona.io/construyendo-una-web-api-rest-segura-con-json-web-token-en-net-parte-i/
+        https://enmilocalfunciona.io/construyendo-una-web-api-rest-segura-con-json-web-token-en-net-parte-ii/
+
+    guia de jwt:
+        https://self-issued.info/docs/draft-ietf-oauth-json-web-token.html
+
+    medium:
+        https://nishanc.medium.com/net-core-3-0-preview-4-web-api-up-and-running-5204ecaef0fc
+
+herramientas útiles:
+    jwt debugger https://jwt.io/
