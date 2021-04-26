@@ -13,12 +13,12 @@ namespace auth_jwt_00.Controllers
     [Route("[controller]")]
     public class CustomersController : ControllerBase
     {
-        [HttpGet]
-        public IActionResult GetId(int id)
-        {
-            var customerFake = "customer-fake";
-            return Ok(customerFake);
-        }
+        // [HttpGet]
+        // public IActionResult GetId(int id)
+        // {
+        //     var customerFake = "customer-fake";
+        //     return Ok(customerFake);
+        // }
 
         [HttpGet]
         public IActionResult GetAll()

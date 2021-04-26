@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -32,12 +35,22 @@ namespace auth_jwt_00
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "auth_jwt_00", Version = "v1" });
-            });
+            });            
+            
+            //services.AddAuthentication(NegotiateDefaults.AuthenticationScheme);
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
+                options =>
+                {
+                    //options.LoginPath = new PathString("/auth/login"); /Login/authenticate
+                    options.LoginPath = new PathString("/Login/authenticate"); 
+                    //options.AccessDeniedPath = new PathString("/auth/denied");
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
