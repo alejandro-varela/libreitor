@@ -9,6 +9,9 @@ lecturitas:
         https://jasonwatmore.com/post/2019/10/11/aspnet-core-3-jwt-authentication-tutorial-with-example-api
         https://jasonwatmore.com/post/2020/05/25/aspnet-core-3-api-jwt-authentication-with-refresh-tokens
 
+    * c-sharpcorner:
+        https://www.c-sharpcorner.com/article/implement-jwt-in-net-core-api/
+
     enmilocalfunciona:
         https://enmilocalfunciona.io/construyendo-una-web-api-rest-segura-con-json-web-token-en-net-parte-i/
         https://enmilocalfunciona.io/construyendo-una-web-api-rest-segura-con-json-web-token-en-net-parte-ii/
