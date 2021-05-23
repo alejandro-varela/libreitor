@@ -1,0 +1,39 @@
+﻿@* For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860 *@
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService authorizationService
+
+<h1>Home Page</h1>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <h1>Usuario Autenticado</h1>
+}
+else
+{
+    <h1>Usuario NO autenticado</h1>
+}
+
+@* CLAIM1 *@
+@{ string claim1 = "Claim.DoB"; }
+@if ((await authorizationService.AuthorizeAsync(User, claim1)).Succeeded)
+{
+    <h1>¡User tiene la claim @claim1!</h1>
+}
+else
+{
+    <h1>ERROR!!! User NO tiene la claim @claim1</h1>
+}
+
+@* 
+CLAIM2 ::: NO ANDA CUANDO LA CLAIM NO EXISTE (TIRA EXCEPT)
+@{ string claim2 = "Claim.QueNoExiste"; }
+
+    @if ((await authorizationService.AuthorizeAsync(User, claim2)).Succeeded)
+    {
+        <h1>¡User tiene la claim @claim2!</h1>
+    }
+    else
+    {
+        <h1>ERROR!!! User NO tiene la claim @claim2</h1>
+    }
+*@
