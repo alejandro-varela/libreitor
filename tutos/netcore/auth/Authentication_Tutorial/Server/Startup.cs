@@ -18,9 +18,10 @@ namespace Server
         {
             services
                 .AddAuthentication("OAuth")
-                .AddJwtBearer("OAuth", config => { }
-                        
-                );
+                .AddJwtBearer("OAuth", config =>
+                {
+                    //
+                });
 
             services.AddControllersWithViews();
 
