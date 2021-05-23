@@ -1,0 +1,24 @@
+tuto sacado de:
+---------------
+    https://www.c-sharpcorner.com/article/how-to-configure-a-net-core-3-1-with-mariadb/
+
+agrego estos paquetes:
+----------------------
+    dotnet add package Microsoft.EntityFrameworkCore.Design
+    dotnet add package Pomelo.EntityFrameworkCore.MySql
+
+    dotnet ef dbcontext scaffold "server=localhost;port=3306;user=root;password=[PASSWORD DE ROOT];database=dbprueba" Pomelo.EntityFrameworkCore.MySql -c MiDbContext -o Models 
+
+agrego esto en Startup.cs:
+--------------------------
+    string connString = "Server=localhost; Database=dbprueba;User=root;Password=<PASSWORD>";
+    services.AddDbContext<Models.MiDbContext>(options => options.UseMySql(
+        connString,
+        ServerVersion.AutoDetect(connString)
+    ));
+
+esto se puede usar para cambiar el password de mariadb:
+-------------------------------------------------------
+    SET PASSWORD FOR 'root'@'localhost' = PASSWORD('mypass');
+    FLUSH PRIVILEGES;
+    para mas info: https://stackoverflow.com/questions/7534056/mysql-root-password-change
