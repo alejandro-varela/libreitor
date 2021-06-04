@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Server
@@ -18,9 +21,30 @@ namespace Server
         {
             services
                 .AddAuthentication("OAuth")
-                .AddJwtBearer("OAuth", config =>
+                .AddJwtBearer("OAuth", config => // Microsoft.AspNetCore.Authentication.JwtBearer
                 {
-                    //
+                    var secretBytes = Encoding.UTF8.GetBytes(Constants.Secret);
+                    var key = new SymmetricSecurityKey(secretBytes);
+
+                    config.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidIssuer      = Constants.Issuer,
+                        ValidAudience    = Constants.Audience,
+                        IssuerSigningKey = key,
+                    };
+
+                    config.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = (context) => 
+                        {
+                            const string nombreParamToken = "access_token";
+                            if (context.Request.Query.ContainsKey(nombreParamToken))
+                            {
+                                context.Token = context.Request.Query[nombreParamToken];
+                            }
+                            return Task.CompletedTask;
+                        },
+                    };
                 });
 
             services.AddControllersWithViews();

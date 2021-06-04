@@ -28,13 +28,13 @@ namespace Server.Controllers
         public IActionResult Authenticate()
         {
             var claims = new[] {
-                new Claim(JwtRegisteredClaimNames.Sub, "some_id"),
+
+                new Claim(JwtRegisteredClaimNames.Sub, "some_id"), // http://tools.ietf.org/html/rfc7519#section-4
                 new Claim("granny", "cookie"),
             };
 
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(Constants.Secret)
-            );
+            var secretBytes = Encoding.UTF8.GetBytes(Constants.Secret);
+            var key = new SymmetricSecurityKey(secretBytes);
 
             var algorithm = SecurityAlgorithms.HmacSha256;
 
@@ -58,6 +58,12 @@ namespace Server.Controllers
 
             //return RedirectToAction("Index");
             return Ok(new { access_token = tokenJson });
+        }
+
+        public IActionResult Decode(string part)
+        {
+            string decoded = Encoding.UTF8.GetString( Convert.FromBase64String(part));
+            return Ok(decoded);
         }
     }
 }
