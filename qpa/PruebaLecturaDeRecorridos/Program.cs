@@ -7,6 +7,8 @@ using StackExchange.Redis;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace PruebaLecturaDeRecorridos
 {
@@ -56,44 +58,67 @@ namespace PruebaLecturaDeRecorridos
 
         static void Main(string[] args)
         {
-            Task.Delay(1000);
-
-            var granularidad = 500;
             var puntosLinBan = LeerRecorridosPorArchivos("../../../REC203/", new int[] { 159, 163 }, DateTime.Now);
 
             // averiguar topes
 
-            var puntos  = puntosLinBan.Select(plinban => (Punto) plinban);
-            var cuantos = puntos.Count(); // hay unos 250 000 puntos para dos líneas solamente :S
+            var cuantos = puntosLinBan.Count(); // hay unos 250 000 puntos para dos líneas solamente :S
 
-            var topes2D = Topes2D.CreateFromPuntos(puntos);
-            
-            var casillerosHorizontales  = Math.Floor((topes2D.AnchoMaximoMts / granularidad) + 1); // 1981
-            var casillerosVerticales    = Math.Floor((topes2D.AlturaMts      / granularidad) + 1); // 1001
+            var topes2D = Topes2D.CreateFromPuntos(puntosLinBan.Select(plinban => (Punto)plinban));
 
-            //c0-0
-            //c0-999
-            //c1230-567
-            //c1981-1001
-
-            // como se "que" casillero le toca a un punto arbitrario
-            var puntoide  = puntos.FirstOrDefault();
-
-            foreach (var xxx in puntosLinBan)
+            //////////////////////////////////////////////////////////////////////
+            /// CREACION DE LA REGEX
+            var sb = new StringBuilder();
+            foreach (var plb in puntosLinBan.Where(p => p.Linea == 159 && p.Bandera == 2744))
             {
+                var casillero = Casillero.DameCasillero(topes2D, plb, 30);
+                //sb.Append('<');
+                //sb.Append(plb.Cuenta);
+                //sb.Append('>');
+                sb.Append('(');
+                sb.Append(casillero.FixedToString("0000"));
+                sb.Append(')');
+                sb.Append('*');
+            }
+
+            string Pattern_0159_2744 = sb.ToString();
+            Console.WriteLine(Pattern_0159_2744);
+            Console.WriteLine($"La regex tiene {Pattern_0159_2744.Length} caracteres");
+
+            //////////////////////////////////////////////////////////////////////
+            /// COMPARACION CON UN PATRON REAL
+            var realreal = "h0647v0718h0646v0718h0645v0718PAPASAVAh0645v0718h0644v0718h0643v0718";
+            var regex = new Regex(Pattern_0159_2744);
+            foreach (Match match in regex.Matches(realreal))
+            {
+                Console.WriteLine($"{match.Index} {match.Value}");
+            }
+
+            //////////////////////////////////////////////////////////////////////
+            /// TODO: JUSTIFICAR LOS MATCHES GRAFICAMENTE
+
+            ///////////////////////////////////////////////////////////////////////
+            /// DIBUJO DEL MAPA
+
+            foreach (var xxx in puntosLinBan.Where(p => p.Linea == 159))
+            {
+                char output = xxx.Linea == 159 ? 'x' : 's';
+
+                Console.ForegroundColor = (ConsoleColor) ((xxx.Bandera % 14) + 1);
+
                 if (xxx.Linea == 163)
                 {
-                    Console.ForegroundColor = ConsoleColor.Blue;
+                    //Console.ForegroundColor = ConsoleColor.Blue;
                 }
                 else if (xxx.Linea == 159)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
+                    //
                 }
 
-                var casillero = DameCasillero(topes2D, xxx, granularidad);
+                var casillero = Casillero.DameCasillero(topes2D, xxx, 500);
                 Console.CursorLeft = casillero.IndexHorizontal;
                 Console.CursorTop  = 61-casillero.IndexVertical;
-                Console.Write("x");
+                Console.Write(output);
                 //Console.WriteLine(casillero);
             }
 
@@ -168,45 +193,7 @@ namespace PruebaLecturaDeRecorridos
             */
         }
 
-        static Casillero DameCasillero(Topes2D topes2D, Punto puntoide, int granularidad)
-        {
-            // se puede precalc
-
-            var maxIndexCasilleroHorizontal = Convert.ToInt32( Math.Ceiling(topes2D.AnchoMaximoMts / granularidad));
-            var maxIndexCasilleroVertical   = Convert.ToInt32( Math.Ceiling(topes2D.AlturaMts      / granularidad));
-
-            var deltaLng = topes2D.Right - topes2D.Left;
-            var deltaLat = topes2D.Top   - topes2D.Bottom;
-
-            // no se puede precalc
-
-            var deltaPuntoideLng = puntoide.Lng - topes2D.Left;
-            var deltaPuntoideLat = puntoide.Lat - topes2D.Bottom;
-
-            System.Diagnostics.Debug.Assert(deltaPuntoideLng <= deltaLng);
-            System.Diagnostics.Debug.Assert(deltaPuntoideLat <= deltaLat);
-
-            var indexCasilleroHorizontal = Convert.ToInt32((deltaPuntoideLng * maxIndexCasilleroHorizontal) / deltaLng);
-            var indexCasilleroVertical   = Convert.ToInt32((deltaPuntoideLat * maxIndexCasilleroVertical  ) / deltaLat);
-
-            System.Diagnostics.Debug.Assert(indexCasilleroVertical   <= maxIndexCasilleroVertical  );
-            System.Diagnostics.Debug.Assert(indexCasilleroHorizontal <= maxIndexCasilleroHorizontal);
-
-            System.Diagnostics.Debug.Assert(indexCasilleroVertical   >= 0);
-            System.Diagnostics.Debug.Assert(indexCasilleroHorizontal >= 0);
-
-            // deltaLng         = 1000 casilleros
-            // deltaPuntoideLng = ?
-
-            // 5000        1000
-            //  500          ?= 100 ((500 * 1000) / 5000)
-
-            return new Casillero
-            {
-                IndexHorizontal = indexCasilleroHorizontal,
-                IndexVertical   = indexCasilleroVertical,
-            };
-        }
+        
 
         public static IEnumerable<PuntoRecorridoLinBan> LeerRecorridosPorArchivos(string dir, int[] codLineas, DateTime fechaInicioCalculo)
         {
