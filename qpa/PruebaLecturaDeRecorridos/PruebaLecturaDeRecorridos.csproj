@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Mediciones\Mediciones.csproj" />
     <ProjectReference Include="..\Recorridos\Recorridos.csproj" />
   </ItemGroup>
 

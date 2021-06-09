@@ -1,7 +1,7 @@
 ﻿using Recorridos;
 using System;
 
-namespace Mediciones
+namespace Recorridos
 {
     public class Haversine
     {

@@ -1,5 +1,4 @@
-﻿using Mediciones;
-using Recorridos;
+﻿using Recorridos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,25 +52,91 @@ namespace PruebaLecturaDeRecorridos
 
     partial class Program
     {
-        static readonly ConnectionMultiplexer _muxer = ConnectionMultiplexer.Connect("localhost:6379");
-        const string GEOHASH = "geoda";
+        //static readonly ConnectionMultiplexer _muxer = ConnectionMultiplexer.Connect("localhost:6379");
+        //const string GEOHASH = "geoda";
 
         static void Main(string[] args)
         {
-            var puntosLinBan = LeerRecorridosPorArchivos("../../../REC203/", new int[] { 159, 163 }, DateTime.Now);
+            //var tete = "AAABBBCCCAAABBBCCC"
+            //    .Simplificar((c1, c2) => c1 == c2)
+            //    .Stringificar("___")
+            //;
 
-            // averiguar topes
+            var start = Environment.TickCount;
 
-            var cuantos = puntosLinBan.Count(); // hay unos 250 000 puntos para dos líneas solamente :S
+            // Leo una colección de recorridos a partir de las líneas dadas (contienen linea y banderas), puede filtrarse
+            var recorridosRBus = LeerRecorridosPorArchivos("../../../REC203/", new int[] { 159, 163 }, DateTime.Now);
 
+            // Creo una lista PLANA de puntos con lina y bandera
+            var puntosLinBan    = recorridosRBus.SelectMany(
+                collectionSelector  : reco => reco.Puntos.HacerGranular(15),
+                resultSelector      : (reco, punto) => new PuntoRecorridoLinBan(punto, reco.Linea, reco.Bandera)
+            );
+
+            // Averiguo los TOPES para el cálculo de este mapa
             var topes2D = Topes2D.CreateFromPuntos(puntosLinBan.Select(plinban => (Punto)plinban));
+
+            // Chusmeo algunas cosas aca para ver que los puntos vienen como quiero
+            var cantidadTotalDePuntos   = puntosLinBan.Count ();
+            var paraMirarMientrasDepuro = puntosLinBan.ToList();
+
+            // Ahora tenemos que crear una colección de casilleros por recorrido...
+            // Si, una colección de nombres que esté relacionada con casilleros "virtuales" y los puntos dados...
+            // Se podria generar una lista nueva con los puntos y sus casilleros correspondientes...
+            // Asi cada vez que se haga referencia a un casillero se puede relacionar con los puntos que se encuentren en él
+            // La información debe transformarse, pero debe seguir un hilo no destructivo, para poder fluir en su génesis
+
+            Dictionary<Casillero, List<PuntoRecorridoLinBan>> dicPuntosLinBanXCasillero = new();
+            
+            foreach (var recorridoRBusX in recorridosRBus)
+            {
+                var casillerosParaEsteRecorrido = new List<Casillero>();
+
+                foreach (var puntoRecorridoX in recorridoRBusX.Puntos)
+                {
+                    var casillero = Casillero.Create(topes2D, puntoRecorridoX, 30);
+
+                    // meto info en un diccionario, a lo mejor es util en el futuro...
+                    var key = casillero;
+                    if (!dicPuntosLinBanXCasillero.ContainsKey(key))
+                    {
+                        dicPuntosLinBanXCasillero.Add(key, new List<PuntoRecorridoLinBan>());
+                    }
+                    var puntoAGuardar = new PuntoRecorridoLinBan(puntoRecorridoX, recorridoRBusX.Linea, recorridoRBusX.Bandera);
+                    dicPuntosLinBanXCasillero[key].Add(puntoAGuardar);
+
+                    // creo la lista de casilleros
+                    casillerosParaEsteRecorrido.Add(casillero);    
+                }
+
+                var casSinRepe = casillerosParaEsteRecorrido
+                    .Simplificar((c1, c2) => 
+                        c1.IndexHorizontal == c2.IndexHorizontal && 
+                        c1.IndexVertical == c2.IndexVertical
+                    )
+                ;
+
+                var pattern = casSinRepe
+                    //.Select(c => c.ToString())
+                    //.Select(c => c.FixedToString("0000"))
+                    //.Select(c => string.Format("{0:0000}h{1:0000}v", c.IndexHorizontal, c.IndexVertical))
+                    .Select(s => $"({s})*")
+                    .Stringificar()
+                ;
+
+                Console.WriteLine($"{recorridoRBusX.Linea} {recorridoRBusX.Bandera} :: {pattern}");
+            }
+
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             //////////////////////////////////////////////////////////////////////
             /// CREACION DE LA REGEX
             var sb = new StringBuilder();
             foreach (var plb in puntosLinBan.Where(p => p.Linea == 159 && p.Bandera == 2744))
             {
-                var casillero = Casillero.DameCasillero(topes2D, plb, 30);
+                var casillero = Casillero.Create(topes2D, plb, 30);
                 //sb.Append('<');
                 //sb.Append(plb.Cuenta);
                 //sb.Append('>');
@@ -99,6 +164,12 @@ namespace PruebaLecturaDeRecorridos
 
             ///////////////////////////////////////////////////////////////////////
             /// DIBUJO DEL MAPA
+            /// 
+
+            Console.WriteLine($"{Environment.TickCount - start} milis");
+            Console.ReadLine();
+
+            Console.Clear();
 
             foreach (var xxx in puntosLinBan.Where(p => p.Linea == 159))
             {
@@ -115,7 +186,7 @@ namespace PruebaLecturaDeRecorridos
                     //
                 }
 
-                var casillero = Casillero.DameCasillero(topes2D, xxx, 500);
+                var casillero = Casillero.Create(topes2D, xxx, 500);
                 Console.CursorLeft = casillero.IndexHorizontal;
                 Console.CursorTop  = 61-casillero.IndexVertical;
                 Console.Write(output);
@@ -193,16 +264,56 @@ namespace PruebaLecturaDeRecorridos
             */
         }
 
-        
+        static DateTime GetVerFecha(string fileName)
+        {
+            // 000000 000011 1111 11 11 22 22 22
+            // 012345 678901 2345 67 89 01 23 45
+            // verrec 000034 2015 12 24 00 00 00
 
-        public static IEnumerable<PuntoRecorridoLinBan> LeerRecorridosPorArchivos(string dir, int[] codLineas, DateTime fechaInicioCalculo)
+            return new DateTime(
+                year: int.Parse(fileName.Substring(12, 4)),
+                month: int.Parse(fileName.Substring(16, 2)),
+                day: int.Parse(fileName.Substring(18, 2)),
+                hour: int.Parse(fileName.Substring(20, 2)),
+                minute: int.Parse(fileName.Substring(22, 2)),
+                second: int.Parse(fileName.Substring(24, 2))
+            );
+        }
+
+        static IEnumerable<RecorridoLinBan> LeerRecorridosLinBanFromZip(string pathArchivoRec)
+        {
+            using FileStream zipStream = File.OpenRead(pathArchivoRec);
+            using ZipArchive zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read);
+
+            foreach (ZipArchiveEntry entry in zipArchive.Entries)
+            {
+                if (entry.Name.StartsWith("r"))
+                {
+                    // 0123456789012
+                    // rLLLLBBBB.txt
+                    int linea = int.Parse(entry.Name.Substring(1, 4));
+                    int bandera = int.Parse(entry.Name.Substring(5, 4));
+
+                    using Stream entryStream = entry.Open();
+                    var puntosRecorrido = RecorridosParser.ReadFile(entryStream);
+
+                    yield return new RecorridoLinBan
+                    {
+                        Linea = linea,
+                        Bandera = bandera,
+                        Puntos = puntosRecorrido,
+                    };
+                }
+            }
+        }
+
+        public static IEnumerable<RecorridoLinBan> LeerRecorridosPorArchivos(string dir, int[] codLineas, DateTime fechaInicioCalculo)
         {
             // los archivos estan guardados con el formato verrec
             // nombre vvvvvv yyyy MM dd hh mm ss
             // verrec 000034 2015 12 24 00 00 00
             // primero listo los directorios que tengan que ver con las líneas en cuestion...
 
-            int conttt = 0;
             var dirsLineas = codLineas.Select(codLinea => Path.Combine(dir, codLinea.ToString("0000")));
 
             foreach (var dirLinea in dirsLineas)
@@ -216,70 +327,11 @@ namespace PruebaLecturaDeRecorridos
                     .FirstOrDefault()
                 ;
 
-                foreach (var recorrido in LeerRecorridosLinBanFromZip(pathVersionRecorridos))
+                foreach (var recorridoLinBan in LeerRecorridosLinBanFromZip(pathVersionRecorridos))
                 {
-                    var puntosLinBan = recorrido.Puntos
-                        .HacerGranular(30)
-                        //.AchicarPorAcumulacionMetros(10)
-                        .Select(puntoRecorrido => new PuntoRecorridoLinBan(puntoRecorrido, recorrido.Linea, recorrido.Bandera));
-
-                    foreach (var puntoLinBan in puntosLinBan)
-                    {
-                        conttt++;
-                        //Console.WriteLine(puntoLinBan);
-                        yield return puntoLinBan;
-                    }
-                }
-                
-                int faa = 0;
-            }
-
-            int foo = 0;
-        }
-
-        // TODO!! aca tambien estabamos bajando responsabilidades...
-        // tenemos que subir las responsabilidades para devolver solo un IEnumerable<PuntoRecorrido>
-        private static IEnumerable<RecorridoLinBan> LeerRecorridosLinBanFromZip(string pathArchivoRec)
-        {
-            using FileStream zipStream  = File.OpenRead(pathArchivoRec);
-            using ZipArchive zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read);
-
-            foreach (ZipArchiveEntry entry in zipArchive.Entries)
-            {
-                if (entry.Name.StartsWith("r"))
-                {
-                    // 0123456789012
-                    // rLLLLBBBB.txt
-                    int linea   = int.Parse(entry.Name.Substring(1, 4));
-                    int bandera = int.Parse(entry.Name.Substring(5, 4));
-                    
-                    using Stream entryStream = entry.Open();
-                    var puntosRecorrido = RecorridosParser.ReadFile(entryStream);
-
-                    yield return new RecorridoLinBan
-                    {
-                        Linea   = linea,
-                        Bandera = bandera,
-                        Puntos  = puntosRecorrido,
-                    };
+                    yield return recorridoLinBan;
                 }
             }
-        }
-
-        static DateTime GetVerFecha(string fileName)
-        {
-            // 000000 000011 1111 11 11 22 22 22
-            // 012345 678901 2345 67 89 01 23 45
-            // verrec 000034 2015 12 24 00 00 00
-
-            return new DateTime(
-                year  : int.Parse(fileName.Substring(12, 4)),
-                month : int.Parse(fileName.Substring(16, 2)),
-                day   : int.Parse(fileName.Substring(18, 2)),
-                hour  : int.Parse(fileName.Substring(20, 2)),
-                minute: int.Parse(fileName.Substring(22, 2)),
-                second: int.Parse(fileName.Substring(24, 2))
-            );
         }
 
         public static void AgregarPuntoAlGeoHash(IDatabase redis, string nombreGeoHash, Punto punto, string nombrePunto)
@@ -303,124 +355,6 @@ namespace PruebaLecturaDeRecorridos
             foreach (var rx in result)
             {
                 yield return rx.Member;
-            }
-        }
-    }
-
-    public static class ExtensionesParaElCaso
-    {
-        static IEnumerable<PuntoRecorrido> CrearPuntosIntermediosNaif(
-            PuntoRecorrido puntoA,
-            PuntoRecorrido puntoB,
-            double cant
-        )
-        {
-            var latDiff = puntoB.Lat - puntoA.Lat;
-            var lngDiff = puntoB.Lng - puntoA.Lng;
-
-            var latPart = latDiff / cant;
-            var lngPart = lngDiff / cant;
-
-            // para que no aparezca distancia cero poner (cantPuntosRelleno - 1)
-            for (int i = 0; i < cant - 1; i++)
-            {
-                yield return new PuntoRecorrido
-                {
-                    Cuenta  = puntoA.Cuenta,
-                    Index   = i + 1,
-                    Alt     = puntoA.Alt,
-                    Lat     = puntoA.Lat + (latPart * (i + 1)),
-                    Lng     = puntoA.Lng + (lngPart * (i + 1)),
-                };
-            }
-        }
-
-        public static IEnumerable<PuntoRecorrido> HacerGranular(
-            this IEnumerable<PuntoRecorrido> recorrido,
-            double maxDistMetros
-        )
-        {
-            PuntoRecorrido puntoAnterior = default;
-
-            foreach (var puntoActual in recorrido)
-            {
-                if (puntoAnterior == null)
-                {
-                    // retorno el primer punto
-                    yield return puntoActual;
-                }
-                else
-                {
-                    // sacar distacia entre anterior y actual
-                    var distancia = Haversine.GetDist(
-                        puntoAnterior.Lat, puntoAnterior.Lng,
-                        puntoActual.Lat, puntoActual.Lng
-                    );
-
-                    // sacar "cantPuntosIntermedios" = Math.Ceiling(distancia / maxDistMetros)
-                    // 0,0 <-- anterior
-                    //    1,1 <-- intermedio
-                    //       2,2 <-- intermedio
-                    //          3,3 <-- actual
-                    var cantPuntosIntermedios = Math.Ceiling(distancia / maxDistMetros);
-
-                    // creamos los puntos intermedios y los retornamos
-                    var puntosIntermediosNaif = CrearPuntosIntermediosNaif(
-                        puntoAnterior,
-                        puntoActual,
-                        cantPuntosIntermedios
-                    );
-
-                    foreach (var puntoIntermedio in puntosIntermediosNaif)
-                    {
-                        yield return puntoIntermedio;
-                    }
-
-                    // luego yield retornaremos el punto actual
-                    yield return puntoActual;
-                }
-
-                puntoAnterior = puntoActual;
-            }
-        }
-
-        public static IEnumerable<T> AchicarPorAcumulacionMetros<T>(
-            this IEnumerable<T> recorrido,
-            int maxMetros
-        ) where T : Punto
-        {
-            double acumMetros = 0.0;
-            T puntoAnterior = default;
-
-            foreach (var puntoActual in recorrido)
-            {
-                var dist = 0.0;
-
-                if (puntoAnterior == null)
-                {
-                    yield return puntoActual;
-                }
-                else
-                {
-                    dist = Haversine.GetDist(puntoAnterior.Lat, puntoAnterior.Lng, puntoActual.Lat, puntoActual.Lng);
-
-                    if (dist + acumMetros >= maxMetros)
-                    {
-                        acumMetros = 0.0;
-                        yield return puntoAnterior;
-                    }
-
-                    acumMetros += dist;
-                }
-
-                // guardo el punto
-                puntoAnterior = puntoActual;
-            }
-
-            // devuelvo el último punto guardado, si acumMetros > 0
-            if (acumMetros > 0.0)
-            {
-                yield return puntoAnterior;
             }
         }
     }

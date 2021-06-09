@@ -43,5 +43,11 @@ namespace Recorridos
         {
             return $"Lat={Lat} Lng={Lng} Alt={Alt}";
         }
+
+        public bool EsCercanoA(Punto otro, int radioEnMetros)
+        {
+            var dist = Haversine.GetDist(this, otro);
+            return dist <= radioEnMetros;
+        }
     }
 }
