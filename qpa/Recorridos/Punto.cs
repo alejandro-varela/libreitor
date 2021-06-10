@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Recorridos
 {
-    public class Punto
+    public class Punto : IEquatable<Punto>
     {
         public double Alt { get; set; }
         public double Lat { get; set; }
@@ -48,6 +49,37 @@ namespace Recorridos
         {
             var dist = Haversine.GetDist(this, otro);
             return dist <= radioEnMetros;
+        }
+
+        
+        ///////////////////////////////////////////////////
+        
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as Punto);
+        }
+
+        public bool Equals(Punto other)
+        {
+            return other != null &&
+                   Alt == other.Alt &&
+                   Lat == other.Lat &&
+                   Lng == other.Lng;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Alt, Lat, Lng);
+        }
+
+        public static bool operator ==(Punto left, Punto right)
+        {
+            return EqualityComparer<Punto>.Default.Equals(left, right);
+        }
+
+        public static bool operator !=(Punto left, Punto right)
+        {
+            return !(left == right);
         }
     }
 }

@@ -1,10 +1,11 @@
 ﻿using Recorridos;
 using System;
+using System.Collections.Generic;
 
 namespace PruebaLecturaDeRecorridos
 {
     //public struct Casillero
-    public class Casillero
+    public class Casillero : IEquatable<Casillero>
     { 
         public int IndexHorizontal { get; set; }
         public int IndexVertical   { get; set; }
@@ -16,7 +17,7 @@ namespace PruebaLecturaDeRecorridos
 
         public override string ToString()
         {
-            return $"h{IndexHorizontal}v{IndexVertical}";
+            return $"p{IndexHorizontal:00000}{IndexVertical:00000}";
         }
 
         public static Casillero Create(Topes2D topes2D, Punto puntoide, int granularidad)
@@ -55,6 +56,33 @@ namespace PruebaLecturaDeRecorridos
                 IndexHorizontal = indexCasilleroHorizontal,
                 IndexVertical   = indexCasilleroVertical,
             };
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as Casillero);
+        }
+
+        public bool Equals(Casillero other)
+        {
+            return other != null &&
+                   IndexHorizontal == other.IndexHorizontal &&
+                   IndexVertical == other.IndexVertical;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(IndexHorizontal, IndexVertical);
+        }
+
+        public static bool operator ==(Casillero left, Casillero right)
+        {
+            return EqualityComparer<Casillero>.Default.Equals(left, right);
+        }
+
+        public static bool operator !=(Casillero left, Casillero right)
+        {
+            return !(left == right);
         }
     }
 }

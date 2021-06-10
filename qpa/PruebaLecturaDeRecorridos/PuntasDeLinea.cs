@@ -9,14 +9,27 @@ namespace PruebaLecturaDeRecorridos
 {
     public class PuntasDeLinea
     {
-        IEnumerable<Punto> Get()
+        public static IEnumerable<Punto> Get(IEnumerable<RecorridoLinBan> recorridos)
         {
-            yield return new Punto();
-            yield return new Punto();
-            yield return new Punto();
-            yield return new Punto();
-            yield return new Punto();
-            yield return new Punto();
+            foreach (var recorrido in recorridos)
+            {
+                yield return recorrido.PuntoSalida;
+                yield return recorrido.PuntoLlegada;
+            }
+        }
+
+        public static bool EsPunta(PuntoHistorico ph, IEnumerable<Punto> puntas, int radioEnMetros)
+        {
+            foreach (var punta in puntas)
+            {
+                var dist = Haversine.GetDist(punta, ph.Punto);
+                if (dist <= radioEnMetros)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
