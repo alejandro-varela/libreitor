@@ -1,7 +1,7 @@
 ﻿using Recorridos;
 using System;
 
-namespace PruebaLecturaDeRecorridos
+namespace Recorridos
 {
     public class PuntoRecorridoLinBan : PuntoRecorrido
     {

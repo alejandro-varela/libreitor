@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="StackExchange.Redis" Version="2.2.4" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
   </ItemGroup>
 
 </Project>

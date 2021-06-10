@@ -87,7 +87,9 @@ namespace PruebaLecturaDeRecorridos
             // La información debe transformarse, pero debe seguir un hilo no destructivo, para poder fluir en su génesis
 
             Dictionary<Casillero, List<PuntoRecorridoLinBan>> dicPuntosLinBanXCasillero = new();
-            
+            List<(int, int, string)> patrones = new();
+            List<(int, int, Regex)>  regexes = new();
+
             foreach (var recorridoRBusX in recorridosRBus)
             {
                 var casillerosParaEsteRecorrido = new List<Casillero>();
@@ -124,12 +126,65 @@ namespace PruebaLecturaDeRecorridos
                     .Stringificar()
                 ;
 
-                Console.WriteLine($"{recorridoRBusX.Linea} {recorridoRBusX.Bandera} :: {pattern}");
+                patrones.Add((recorridoRBusX.Linea, recorridoRBusX.Bandera, pattern));
+                regexes.Add((recorridoRBusX.Linea, recorridoRBusX.Bandera, new Regex(pattern, RegexOptions.Compiled)));
+
+                //Console.WriteLine($"{recorridoRBusX.Linea} {recorridoRBusX.Bandera} :: {pattern}");
             }
+
+            Console.WriteLine($"{Environment.TickCount - start} milis");
 
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            var desde = new DateTime(2021, 06, 02);
+            var hasta = desde.AddDays(1);
+            var pepino = Historia.GetFromCSV(3646, desde, hasta, new HistoriaGetFromCSVConfig { InvertLat = true, InvertLng = true });
+
+            var firma = pepino.PuntosHistoricos
+                .Select(ph => ph.Punto)
+                .Select(p => Casillero.Create(topes2D, p, 30))
+                .Simplificar((c1, c2) => c1.IndexHorizontal == c2.IndexHorizontal && c1.IndexVertical == c2.IndexVertical)
+                .Stringificar()
+            ;
+
+            int foofoo = 0;
+
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            int startfaafaa = Environment.TickCount;
+            foreach ((int, int, string) patronX in patrones)
+            //foreach ((int, int, Regex) patronX in regexes)
+            {
+                int linea = patronX.Item1;
+                int bandera = patronX.Item2;
+                string pattern = patronX.Item3;
+                //Regex r = patronX.Item3;
+
+                Regex r = new(pattern);
+
+                Console.WriteLine($"{linea} {bandera}");
+
+                foreach (Match matchX in r.Matches(firma))
+                {
+                    if (matchX.Value.Trim().Length == 0)
+                    {
+                        continue;
+                    }
+
+                    Console.WriteLine($"{matchX.Index} {matchX.Value}");
+                }
+            }
+            Console.WriteLine($"MILIS: {Environment.TickCount - startfaafaa}");
+
+            int faafaa = 0;
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
             //////////////////////////////////////////////////////////////////////
             /// CREACION DE LA REGEX
