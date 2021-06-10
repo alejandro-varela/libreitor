@@ -35,7 +35,7 @@ namespace PruebaLecturaDeRecorridos
             double latInverter = config.InvertLat ? -1 : 1;
             double lngInverter = config.InvertLng ? -1 : 1;
 
-            foreach (string line in File.ReadLines("C:\\Users\\alejandro\\Desktop\\CSV\\2021-06-02.csv"))
+            foreach (string line in File.ReadLines("2021-06-02.csv"))
             {
                 // parto la linea
                 string[] lineParts = line.Split(config.Separator);

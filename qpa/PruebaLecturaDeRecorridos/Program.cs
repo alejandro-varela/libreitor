@@ -13,7 +13,7 @@ namespace PruebaLecturaDeRecorridos
 {
     partial class Program
     {
-        static readonly ConnectionMultiplexer _muxer = ConnectionMultiplexer.Connect("localhost:6379");
+        //static readonly ConnectionMultiplexer _muxer = ConnectionMultiplexer.Connect("localhost:6379");
         const string GEO_PUNTAS_LINEA = "geo_puntas_de_linea"; // poner una guid y una fecha para ser borrado mas tarde...
         const string GEOHASH = "geoda";
 
