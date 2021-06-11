@@ -17,7 +17,7 @@ namespace PruebaLecturaDeRecorridos
         const string GEO_PUNTAS_LINEA = "geo_puntas_de_linea"; // poner una guid y una fecha para ser borrado mas tarde...
         const string GEOHASH = "geoda";
 
-        const int GRANULARIDAD = 300;
+        const int GRANULARIDAD = 500;
 
         static void Main(string[] args)
         {
@@ -47,8 +47,8 @@ namespace PruebaLecturaDeRecorridos
 
             Console.Clear();
             //DibujarPuntosLinBan(puntosLinBan, topes2D);
-            DibujarPuntos(puntosLinBan.Select(plb=> (Punto)plb), topes2D, 500, '.', ConsoleColor.DarkGray);
-            DibujarPuntos(puntasDeLinea, topes2D, 500, 'X', ConsoleColor.Blue);
+            DibujarPuntos(puntosLinBan.Select(plb=> (Punto)plb), topes2D, GRANULARIDAD, '.', ConsoleColor.DarkGray);
+            DibujarPuntos(puntasDeLinea, topes2D, GRANULARIDAD, 'X', ConsoleColor.Blue);
 
 
             // Chusmeo algunas cosas aca para ver que los puntos vienen como quiero
@@ -117,13 +117,19 @@ namespace PruebaLecturaDeRecorridos
             var hasta = desde.AddDays(1);
             var historia = Historia.GetFromCSV(4314, desde, hasta, puntasDeLinea, 150, new HistoriaGetFromCSVConfig { InvertLat = true, InvertLng = true });
 
+            DibujarPuntos(puntosLinBan.Select(plb => (Punto)plb), topes2D, GRANULARIDAD , '.', ConsoleColor.DarkGray);
             foreach (var subHistoriaX in historia.SubHistorias)
             {
-                DibujarPuntos(puntosLinBan.Select(plb => (Punto)plb), topes2D, 500, '.', ConsoleColor.DarkGray);
-                DibujarPuntos(subHistoriaX.Select(ph => ph.Punto), topes2D, 500, '#', ConsoleColor.Gray);
-                DibujarPuntos(puntasDeLinea, topes2D, 500, 'X', ConsoleColor.Blue);
+                if (subHistoriaX.Count < 3)
+                {
+                    continue;
+                }
+
+                DibujarPuntos(subHistoriaX.Select(ph => ph.Punto), topes2D, GRANULARIDAD, '#', ConsoleColor.Red);
+                DibujarPuntos(puntasDeLinea, topes2D, GRANULARIDAD, 'X', ConsoleColor.Blue);
                 Console.ReadKey();
-                Console.Clear();
+                // es mas rápido pero Console.Clear es mas limpio
+                DibujarPuntos(subHistoriaX.Select(ph => ph.Punto), topes2D, GRANULARIDAD, '.', ConsoleColor.DarkGray);
             }
 
             var firma = historia.Puntos
@@ -175,33 +181,33 @@ namespace PruebaLecturaDeRecorridos
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-            //////////////////////////////////////////////////////////////////////
-            /// CREACION DE LA REGEX
-            var sb = new StringBuilder();
-            foreach (var plb in puntosLinBan.Where(p => p.Linea == 159 && p.Bandera == 2744))
-            {
-                var casillero = Casillero.Create(topes2D, plb, GRANULARIDAD);
-                //sb.Append('<');
-                //sb.Append(plb.Cuenta);
-                //sb.Append('>');
-                sb.Append('(');
-                sb.Append(casillero.FixedToString("0000"));
-                sb.Append(')');
-                sb.Append('*');
-            }
+            ////////////////////////////////////////////////////////////////////////
+            ///// CREACION DE LA REGEX
+            //var sb = new StringBuilder();
+            //foreach (var plb in puntosLinBan.Where(p => p.Linea == 159 && p.Bandera == 2744))
+            //{
+            //    var casillero = Casillero.Create(topes2D, plb, GRANULARIDAD);
+            //    //sb.Append('<');
+            //    //sb.Append(plb.Cuenta);
+            //    //sb.Append('>');
+            //    sb.Append('(');
+            //    sb.Append(casillero.FixedToString("0000"));
+            //    sb.Append(')');
+            //    sb.Append('*');
+            //}
 
-            string Pattern_0159_2744 = sb.ToString();
-            Console.WriteLine(Pattern_0159_2744);
-            Console.WriteLine($"La regex tiene {Pattern_0159_2744.Length} caracteres");
+            //string Pattern_0159_2744 = sb.ToString();
+            //Console.WriteLine(Pattern_0159_2744);
+            //Console.WriteLine($"La regex tiene {Pattern_0159_2744.Length} caracteres");
 
-            //////////////////////////////////////////////////////////////////////
-            /// COMPARACION CON UN PATRON REAL
-            var realreal = "h0647v0718h0646v0718h0645v0718PAPASAVAh0645v0718h0644v0718h0643v0718";
-            var regex = new Regex(Pattern_0159_2744);
-            foreach (Match match in regex.Matches(realreal))
-            {
-                Console.WriteLine($"{match.Index} {match.Value}");
-            }
+            ////////////////////////////////////////////////////////////////////////
+            ///// COMPARACION CON UN PATRON REAL
+            //var realreal = "h0647v0718h0646v0718h0645v0718PAPASAVAh0645v0718h0644v0718h0643v0718";
+            //var regex = new Regex(Pattern_0159_2744);
+            //foreach (Match match in regex.Matches(realreal))
+            //{
+            //    Console.WriteLine($"{match.Index} {match.Value}");
+            //}
 
             //////////////////////////////////////////////////////////////////////
             /// TODO: JUSTIFICAR LOS MATCHES GRAFICAMENTE
@@ -316,7 +322,7 @@ namespace PruebaLecturaDeRecorridos
 
             foreach (Punto px in puntos)
             {
-                var casillero = Casillero.Create(topes2D, px, 500);
+                var casillero = Casillero.Create(topes2D, px, granularidad);
                 var casilleroKey = casillero.ToString();
                 if (nombresCasilleros.Contains(casilleroKey))
                 {
