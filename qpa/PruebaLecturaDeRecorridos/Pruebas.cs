@@ -139,24 +139,29 @@ namespace PruebaLecturaDeRecorridos
             int faa = 0;
         }
 
-        public static void EnQueRecoEstaEstePunto(IEnumerable<RecorridoLinBan> recorridosRBus, Topes2D topes2D)
+        public static void EnQueRecoEstaEstePunto(List<RecorridoLinBan> recorridosRBus, Topes2D topes2D)
         {
             Console.WriteLine("EMPIEZA");
 
             /////////////////////////////////////////////
             // Creo los casilleros para cada recorrido
 
-            Dictionary<string, HashSet<Casillero>> casillerosXBandera = new();
+            Dictionary<string, HashSet<Casillero>> casillerosXLinBan = new();
 
             foreach (RecorridoLinBan reco in recorridosRBus)
             {
                 var key = $"{reco.Linea:0000}{reco.Bandera:0000}";
-                casillerosXBandera.Add(key, new HashSet<Casillero>());
+                casillerosXLinBan.Add(key, new HashSet<Casillero>());
 
-                foreach (var puntoX in reco.Puntos)
+                foreach (var puntoX in reco.Puntos.HacerGranular(15))
                 {
                     var casillero = Casillero.Create(topes2D, puntoX, GRANU);
-                    casillerosXBandera[key].Add(casillero);
+                    casillerosXLinBan[key].Add(casillero);
+                }
+
+                if (reco.Linea == 163 && reco.Bandera == 2777)
+                {
+                    int parameAca = 0;
                 }
             }
 
@@ -199,8 +204,8 @@ namespace PruebaLecturaDeRecorridos
                             var sConcuerda = Concuerda(kvp, recorridosRBus) ? "SI" : "_";
                             Console.WriteLine($"{kvp.Key} {kvp.Value.Count} {sConcuerda}");
                         }
+                        acumBanderaas = new Dictionary<string, List<PuntoHistorico>>();
                     }
-                    acumBanderaas = new Dictionary<string, List<PuntoHistorico>>();
                     Console.ForegroundColor = ConsoleColor.DarkGray;
                 }
                 else
@@ -210,10 +215,10 @@ namespace PruebaLecturaDeRecorridos
 
                 var casilleroActual = Casillero.Create(topes2D, phx.Punto, GRANU);
                 Console.Write(phx.Punto);
-                foreach (var key in casillerosXBandera.Keys)
+                foreach (var key in casillerosXLinBan.Keys)
                 {
                     // if (casillerosXBandera[key].Contains(casilleroActual))
-                    if (ContieneCasilleroFlex(casillerosXBandera[key], casilleroActual, GRANU))
+                    if (ContieneCasilleroFlex(casillerosXLinBan[key], casilleroActual, GRANU))
                     {
                         if (!esPunta)
                         {
@@ -232,6 +237,8 @@ namespace PruebaLecturaDeRecorridos
                 }
                 Console.WriteLine();
             }
+
+            // 2777 WTF?????????????????
 
             int foo = 0;
         }

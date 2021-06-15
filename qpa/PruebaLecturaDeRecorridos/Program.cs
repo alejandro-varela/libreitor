@@ -156,10 +156,19 @@ namespace PruebaLecturaDeRecorridos
                 }
 
                 DibujarPuntos(subHistoriaX.Select(ph => ph.Punto), topes2D, GRANULARIDAD, '#', ConsoleColor.Red);
-                DibujarPuntos(puntasDeLinea, topes2D, GRANULARIDAD, 'X', ConsoleColor.Blue);
+                DibujarPuntos(puntasDeLinea, topes2D, GRANULARIDAD, '~', ConsoleColor.Blue);
+
+                IEnumerable<Punto> pts2777 = recorridosRBus
+                    .First(recx => recx.Bandera == 2777 && recx.Linea == 163)
+                    .Puntos
+                    .Select(prec => (Punto)prec)
+                ;
+                DibujarPuntos(pts2777, topes2D, GRANULARIDAD, '%', ConsoleColor.Yellow);
+
                 Console.ReadKey();
                 // es mas rápido pero Console.Clear es mas limpio
                 DibujarPuntos(subHistoriaX.Select(ph => ph.Punto), topes2D, GRANULARIDAD, '.', ConsoleColor.DarkGray);
+                
             }
 
             var firma = historia.Puntos
@@ -354,7 +363,7 @@ namespace PruebaLecturaDeRecorridos
             {
                 var casillero = Casillero.Create(topes2D, px, granularidad);
                 var casilleroKey = casillero.ToString();
-                if (nombresCasilleros.Contains(casilleroKey))
+                if (nombresCasilleros.Contains(casilleroKey) && pen != '%')
                 {
                     continue;
                 }
@@ -362,9 +371,24 @@ namespace PruebaLecturaDeRecorridos
                 Console.CursorLeft = casillero.IndexHorizontal;
                 Console.CursorTop = 65 - casillero.IndexVertical;
                 Console.Write(pen);
+                if (pen == '%')
+                    System.Threading.Thread.Sleep(1);
 
                 nombresCasilleros.Add(casilleroKey);
             }
+
+            ///////////// DIBUJO ULTIMO PUNTO //////////////
+            if (pen == '%')
+            {
+                var ultimo = puntos.Last();
+                var casillerou = Casillero.Create(topes2D, ultimo, granularidad);
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.CursorLeft = casillerou.IndexHorizontal;
+                Console.CursorTop = 65 - casillerou.IndexVertical;
+                Console.Write(pen);
+            }
+            ///////////// DIBUJO ULTIMO PUNTO //////////////
+            ///
             Console.ForegroundColor = old;
         }
 
