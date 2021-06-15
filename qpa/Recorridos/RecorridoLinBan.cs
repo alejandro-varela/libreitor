@@ -1,4 +1,6 @@
-﻿namespace Recorridos
+﻿using System;
+
+namespace Recorridos
 {
     public class RecorridoLinBan : Recorrido
     {

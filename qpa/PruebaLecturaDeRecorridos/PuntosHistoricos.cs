@@ -28,7 +28,7 @@ namespace PruebaLecturaDeRecorridos
             return null;
         }
 
-        public static Historia GetFromCSV(int ficha, DateTime desde, DateTime hasta, IEnumerable<Punto> puntasDeLinea, int radioPuntaMetros, HistoriaGetFromCSVConfig config)
+        public static Historia GetFromCSV(int ficha, DateTime desde, DateTime hasta, IEnumerable<Punto> puntasDeLinea, int radioPuntaMetros, PuntosHistoricosGetFromCSVConfig config)
         {
             List<PuntoHistorico> puntosHistoricos = new List<PuntoHistorico>();
 
@@ -104,17 +104,18 @@ namespace PruebaLecturaDeRecorridos
 
         public static Historia GetFromCSV(int ficha, DateTime desde, DateTime hasta, IEnumerable<Punto> puntasDeLinea, int radioPuntaMetros)
         {
-            return GetFromCSV(ficha, desde, hasta, puntasDeLinea, radioPuntaMetros, new HistoriaGetFromCSVConfig());
+            return GetFromCSV(ficha, desde, hasta, puntasDeLinea, radioPuntaMetros, new PuntosHistoricosGetFromCSVConfig());
         }
     }
 
-    public class HistoriaGetConfig
+    public class PuntosHistoricosGetConfig
     {
         public bool InvertLat { get; set; }
         public bool InvertLng { get; set; }
+        public bool ExcluirCeros { get; set; } = true;
     }
 
-    public class HistoriaGetFromCSVConfig : HistoriaGetConfig
+    public class PuntosHistoricosGetFromCSVConfig : PuntosHistoricosGetConfig
     {
         public int FichaPos     { get; set; } = 2;
         public int FechaHoraPos { get; set; } = 3;

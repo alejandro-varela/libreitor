@@ -158,5 +158,19 @@ namespace PruebaLecturaDeRecorridos
                 return Haversine.GetDist(PuntoNorOeste, PuntoSurOeste);
             }
         }
+
+        public int GetAnchoGranular(double granularidad)
+        {
+            // 0 1 2 3 4 5 6 ... N
+            var maxIndexCasilleroHorizontal = Convert.ToInt32(Math.Ceiling(this.AnchoMaximoMts / granularidad));
+            return maxIndexCasilleroHorizontal + 1; // N + 1
+        }
+
+        public int GetAlturaGranular(double granularidad)
+        {
+            // 0 1 2 3 4 5 6 ... N
+            var maxIndexCasilleroVertical = Convert.ToInt32(Math.Ceiling(this.AlturaMts / granularidad));
+            return maxIndexCasilleroVertical + 1; // N + 1
+        }
     }
 }

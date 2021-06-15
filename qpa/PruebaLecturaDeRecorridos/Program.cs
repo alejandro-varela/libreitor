@@ -11,6 +11,15 @@ using System.Text.RegularExpressions;
 
 namespace PruebaLecturaDeRecorridos
 {
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    // TODO: reforzar los dibujos
+    //          dibujador bmp
+    //          dibujador ascii art
+    //          dibujador de línea temporal (rectangulo con las rayitas)
+    // TODO: reforzar las puntas de linea, cortar si es posible, no dar bola a falsos cortes
+    // TODO: se pueden probar con distintas distancias a las puntas de linea para ver cual da mejor resultado con las subhistorias...
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    
     partial class Program
     {
         //static readonly ConnectionMultiplexer _muxer = ConnectionMultiplexer.Connect("localhost:6379");
@@ -31,6 +40,9 @@ namespace PruebaLecturaDeRecorridos
             // Leo una colección de recorridos a partir de las líneas dadas (contienen linea y banderas), puede filtrarse
             var recorridosRBus = LeerRecorridosPorArchivos("../../../REC203/", new int[] { 159, 163 }, DateTime.Now);
 
+            //foreach (var petex in PuntasDeLinea.Get(recorridosRBus))
+            //    Console.WriteLine(petex);
+
             var puntasDeLinea = PuntasDeLinea
                 .Get    (recorridosRBus)
                 .ToList()
@@ -44,6 +56,19 @@ namespace PruebaLecturaDeRecorridos
 
             // Averiguo los TOPES para el cálculo de este mapa
             var topes2D = Topes2D.CreateFromPuntos(puntosLinBan.Select(plinban => (Punto)plinban));
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //PRUEBAS
+            //Pruebas.PruebaPuntosDesechados(recorridosRBus, topes2D);
+            Pruebas.EnQueRecoEstaEstePunto(recorridosRBus, topes2D);
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
             Console.Clear();
             //DibujarPuntosLinBan(puntosLinBan, topes2D);
@@ -111,11 +136,16 @@ namespace PruebaLecturaDeRecorridos
             // TODO: estudiar la firma de 3943 en 2 de junio
             // 4102 2 jun galpon
             // 4071 2 jun (pico 159) tiene puntos tanto en 159 como en 163 (pero en 163 pueden ser puntas línea, ademas son menos)
-            // 4314 2 jun (pico 163) 
+            // 4314 2 jun (pico 163) <--
+            // 4316 2 jun (pico 163) 
+            // 4306 2 jun (pico 163) nada
+            // 3751 2 jun (pico 163) nada
+            // 4337 2 jun (pico 163) nada
+            // 3850 2 jun (pico 163) 
 
             var desde = new DateTime(2021, 06, 02);
             var hasta = desde.AddDays(1);
-            var historia = Historia.GetFromCSV(4314, desde, hasta, puntasDeLinea, 150, new HistoriaGetFromCSVConfig { InvertLat = true, InvertLng = true });
+            var historia = Historia.GetFromCSV(3850, desde, hasta, puntasDeLinea, 400, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true });
 
             DibujarPuntos(puntosLinBan.Select(plb => (Punto)plb), topes2D, GRANULARIDAD , '.', ConsoleColor.DarkGray);
             foreach (var subHistoriaX in historia.SubHistorias)
@@ -380,8 +410,11 @@ namespace PruebaLecturaDeRecorridos
             );
         }
 
-        static IEnumerable<RecorridoLinBan> LeerRecorridosLinBanFromZip(string pathArchivoRec)
+        //static IEnumerable<RecorridoLinBan> LeerRecorridosLinBanFromZip(string pathArchivoRec)
+        static List<RecorridoLinBan> LeerRecorridosLinBanFromZip(string pathArchivoRec)
         {
+            var ret = new List<RecorridoLinBan>();
+
             using FileStream zipStream = File.OpenRead(pathArchivoRec);
             using ZipArchive zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read);
 
@@ -397,17 +430,23 @@ namespace PruebaLecturaDeRecorridos
                     using Stream entryStream = entry.Open();
                     var puntosRecorrido = RecorridosParser.ReadFile(entryStream);
 
-                    yield return new RecorridoLinBan
+                    var recoLinBan = new RecorridoLinBan
                     {
-                        Linea = linea,
+                        Linea   = linea,
                         Bandera = bandera,
-                        Puntos = puntosRecorrido,
+                        Puntos  = puntosRecorrido,
                     };
+
+                    //yield return recoLinBan;
+                    ret.Add(recoLinBan);
                 }
             }
+
+            return ret;
         }
 
-        public static IEnumerable<RecorridoLinBan> LeerRecorridosPorArchivos(string dir, int[] codLineas, DateTime fechaInicioCalculo)
+        //public static IEnumerable<RecorridoLinBan> LeerRecorridosPorArchivos(string dir, int[] codLineas, DateTime fechaInicioCalculo)
+        public static List<RecorridoLinBan> LeerRecorridosPorArchivos(string dir, int[] codLineas, DateTime fechaInicioCalculo)
         {
             // los archivos estan guardados con el formato verrec
             // nombre vvvvvv yyyy MM dd hh mm ss
@@ -415,6 +454,7 @@ namespace PruebaLecturaDeRecorridos
             // primero listo los directorios que tengan que ver con las líneas en cuestion...
 
             var dirsLineas = codLineas.Select(codLinea => Path.Combine(dir, codLinea.ToString("0000")));
+            var ret = new List<RecorridoLinBan>();
 
             foreach (var dirLinea in dirsLineas)
             {
@@ -429,9 +469,12 @@ namespace PruebaLecturaDeRecorridos
 
                 foreach (var recorridoLinBan in LeerRecorridosLinBanFromZip(pathVersionRecorridos))
                 {
-                    yield return recorridoLinBan;
+                    //yield return recorridoLinBan;
+                    ret.Add(recorridoLinBan);
                 }
             }
+
+            return ret;
         }
 
         public static void AgregarPuntoAlGeoHash(IDatabase redis, string nombreGeoHash, Punto punto, string nombrePunto)

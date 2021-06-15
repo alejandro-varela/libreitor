@@ -16,15 +16,20 @@ namespace Recorridos
             }
         }
 
-        public static IEnumerable<PuntoRecorrido> ReadFile(Stream stream)
+        //public static IEnumerable<PuntoRecorrido> ReadFile(Stream stream)
+        public static List<PuntoRecorrido> ReadFile(Stream stream)
         {
+            var ret = new List<PuntoRecorrido>();
             byte[] buffer = new byte[16];
 
             while (16 == stream.Read(buffer, 0, buffer.Length))
             {
                 var p = PuntoRecorrido.CreateFromBuffer(buffer);
-                yield return p;
+                //yield return p;
+                ret.Add(p);
             }
+
+            return ret;
         }
     }
 }

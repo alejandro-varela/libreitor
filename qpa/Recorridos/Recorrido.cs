@@ -32,5 +32,24 @@ namespace Recorridos
                 return null;
             }
         }
+
+        public int DameCuentaMasCercanaA(Punto punto)
+        {
+            var minDist = double.MaxValue;
+            var cuenta  = -1;
+
+            foreach (var prec in Puntos)
+            {
+                var dist = Haversine.GetDist(prec, punto);
+
+                if (dist < minDist)
+                {
+                    cuenta = prec.Cuenta;
+                    minDist = dist;
+                }
+            }
+
+            return cuenta;
+        }
     }
 }
