@@ -139,6 +139,10 @@ namespace PruebaLecturaDeRecorridos
             int faa = 0;
         }
 
+
+        // TODO:
+        //       DETECTAR LOS CASILLEROS QUE TIENEN UN "ÚNICO RECORRIDO" Y COMPARARLOS SIN FLEX O VERIFICAR CUAN FLEX PUEDEN SER...
+
         public static void EnQueRecoEstaEstePunto(List<RecorridoLinBan> recorridosRBus, Topes2D topes2D)
         {
             Console.WriteLine("EMPIEZA");
@@ -201,7 +205,7 @@ namespace PruebaLecturaDeRecorridos
                         var listOrdenada = acumBanderaas.ToList().OrderByDescending(kvp => kvp.Value.Count);
                         foreach (var kvp in listOrdenada)
                         {
-                            var sConcuerda = Concuerda(kvp, recorridosRBus) ? "SI" : "_";
+                            var sConcuerda = ConcuerdaPorCuenta(kvp, recorridosRBus) ? "SI" : "_";
                             Console.WriteLine($"{kvp.Key} {kvp.Value.Count} {sConcuerda}");
                         }
                         acumBanderaas = new Dictionary<string, List<PuntoHistorico>>();
@@ -243,34 +247,60 @@ namespace PruebaLecturaDeRecorridos
             int foo = 0;
         }
 
-        static bool Concuerda(KeyValuePair<string, List<PuntoHistorico>> kvp, IEnumerable<RecorridoLinBan> recorridosRBus)
+        static bool ConcuerdaPorCuenta(List<Punto> puntos, IEnumerable<PuntoRecorrido> recorrido)
         {
-            // en el string me dice que linea y bandera es, o sea, puedo pedir un recorrido desde ahi...
+            if (puntos == null)
+            {
+                throw new ArgumentNullException(nameof(recorrido));
+            }
+
+            if (recorrido == null)
+            {
+                throw new ArgumentNullException(nameof(recorrido));
+            }
+
+            // si la lista de puntos es menor que 2 no puedo averiguar el "sentido"
+            if (puntos.Count < 2)
+            {
+                return false;
+            }
+
+            // tomo el primero y el último punto de la lista
+            var primerPuntoHistorico = puntos[0];
+            var ultimoPuntoHistorico = puntos[puntos.Count - 1]; // ^1 se podría usar este index operator
+
+            // con esos puntos puedo tratar de averiguar las cuentas y saber si concuerda o no con ese recorrido...
+            var primeraCuenta = Recorrido.DameCuentaMasCercanaA(primerPuntoHistorico, recorrido);
+            var ultimaCuenta =  Recorrido.DameCuentaMasCercanaA(ultimoPuntoHistorico, recorrido);
+
+            return primeraCuenta < ultimaCuenta;
+        }
+
+        static bool ConcuerdaPorCuenta(List<Punto> puntos, Recorrido recorrido)
+        {
+            return ConcuerdaPorCuenta(puntos, recorrido.Puntos);
+        }
+
+        static bool ConcuerdaPorCuenta(int linea, int bandera, List<Punto> puntos, IEnumerable<RecorridoLinBan> recorridosRBus)
+        {
+            var recorridoLinBan = recorridosRBus.FirstOrDefault(r => r.Linea == linea && r.Bandera == bandera);
+            return ConcuerdaPorCuenta(puntos, recorridoLinBan);
+        }
+
+        static bool ConcuerdaPorCuenta(KeyValuePair<string, List<PuntoHistorico>> kvp, IEnumerable<RecorridoLinBan> recorridosRBus)
+        {
+            // en la clave de tipo string, me dice que linea y bandera es
             var linea = int.Parse(kvp.Key.Substring(0, 4));
             var bande = int.Parse(kvp.Key.Substring(4, 4));
 
-            var reco  = recorridosRBus.FirstOrDefault(r => r.Linea == linea && r.Bandera == bande);
+            var puntos = kvp.Value.Select(ph => ph.Punto).ToList();
 
-            if (reco == default(RecorridoLinBan))
-            {
-                return false;
-            }
-
-            // en el kvp me dice los puntos que han concordado con esa historia, deben ser 2 o mas...
-            if (kvp.Value.Count < 2)
-            {
-                return false;
-            }
-
-            // tomaré el primero y el último...
-            var primerPuntoHistorico = kvp.Value[0];
-            var ultimoPuntoHistorico = kvp.Value[kvp.Value.Count - 1];
-
-            // con esos puntos puedo tratar de averiguar las cuentas y saber si concuerda o no con ese recorrido...
-            var primeraCuenta = reco.DameCuentaMasCercanaA(primerPuntoHistorico.Punto);
-            var ultimaCuenta  = reco.DameCuentaMasCercanaA(ultimoPuntoHistorico.Punto);
-
-            return primeraCuenta < ultimaCuenta;
+            return ConcuerdaPorCuenta(
+                linea,
+                bande,
+                puntos,
+                recorridosRBus
+            );
         }
 
         static bool ContieneCasilleroFlex(HashSet<Casillero> casilleros, Casillero casillero, int granularidad)

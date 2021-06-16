@@ -33,12 +33,19 @@ namespace Recorridos
             }
         }
 
+        // inst 
         public int DameCuentaMasCercanaA(Punto punto)
+        {
+            return DameCuentaMasCercanaA(punto, Puntos);
+        }
+
+        // static
+        public static int DameCuentaMasCercanaA(Punto punto, IEnumerable<PuntoRecorrido> puntos)
         {
             var minDist = double.MaxValue;
             var cuenta  = -1;
 
-            foreach (var prec in Puntos)
+            foreach (var prec in puntos)
             {
                 var dist = Haversine.GetDist(prec, punto);
 
