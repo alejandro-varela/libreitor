@@ -72,8 +72,8 @@ namespace PruebaLecturaDeRecorridos
 
             Console.Clear();
             //DibujarPuntosLinBan(puntosLinBan, topes2D);
-            DibujarPuntos(puntosLinBan.Select(plb=> (Punto)plb), topes2D, GRANULARIDAD, '.', ConsoleColor.DarkGray);
-            DibujarPuntos(puntasDeLinea, topes2D, GRANULARIDAD, 'X', ConsoleColor.Blue);
+            DibujarPuntos(puntosLinBan.Select(plb=> (Punto)plb), topes2D, GRANULARIDAD, '.', ConsoleColor.Green);
+            //DibujarPuntos(puntasDeLinea, topes2D, GRANULARIDAD, 'X', ConsoleColor.Blue);
 
 
             // Chusmeo algunas cosas aca para ver que los puntos vienen como quiero
@@ -154,9 +154,9 @@ namespace PruebaLecturaDeRecorridos
                     continue;
                 }
 
-                DibujarPuntos(puntosLinBan.Select(plb => (Punto)plb), topes2D, GRANULARIDAD, '.', ConsoleColor.Gray);
+                DibujarPuntos(puntosLinBan.Select(plb => (Punto)plb), topes2D, GRANULARIDAD, '.', ConsoleColor.DarkGray);
                 DibujarPuntos(subHistoriaX.Select(ph => ph.Punto), topes2D, GRANULARIDAD, '#', ConsoleColor.DarkCyan);
-                DibujarPuntos(puntasDeLinea, topes2D, GRANULARIDAD, '~', ConsoleColor.DarkYellow);
+                DibujarPuntos(puntasDeLinea, topes2D, GRANULARIDAD, 'P', ConsoleColor.Red);
 
                 IEnumerable<Punto> pts2777 = recorridosRBus
                     .First(recx => recx.Bandera == 2777 && recx.Linea == 163)
@@ -214,14 +214,14 @@ namespace PruebaLecturaDeRecorridos
             {
                 var primero = puntos.First();
                 var casillerop = Casillero.Create(topes2D, primero, granularidad);
-                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.ForegroundColor = ConsoleColor.Green;
                 Console.CursorLeft = casillerop.IndexHorizontal;
                 Console.CursorTop = 65 - casillerop.IndexVertical;
                 Console.Write('S');
 
                 var ultimo = puntos.Last();
                 var casillerou = Casillero.Create(topes2D, ultimo, granularidad);
-                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.ForegroundColor = ConsoleColor.Green;
                 Console.CursorLeft = casillerou.IndexHorizontal;
                 Console.CursorTop = 65 - casillerou.IndexVertical;
                 Console.Write('L');
@@ -234,31 +234,31 @@ namespace PruebaLecturaDeRecorridos
             Console.ForegroundColor = old;
         }
 
-        private static void DibujarPuntosLinBan(IEnumerable<PuntoRecorridoLinBan> puntosLinBan, Topes2D topes2D)
-        {
-            foreach (var xxx in puntosLinBan.Where(p => true /*p.Linea == 159 || p.Linea == 163*/))
-            {
-                char output = xxx.Linea == 159 ? '.' : '_';
+        //private static void DibujarPuntosLinBan(IEnumerable<PuntoRecorridoLinBan> puntosLinBan, Topes2D topes2D)
+        //{
+        //    foreach (var xxx in puntosLinBan.Where(p => true /*p.Linea == 159 || p.Linea == 163*/))
+        //    {
+        //        char output = xxx.Linea == 159 ? '.' : '_';
 
-                //Console.ForegroundColor = (ConsoleColor)((xxx.Bandera % 14) + 1);
-                Console.ForegroundColor = ConsoleColor.DarkGray;
+        //        //Console.ForegroundColor = (ConsoleColor)((xxx.Bandera % 14) + 1);
+        //        Console.ForegroundColor = ConsoleColor.DarkGray;
 
-                if (xxx.Linea == 163)
-                {
-                    //Console.ForegroundColor = ConsoleColor.Blue;
-                }
-                else if (xxx.Linea == 159)
-                {
-                    //
-                }
+        //        if (xxx.Linea == 163)
+        //        {
+        //            //Console.ForegroundColor = ConsoleColor.Blue;
+        //        }
+        //        else if (xxx.Linea == 159)
+        //        {
+        //            //
+        //        }
 
-                var casillero = Casillero.Create(topes2D, xxx, 500);
-                Console.CursorLeft = casillero.IndexHorizontal;
-                Console.CursorTop = 61 - casillero.IndexVertical;
-                Console.Write(output);
-                //Console.WriteLine(casillero);
-            }
-        }
+        //        var casillero = Casillero.Create(topes2D, xxx, 500);
+        //        Console.CursorLeft = casillero.IndexHorizontal;
+        //        Console.CursorTop = 61 - casillero.IndexVertical;
+        //        Console.Write(output);
+        //        //Console.WriteLine(casillero);
+        //    }
+        //}
 
         static DateTime GetVerFecha(string fileName)
         {
