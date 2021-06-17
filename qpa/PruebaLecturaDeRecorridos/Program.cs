@@ -8,6 +8,8 @@ using System.IO.Compression;
 using System.Threading.Tasks;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace PruebaLecturaDeRecorridos
 {
@@ -38,7 +40,7 @@ namespace PruebaLecturaDeRecorridos
             var start = Environment.TickCount;
 
             // Leo una colección de recorridos a partir de las líneas dadas (contienen linea y banderas), puede filtrarse
-            var recorridosRBus = LeerRecorridosPorArchivos("../../../REC203/", new int[] { /*159,*/ 163 }, DateTime.Now);
+            var recorridosRBus = LeerRecorridosPorArchivos("../../../REC203/", new int[] { 159, 163 }, DateTime.Now);
 
             //foreach (var petex in PuntasDeLinea.Get(recorridosRBus))
             //    Console.WriteLine(petex);
@@ -50,7 +52,7 @@ namespace PruebaLecturaDeRecorridos
 
             // Creo una lista PLANA de puntos con lina y bandera
             var puntosLinBan = recorridosRBus.SelectMany(
-                collectionSelector: reco => reco.Puntos.HacerGranular(15),
+                collectionSelector: reco => reco.Puntos.HacerGranular(20), // 15 anda perfecto
                 resultSelector: (reco, punto) => new PuntoRecorridoLinBan(punto, reco.Linea, reco.Bandera)
             );
 
@@ -63,7 +65,27 @@ namespace PruebaLecturaDeRecorridos
             //////////////////////////////////////////////////////////////////////////////////////////////////////////
             //PRUEBAS
             //Pruebas.PruebaPuntosDesechados(recorridosRBus, topes2D);
-            Pruebas.EnQueRecoEstaEstePunto(recorridosRBus, topes2D);
+            //Pruebas.EnQueRecoEstaEstePunto(recorridosRBus, topes2D);
+            //foreach (var reco in recorridosRBus)
+            //{
+            //    var listaRecos = new List<RecorridoLinBan>() { reco };
+            //    var nombreArchivo = $"reco_{reco.Linea:0000}_{reco.Bandera:0000}.png";
+            //    Pruebas.PintarRecorridos(listaRecos, topes2D, 20, nombreArchivo);
+            //}
+
+            //{
+            //    var nombreArchivo = $"reco_todos.png";
+            //    Pruebas.PintarRecorridos(recorridosRBus, topes2D, 20, nombreArchivo);
+            //}
+
+            new PintorDeRecorrido(topes2D: topes2D, granularidad: 20)
+                .SetColorFondo(Color.Beige)
+                .PintarPuntos(puntosLinBan.Select(plb => (Punto)plb), Color.DarkGray, size: 3)
+                .PintarPuntos(puntosLinBan.Select(plb => (Punto)plb), Color.DarkBlue)
+                .Render()
+                .Save("pruebita.png", ImageFormat.Png)
+            ;
+
             //////////////////////////////////////////////////////////////////////////////////////////////////////////
             //////////////////////////////////////////////////////////////////////////////////////////////////////////
             //////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,6 +1,7 @@
 ﻿using Recorridos;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 
@@ -247,6 +248,64 @@ namespace PruebaLecturaDeRecorridos
             int foo = 0;
         }
 
+
+        public static void PintarRecorridos(List<RecorridoLinBan> recorridosRBus, Topes2D topes2D, int granularidad, string nombreArchivo)
+        {
+            int ancho   = topes2D.GetAnchoGranular  (granularidad);
+            int altura  = topes2D.GetAlturaGranular (granularidad);
+
+            var bitmap = new Bitmap(width: ancho, height: altura);
+
+            var cont = 0;
+            using (Graphics g = Graphics.FromImage(bitmap))
+            {
+                // fondo:
+                Color colorFondo = Color.DarkSlateGray;
+                Brush brushFondo = new SolidBrush(colorFondo);
+                g.FillRectangle(brushFondo, new Rectangle(0, 0, ancho, altura));
+
+                // puntos de recorrido:
+                //Color color = Color.FromArgb(alpha: 50, red: 255, green: 0, blue: 0);
+                
+                foreach (var reco in recorridosRBus)
+                {
+                    Color color = Color.FromArgb(alpha: 200, Color.FromName(Colores[cont]));
+                    Brush brush = new SolidBrush(color);
+
+                    foreach (var pt in reco.Puntos)
+                    {
+                        var casillero = Casillero.Create(topes2D, pt, granularidad);
+                        var pos = new Point { X = casillero.IndexHorizontal, Y = casillero.IndexVertical };
+                        var size = new Size(3, 3);
+                        Rectangle rect = new Rectangle(pos, size);
+                        g.FillEllipse(brush, rect);
+                    }
+
+                    cont++;
+                }
+
+                
+            }
+
+            bitmap.Save(nombreArchivo, System.Drawing.Imaging.ImageFormat.Png);
+        }
+
+        //public static Bitmap PintarRecorridos(Topes2D topes2D, int granularidad, params TareaDePintura[] tareasDePintura)
+        //{
+        //    int ancho = topes2D.GetAnchoGranular(granularidad);
+        //    int altura = topes2D.GetAlturaGranular(granularidad);
+
+        //    var bitmap = new Bitmap(width: ancho, height: altura);
+
+        //    using (Graphics g = Graphics.FromImage(bitmap))
+        //    {
+
+        //    }
+
+        //    return bitmap;
+        //}
+
+
         static bool ConcuerdaPorCuenta(List<Punto> puntos, IEnumerable<PuntoRecorrido> recorrido)
         {
             if (puntos == null)
@@ -395,5 +454,231 @@ namespace PruebaLecturaDeRecorridos
 
         }
 
+        public static readonly string[] Colores = new string[] {
+            "MediumAquamarine",
+            "MediumBlue",
+            "MediumOrchid",
+            "MediumPurple",
+            "MediumSeaGreen",
+            "MediumSlateBlue",
+            "MediumSpringGreen",
+            "Maroon",
+            "MediumTurquoise",
+            "MidnightBlue",
+            "MintCream",
+            "MistyRose",
+            "Moccasin",
+            "NavajoWhite",
+            "Navy",
+            "OldLace",
+            "MediumVioletRed",
+            "Magenta",
+            "Linen",
+            "LimeGreen",
+            "LavenderBlush",
+            "LawnGreen",
+            "LemonChiffon",
+            "LightBlue",
+            "LightCoral",
+            "LightCyan",
+            "LightGoldenrodYellow",
+            "LightGray",
+            "LightGreen",
+            "LightPink",
+            "LightSalmon",
+            "LightSeaGreen",
+            "LightSkyBlue",
+            "LightSlateGray",
+            "LightSteelBlue",
+            "LightYellow",
+            "Lime",
+            "Olive",
+            "OliveDrab",
+            "Orange",
+            "OrangeRed",
+            "Silver",
+            "SkyBlue",
+            "SlateBlue",
+            "SlateGray",
+            "Snow",
+            "SpringGreen",
+            "SteelBlue",
+            "Tan",
+            "Teal",
+            "Thistle",
+            "Tomato",
+            "Transparent",
+            "Turquoise",
+            "Violet",
+            "Wheat",
+            "White",
+            "WhiteSmoke",
+            "Sienna",
+            "Lavender",
+            "SeaShell",
+            "SandyBrown",
+            "Orchid",
+            "PaleGoldenrod",
+            "PaleGreen",
+            "PaleTurquoise",
+            "PaleVioletRed",
+            "PapayaWhip",
+            "PeachPuff",
+            "Peru",
+            "Pink",
+            "Plum",
+            "PowderBlue",
+            "Purple",
+            "Red",
+            "RosyBrown",
+            "RoyalBlue",
+            "SaddleBrown",
+            "Salmon",
+            "SeaGreen",
+            "Yellow",
+            "Khaki",
+            "Cyan",
+            "DarkMagenta",
+            "DarkKhaki",
+            "DarkGreen",
+            "DarkGray",
+            "DarkGoldenrod",
+            "DarkCyan",
+            "DarkBlue",
+            "Ivory",
+            "Crimson",
+            "Cornsilk",
+            "CornflowerBlue",
+            "Coral",
+            "Chocolate",
+            "DarkOliveGreen",
+            "Chartreuse",
+            "BurlyWood",
+            "Brown",
+            "BlueViolet",
+            "Blue",
+            "BlanchedAlmond",
+            "Black",
+            "Bisque",
+            "Beige",
+            "Azure"
+        };
+
+    }
+
+    public class PintorDeRecorrido
+    {
+        // Límites
+        public Topes2D Topes2D { get; private set; }
+        public int Granularidad { get; private set; }
+
+        // Tamaño
+        public int Width  { get; private set; }
+        public int Height { get; private set; }
+
+        // Color de fondo
+        public Color ColorFondo { get; private set; } = Color.White;
+        public List<ITarea> Tareas { get; private set; }
+
+        public PintorDeRecorrido(Topes2D topes2D, int granularidad)
+        {
+            Topes2D         = topes2D;
+            Granularidad    = granularidad;
+            Width           = topes2D.GetAnchoGranular(granularidad);
+            Height          = topes2D.GetAlturaGranular(granularidad);
+            Tareas          = new();
+        }
+
+        public PintorDeRecorrido SetColorFondo(Color color)
+        {
+            ColorFondo = color;
+            return this;
+        }
+
+        public PintorDeRecorrido PintarPunto(Punto punto, Color color, int size = 1)
+        {
+            Tareas.Add(
+                new TareaPunto { 
+                    Punto = punto, 
+                    Color = color, 
+                    Size  = size, 
+                    Granularidad = Granularidad, 
+                    Topes2D = Topes2D 
+                }
+            );
+            return this;
+        }
+
+        public PintorDeRecorrido PintarPuntos(IEnumerable<Punto> puntos, Color color, int size = 1)
+        {
+            foreach (var p in puntos)
+            {
+                PintarPunto(p, color, size);
+            }
+
+            return this;
+        }
+
+        public Bitmap Render()
+        {
+            // tamaño
+            var bitmap = new Bitmap(Width, Height);
+
+            using (Graphics g = Graphics.FromImage(bitmap))
+            {
+                // fondo
+                g.FillRectangle(new SolidBrush(ColorFondo), new Rectangle(0, 0, Width, Height));
+
+                // tareas de puntos...
+                foreach (ITarea itarea in Tareas)
+                {
+                    itarea.Paint(g);
+                }
+            }
+
+            return bitmap;
+        }
+
+        public interface ITarea
+        {
+            public void Paint(Graphics g);
+        }
+
+        public class TareaPunto : ITarea
+        {
+            public Punto    Punto       { get; set; }
+            public Color    Color       { get; set; }
+            public int      Size        { get; set; }
+            public Topes2D  Topes2D     { get; set; }
+            public int      Granularidad{ get; set; }
+
+            public void Paint(Graphics g)
+            {
+                var casillero = Casillero.Create(Topes2D, Punto, Granularidad);
+
+                if (Size == 1)
+                {
+                    g.FillRectangle(
+                        new SolidBrush(Color), 
+                        casillero.IndexHorizontal, 
+                        casillero.IndexVertical, 
+                        1, 
+                        1
+                    );
+                }
+                else
+                {
+                    Rectangle rect = new()
+                    {
+                        X = casillero.IndexHorizontal,
+                        Y = casillero.IndexVertical,
+                        Width = Size,
+                        Height = Size,
+                    };
+
+                    g.FillEllipse(new SolidBrush(Color), rect);
+                }
+            }
+        }
     }
 }
