@@ -40,7 +40,7 @@ namespace PruebaLecturaDeRecorridos
             var start = Environment.TickCount;
 
             // Leo una colección de recorridos a partir de las líneas dadas (contienen linea y banderas), puede filtrarse
-            var recorridosRBus = LeerRecorridosPorArchivos("../../../REC203/", new int[] { 159, 163 }, DateTime.Now);
+            var recorridosRBus = LeerRecorridosPorArchivos("../../../REC203/", new int[] { 159, 163, 127 }, DateTime.Now);
 
             //foreach (var petex in PuntasDeLinea.Get(recorridosRBus))
             //    Console.WriteLine(petex);
@@ -78,19 +78,31 @@ namespace PruebaLecturaDeRecorridos
             //    Pruebas.PintarRecorridos(recorridosRBus, topes2D, 20, nombreArchivo);
             //}
 
-            new PintorDeRecorrido(topes2D: topes2D, granularidad: 20)
-                .SetColorFondo(Color.Beige)
-                .PintarPuntos(puntosLinBan.Select(plb => (Punto)plb), Color.DarkGray, size: 3)
-                .PintarPuntos(puntosLinBan.Select(plb => (Punto)plb), Color.DarkBlue)
-                .Render()
-                .Save("pruebita.png", ImageFormat.Png)
-            ;
+            var desde1 = new DateTime(2021, 06, 02);
+            var hasta1 = desde1.AddDays(1);
+            var histor = Historia.GetFromCSV(3850, desde1, hasta1, puntasDeLinea, 400, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true });
+
+            var starti = Environment.TickCount;
+            foreach (var recoX in recorridosRBus.Where(reco => reco.Linea ==  163))
+            {
+                new PintorDeRecorrido(topes2D: topes2D, granularidad: 20)
+                    .SetColorFondo(Color.FromArgb(255, 50, 50, 50))
+                    .PintarPuntos(recoX.Puntos.Select(prec => (Punto) prec), Color.GreenYellow, 11 )
+                    .PintarPuntos(puntosLinBan.Select(plb => (Punto)plb), Color.FromArgb(90,90,90), 3) // la gran máscara de recorridos
+                    //.PintarPuntos(puntosLinBan.Where(plb => plb.Linea == 127).Select(plb => (Punto)plb), Color.Lime, size: 1)
+                    //.PintarPuntos(puntosLinBan.Where(plb => plb.Linea == 159).Select(plb => (Punto)plb), Color.Red, size: 1)
+                    .PintarPuntos(puntosLinBan.Where(plb => plb.Linea == 163).Select(plb => (Punto)plb), Color.Cyan, size: 1)
+                    .PintarPuntos(histor.Puntos.Select(ph => ph.Punto), Color.HotPink, 3)
+                    .Render()
+                    .Save($"reco_{recoX.Linea:0000}_{recoX.Bandera:0000}.png", ImageFormat.Png)
+                ;
+            }
+            Console.WriteLine(Environment.TickCount - starti);
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////
             //////////////////////////////////////////////////////////////////////////////////////////////////////////
             //////////////////////////////////////////////////////////////////////////////////////////////////////////
             //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
             Console.Clear();
             //DibujarPuntosLinBan(puntosLinBan, topes2D);

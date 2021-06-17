@@ -54,7 +54,7 @@ namespace PruebaLecturaDeRecorridos
             return new Casillero
             {
                 IndexHorizontal = indexCasilleroHorizontal,
-                IndexVertical   = indexCasilleroVertical,
+                IndexVertical   = maxIndexCasilleroVertical - indexCasilleroVertical,
             };
         }
 

@@ -21,4 +21,8 @@
     <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="REC203\0127\" />
+  </ItemGroup>
+
 </Project>

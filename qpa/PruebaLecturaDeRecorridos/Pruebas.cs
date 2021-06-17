@@ -656,6 +656,7 @@ namespace PruebaLecturaDeRecorridos
             {
                 var casillero = Casillero.Create(Topes2D, Punto, Granularidad);
 
+                
                 if (Size == 1)
                 {
                     g.FillRectangle(
@@ -668,15 +669,23 @@ namespace PruebaLecturaDeRecorridos
                 }
                 else
                 {
+                    int despX = (Size / 2);
+                    int despY = (Size / 2);
+
                     Rectangle rect = new()
                     {
-                        X = casillero.IndexHorizontal,
-                        Y = casillero.IndexVertical,
+                        X = casillero.IndexHorizontal - despX,
+                        Y = casillero.IndexVertical   - despY,
                         Width = Size,
                         Height = Size,
                     };
 
-                    g.FillEllipse(new SolidBrush(Color), rect);
+                    //g.FillEllipse(new SolidBrush(Color), rect);
+
+                    g.FillRectangle(
+                        new SolidBrush(Color),
+                        rect
+                    );
                 }
             }
         }
