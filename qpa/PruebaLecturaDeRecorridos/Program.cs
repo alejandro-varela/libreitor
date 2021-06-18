@@ -59,6 +59,11 @@ namespace PruebaLecturaDeRecorridos
             // Averiguo los TOPES para el cálculo de este mapa
             var topes2D = Topes2D.CreateFromPuntos(puntosLinBan.Select(plinban => (Punto)plinban));
 
+
+            var RADIO_PUNTAS = 750;
+            var puntasNombradas = PuntasDeLinea.GetPuntasNombradas(recorridosRBus.Where(reco => reco.Linea == 163), radio: RADIO_PUNTAS);
+
+
             //////////////////////////////////////////////////////////////////////////////////////////////////////////
             //////////////////////////////////////////////////////////////////////////////////////////////////////////
             //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,21 +83,24 @@ namespace PruebaLecturaDeRecorridos
             //    Pruebas.PintarRecorridos(recorridosRBus, topes2D, 20, nombreArchivo);
             //}
 
-            var desde1 = new DateTime(2021, 06, 02);
+            var desde1 = new DateTime(2021, 06, 02, 0, 0, 0); // new DateTime(2021, 06, 02, 13, 0, 0);
             var hasta1 = desde1.AddDays(1);
             var histor = Historia.GetFromCSV(3850, desde1, hasta1, puntasDeLinea, 400, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true });
 
             var starti = Environment.TickCount;
-            foreach (var recoX in recorridosRBus.Where(reco => reco.Linea ==  163))
+            foreach (var recoX in recorridosRBus.Where(reco => reco.Linea == 163))
             {
                 new PintorDeRecorrido(topes2D: topes2D, granularidad: 20)
                     .SetColorFondo(Color.FromArgb(255, 50, 50, 50))
-                    .PintarPuntos(recoX.Puntos.Select(prec => (Punto) prec), Color.GreenYellow, 11 )
-                    .PintarPuntos(puntosLinBan.Select(plb => (Punto)plb), Color.FromArgb(90,90,90), 3) // la gran máscara de recorridos
+                    .PintarRadios(puntasNombradas.Select(punta => punta.Punto), Color.LimeGreen, size: RADIO_PUNTAS / 10) // punta de línea
+                    .PintarPuntos(recoX.Puntos.Select(prec => (Punto)prec), Color.GreenYellow, 11)
+                    .PintarPuntos(puntosLinBan.Select(plb => (Punto)plb), Color.FromArgb(90, 90, 90), 3) // la gran máscara de recorridos
                     //.PintarPuntos(puntosLinBan.Where(plb => plb.Linea == 127).Select(plb => (Punto)plb), Color.Lime, size: 1)
-                    //.PintarPuntos(puntosLinBan.Where(plb => plb.Linea == 159).Select(plb => (Punto)plb), Color.Red, size: 1)
+                    .PintarPuntos(puntosLinBan.Where(plb => plb.Linea == 159).Select(plb => (Punto)plb), Color.Red, size: 1)
                     .PintarPuntos(puntosLinBan.Where(plb => plb.Linea == 163).Select(plb => (Punto)plb), Color.Cyan, size: 1)
                     .PintarPuntos(histor.Puntos.Select(ph => ph.Punto), Color.HotPink, 3)
+                    .PintarPuntos(new[] { recoX.PuntoSalida }, Color.Fuchsia, size: 20)
+                    .PintarPuntos(new[] { recoX.PuntoLlegada }, Color.Blue, size: 20)
                     .Render()
                     .Save($"reco_{recoX.Linea:0000}_{recoX.Bandera:0000}.png", ImageFormat.Png)
                 ;
