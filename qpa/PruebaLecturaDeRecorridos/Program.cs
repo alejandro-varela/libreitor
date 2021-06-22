@@ -63,6 +63,13 @@ namespace PruebaLecturaDeRecorridos
             var RADIO_PUNTAS = 750;
             var puntasNombradas = PuntasDeLinea.GetPuntasNombradas(recorridosRBus.Where(reco => reco.Linea == 163), radio: RADIO_PUNTAS);
 
+            var camino = Camino.CreateFromRecorrido(
+                puntasNombradas,
+                recorridosRBus.Where(reco => reco.Linea == 163 && reco.Bandera == 2777).First()
+            );
+            var caminoDescr = camino.Description;
+            int falifruli = 0;
+
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////
             //////////////////////////////////////////////////////////////////////////////////////////////////////////

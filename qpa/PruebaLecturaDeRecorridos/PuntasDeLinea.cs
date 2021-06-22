@@ -37,7 +37,7 @@ namespace PruebaLecturaDeRecorridos
             var varios = new List<Tuple<int, int>>();
             varios.Add(new Tuple<int, int>(linea, bandera));
             var nombre = ((char)(n + 'A')).ToString();
-            puntas.Add(new PuntaLinea { Punto = punto, Nombre = nombre, Varios = varios });
+            puntas.Add(new PuntaLinea { Punto = punto, Nombre = nombre, Varios = varios, Radio = radio });
 
             return n + 1;
         }
@@ -70,6 +70,7 @@ namespace PruebaLecturaDeRecorridos
     {
         public Punto Punto { get; set; }
         public string Nombre { get; set; }
+        public int Radio { get; set; }
         public List<Tuple<int, int>> Varios { get; set; }
     }
 }
