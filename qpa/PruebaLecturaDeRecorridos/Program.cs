@@ -57,17 +57,27 @@ namespace PruebaLecturaDeRecorridos
             );
 
             // Averiguo los TOPES para el cálculo de este mapa
-            var topes2D = Topes2D.CreateFromPuntos(puntosLinBan.Select(plinban => (Punto)plinban));
+            var topes2D = Topes2D.CreateFromPuntos(puntosLinBan.Select(plinban => (PuntoRecorrido)plinban));
 
 
             var RADIO_PUNTAS = 750;
             var puntasNombradas = PuntasDeLinea.GetPuntasNombradas(recorridosRBus.Where(reco => reco.Linea == 163), radio: RADIO_PUNTAS);
 
-            var camino = Camino.CreateFromRecorrido(
+            var caminoFromReco = Camino.CreateFromRecorrido(
                 puntasNombradas,
-                recorridosRBus.Where(reco => reco.Linea == 163 && reco.Bandera == 2777).First()
+                recorridosRBus.Where(reco => reco.Linea == 163 && reco.Bandera == 2776).First()
             );
-            var caminoDescr = camino.Description;
+            var caminoDescr = caminoFromReco.Description;
+
+            var desdi = new DateTime(2021, 6, 2);
+            var hasti = desdi.AddDays(1);
+            var caminoFromHisto = Camino.CreateFromPuntos(
+                puntasNombradas,
+                //var historia = Historia.GetFromCSV(3850, desde, hasta, puntasDeLinea, 400, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true });
+                Historia.GetRaw(3850, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true })
+                    .Select(ph => ph.Punto)
+            ) ;
+
             int falifruli = 0;
 
 

@@ -40,13 +40,13 @@ namespace PruebaLecturaDeRecorridos
             }
         }
 
-        public static Camino CreateFromRecorrido(IEnumerable<PuntaLinea> puntas, RecorridoLinBan recorridoLinBan)
+        public static Camino CreateFromPuntos(IEnumerable<PuntaLinea> puntas, IEnumerable<Punto> puntos)
         {
             Camino camino = new();
 
-            foreach (var prec in recorridoLinBan.Puntos)
+            foreach (var puntoX in puntos)
             {
-                var puntaTristate = EnPuntaTristate(prec, puntas);
+                var puntaTristate = EnPuntaTristate(puntoX, puntas);
 
                 switch (puntaTristate.Type)
                 {
@@ -65,15 +65,42 @@ namespace PruebaLecturaDeRecorridos
             return camino;
         }
 
+        public static Camino CreateFromRecorrido(IEnumerable<PuntaLinea> puntas, RecorridoLinBan recorridoLinBan)
+        {
+            return CreateFromPuntos(puntas, recorridoLinBan.Puntos);
+
+            //Camino camino = new();
+
+            //foreach (var prec in recorridoLinBan.Puntos)
+            //{
+            //    var puntaTristate = EnPuntaTristate(prec, puntas);
+
+            //    switch (puntaTristate.Type)
+            //    {
+            //        case PuntoTristate.PuntoTristateType.Punta:
+            //            camino.Nodos.Add(puntaTristate.Punta);
+            //            break;
+            //        case PuntoTristate.PuntoTristateType.Normal:
+            //            camino.Nodos.Add(new PuntaLinea { Nombre = "." });
+            //            break;
+            //        case PuntoTristate.PuntoTristateType.Indet:
+            //            camino.Nodos.Add(new PuntaLinea { Nombre = "?" });
+            //            break;
+            //    }
+            //}
+
+            //return camino;
+        }
+
         // debe retornar tres cosas:
         //    enpunta...
         //    no punta...
         //    indet (por estar muy cerca del borde de lo que es una punta o no)
-        static PuntoTristate EnPuntaTristate(PuntoRecorrido prec, IEnumerable<PuntaLinea> puntas)
+        static PuntoTristate EnPuntaTristate(Punto punto, IEnumerable<PuntaLinea> puntas)
         {
             foreach (var puntaX in puntas)
             {
-                var dist = Haversine.GetDist(prec, puntaX.Punto);
+                var dist = Haversine.GetDist(punto, puntaX.Punto);
                 
                 if (dist < puntaX.Radio)
                 {
@@ -98,21 +125,6 @@ namespace PruebaLecturaDeRecorridos
                 Type  = PuntoTristate.PuntoTristateType.Normal
             };
         }
-
-        static PuntaLinea EnPunta(PuntoRecorrido prec, IEnumerable<PuntaLinea> puntas)
-        {
-            foreach (var punta in puntas)
-            {
-                var dist = Haversine.GetDist(prec, punta.Punto);
-                if (dist < punta.Radio)
-                {
-                    return punta;
-                }
-            }
-
-            return null;
-        }
-
 
         private class PuntoTristate
         {
