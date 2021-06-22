@@ -11,7 +11,7 @@ namespace PruebaLecturaDeRecorridos
         public int Granularidad { get; set; }
         public Topes2D Topes2D { get; set; }
 
-        public void Paint(Graphics g)
+        public virtual void Paint(Graphics g)
         {
             var casillero = Casillero.Create(Topes2D, Centro, Granularidad);
 
@@ -25,6 +25,31 @@ namespace PruebaLecturaDeRecorridos
                 width: Size, 
                 height: Size
             ); 
+        }
+    }
+
+    public class TareaDePinturaRadioNombrado : TareaDePinturaRadio
+    {
+        public string Nombre { get; set; }
+
+        public override void Paint(Graphics g)
+        {
+            var casillero = Casillero.Create(Topes2D, Centro, Granularidad);
+
+            int despX = (Size / 2);
+            int despY = (Size / 2);
+
+            var font  = new Font("Tahoma", 14);
+            var brush = new SolidBrush(Color);
+            var punto = new Point
+            {
+                X = casillero.IndexHorizontal - despX*2,
+                Y = casillero.IndexVertical - despY*2,
+            };
+
+            g.DrawString(Nombre, font, brush, punto);
+
+            base.Paint(g);
         }
     }
 }

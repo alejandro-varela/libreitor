@@ -1,4 +1,5 @@
 ﻿using Recorridos;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 
@@ -81,6 +82,34 @@ namespace PruebaLecturaDeRecorridos
 
             return this;
         }
+
+        public PintorDeRecorrido PintarRadioNombrado(Punto centro, string nombre, Color color, int size = 10)
+        {
+            Tareas.Add(
+                new TareaDePinturaRadioNombrado
+                {
+                    Centro = centro,
+                    Color = color,
+                    Size = size,
+                    Granularidad = Granularidad,
+                    Topes2D = Topes2D,
+                    Nombre = nombre,
+                }
+            );
+
+            return this;
+        }
+
+        public PintorDeRecorrido PintarRadiosNombrados(IEnumerable<(Punto,string)> centrosNombrados, Color color, int size = 10)
+        {
+            foreach (var centroNombrado in centrosNombrados)
+            {
+                PintarRadioNombrado(centroNombrado.Item1, centroNombrado.Item2, color, size);
+            }
+
+            return this;
+        }
+
 
         public Bitmap Render()
         {

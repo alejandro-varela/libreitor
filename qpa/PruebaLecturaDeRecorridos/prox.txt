@@ -1,0 +1,6 @@
+﻿todos los recorridos son un DIGRAFO
+
+- hacer que la agrupación de puntas de línea, tenga un "centroide", esto es un centro común entre todos sus puntos
+	el centroide será siempre la mitad entre los centros dados
+	de ahí saldra la propiedad MinRadius que es el minimo radio que acepta a todos esos centros
+- crear los CAMINOS para los recorridos teóricos

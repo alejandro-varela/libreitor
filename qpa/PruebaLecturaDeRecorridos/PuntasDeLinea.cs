@@ -9,7 +9,7 @@ namespace PruebaLecturaDeRecorridos
 {
     public class PuntasDeLinea
     {
-        // las puntas se podrian agrupar usando el algoritmo "#" y mirando la superficie del cuadrado enmarcado
+        // las puntas se podrían agrupar usando el algoritmo "#" y mirando la superficie del cuadrado enmarcado
         public static IEnumerable<PuntaLinea> GetPuntasNombradas(IEnumerable<RecorridoLinBan> recorridos, int radio)
         {
             List<PuntaLinea> puntas = new();
@@ -36,7 +36,8 @@ namespace PruebaLecturaDeRecorridos
 
             var varios = new List<Tuple<int, int>>();
             varios.Add(new Tuple<int, int>(linea, bandera));
-            puntas.Add(new PuntaLinea { Punto = punto, Nombre = $"Punta-{n:0000};", Varios = varios });
+            var nombre = ((char)(n + 'A')).ToString();
+            puntas.Add(new PuntaLinea { Punto = punto, Nombre = nombre, Varios = varios });
 
             return n + 1;
         }

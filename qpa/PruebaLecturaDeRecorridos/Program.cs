@@ -25,8 +25,8 @@ namespace PruebaLecturaDeRecorridos
     partial class Program
     {
         //static readonly ConnectionMultiplexer _muxer = ConnectionMultiplexer.Connect("localhost:6379");
-        const string GEO_PUNTAS_LINEA = "geo_puntas_de_linea"; // poner una guid y una fecha para ser borrado mas tarde...
-        const string GEOHASH = "geoda";
+        //const string GEO_PUNTAS_LINEA = "geo_puntas_de_linea"; // poner una guid y una fecha para ser borrado mas tarde...
+        //const string GEOHASH = "geoda";
 
         const int GRANULARIDAD = 500;
 
@@ -92,12 +92,13 @@ namespace PruebaLecturaDeRecorridos
             {
                 new PintorDeRecorrido(topes2D: topes2D, granularidad: 20)
                     .SetColorFondo(Color.FromArgb(255, 50, 50, 50))
-                    .PintarRadios(puntasNombradas.Select(punta => punta.Punto), Color.LimeGreen, size: RADIO_PUNTAS / 10) // punta de línea
+                    //.PintarRadios(puntasNombradas.Select(punta => punta.Punto), Color.LimeGreen, size: RADIO_PUNTAS / 10) // punta de línea
                     .PintarPuntos(recoX.Puntos.Select(prec => (Punto)prec), Color.GreenYellow, 11)
                     .PintarPuntos(puntosLinBan.Select(plb => (Punto)plb), Color.FromArgb(90, 90, 90), 3) // la gran máscara de recorridos
                     //.PintarPuntos(puntosLinBan.Where(plb => plb.Linea == 127).Select(plb => (Punto)plb), Color.Lime, size: 1)
                     .PintarPuntos(puntosLinBan.Where(plb => plb.Linea == 159).Select(plb => (Punto)plb), Color.Red, size: 1)
                     .PintarPuntos(puntosLinBan.Where(plb => plb.Linea == 163).Select(plb => (Punto)plb), Color.Cyan, size: 1)
+                    .PintarRadiosNombrados(puntasNombradas.Select(puntaNombrada => (puntaNombrada.Punto, puntaNombrada.Nombre)), Color.Pink, size: RADIO_PUNTAS / 10)
                     .PintarPuntos(histor.Puntos.Select(ph => ph.Punto), Color.HotPink, 3)
                     .PintarPuntos(new[] { recoX.PuntoSalida }, Color.Fuchsia, size: 20)
                     .PintarPuntos(new[] { recoX.PuntoLlegada }, Color.Blue, size: 20)
