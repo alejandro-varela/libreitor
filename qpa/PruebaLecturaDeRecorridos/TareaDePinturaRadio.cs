@@ -43,8 +43,8 @@ namespace PruebaLecturaDeRecorridos
             var brush = new SolidBrush(Color);
             var punto = new Point
             {
-                X = casillero.IndexHorizontal - despX*2,
-                Y = casillero.IndexVertical - despY*2,
+                X = casillero.IndexHorizontal,
+                Y = casillero.IndexVertical - despY,
             };
 
             g.DrawString(Nombre, font, brush, punto);

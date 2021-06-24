@@ -22,6 +22,14 @@ namespace PruebaLecturaDeRecorridos
     // TODO: se pueden probar con distintas distancias a las puntas de linea para ver cual da mejor resultado con las subhistorias...
     ///////////////////////////////////////////////////////////////////////////////////////////
     
+    // 4267
+    // DCDEGIAIGEDHFHD
+    // ??
+    //   DEGIA
+    //       AIGED
+    //           DHF
+    //             FHD
+
     partial class Program
     {
         //static readonly ConnectionMultiplexer _muxer = ConnectionMultiplexer.Connect("localhost:6379");
@@ -60,23 +68,58 @@ namespace PruebaLecturaDeRecorridos
             var topes2D = Topes2D.CreateFromPuntos(puntosLinBan.Select(plinban => (PuntoRecorrido)plinban));
 
 
-            var RADIO_PUNTAS = 750;
-            var puntasNombradas = PuntasDeLinea.GetPuntasNombradas(recorridosRBus.Where(reco => reco.Linea == 163), radio: RADIO_PUNTAS);
+            var RADIO_PUNTAS = 1000;
+            //var puntasNombradas = PuntasDeLinea.GetPuntasNombradas(recorridosRBus.Where(reco => reco.Linea == 163), radio: RADIO_PUNTAS);
+            var puntasNombradas = PuntasDeLinea.GetPuntasNombradas(recorridosRBus, radio: RADIO_PUNTAS);
 
-            var caminoFromReco = Camino.CreateFromRecorrido(
-                puntasNombradas,
-                recorridosRBus.Where(reco => reco.Linea == 163 && reco.Bandera == 2776).First()
-            );
-            var caminoDescr = caminoFromReco.Description;
+            foreach (var recoX in recorridosRBus)
+            {
+                var caminoFromReco = Camino.CreateFromRecorrido(
+                    puntasNombradas,
+                    recoX
+                );
+                var caminoDescr = caminoFromReco.Description;
+                Console.WriteLine($"{recoX.Linea:0000} {recoX.Bandera:0000} : {caminoFromReco.Description} : RAW_SR: {caminoFromReco.DescriptionRawSinRuido} RAW: {caminoFromReco.DescriptionRaw} ");
+            }
 
             var desdi = new DateTime(2021, 6, 2);
             var hasti = desdi.AddDays(1);
             var caminoFromHisto = Camino.CreateFromPuntos(
                 puntasNombradas,
-                //var historia = Historia.GetFromCSV(3850, desde, hasta, puntasDeLinea, 400, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true });
-                Historia.GetRaw(3850, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true })
-                    .Select(ph => ph.Punto)
-            ) ;
+                //              Historia.GetRaw(3850, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                //              Historia.GetRaw(4267, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                //              Historia.GetRaw(4334, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                //              Historia.GetRaw(4380, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                //              Historia.GetRaw(4366, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                //              Historia.GetRaw(4323, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                //              Historia.GetRaw(4307, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                // EN GALPON    Historia.GetRaw(3851, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                //              Historia.GetRaw(3856, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                //              Historia.GetRaw(4319, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                // SIN DATOS    Historia.GetRaw(4372, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                //              Historia.GetRaw(4368, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                // MOV GALPON   Historia.GetRaw(4309, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                // SIN DATOS    Historia.GetRaw(4338, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                // SIN DATOS    Historia.GetRaw(4262, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                // EN GALPON    Historia.GetRaw(3847, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                //              Historia.GetRaw(4349, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                // EN GALPON    Historia.GetRaw(4336, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                //              Historia.GetRaw(4267, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                //              Historia.GetRaw(4377, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                // MASO RARO    Historia.GetRaw(3809, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                //              Historia.GetRaw(4361, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                //              Historia.GetRaw(4103, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                // SIN DATOS    Historia.GetRaw(4313, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                //              Historia.GetRaw(4360, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                //              Historia.GetRaw(4325, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+                Historia.GetRaw(4354, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }).Select(ph => ph.Punto)
+            );
+
+            // 4354
+
+            Console.WriteLine(caminoFromHisto.Description);
+            Console.WriteLine(caminoFromHisto.DescriptionRaw);
+            Console.WriteLine(caminoFromHisto.DescriptionRawSinSimplificar);
 
             int falifruli = 0;
 

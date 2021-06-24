@@ -22,7 +22,7 @@ namespace PatronesReco
         //   o sea, al encontrar una direccionalidad entre los puntos pudo determinar que se fue a tal o cual punta sin llegar a tocarla...
         //   si la tocamos mejor...
 
-        static readonly string[] _patronesRaw = new [] {
+        static readonly string[] _patronesRaw1 = new [] {
             "AB",
             "ABC",
             "BA",
@@ -31,6 +31,32 @@ namespace PatronesReco
             "ADF",
             "DA",
             "FDA",
+        };
+
+        static readonly string[] _patronesRaw2 = new[] {
+            "DA",
+            "AA",
+            "DE",
+            "ED",
+            "AIA",
+            "DHF",
+            "FHD",
+            "DEGIA",
+            "DEGIA",
+            "DEGIA",
+            "AIGED",
+            "AIGED",
+            "AIGED",
+            "DEGIA",
+            "FHEGIA",
+            "AIGEHF",
+            "DEGIA",
+            "DEG",
+            "GED",
+            "DH",
+            "HD",
+            "IGED",
+            "DEGI"
         };
 
         //static List<string> _patronHisto1 = new("ABABCBA".Select(c => c.ToString()));
@@ -46,9 +72,20 @@ namespace PatronesReco
         //                                           AD. <-- recorrido de A a D
         //                                            DA <-- recorrido de D a A
 
+        static string _patronHisto_3856 = "DEGIAIGEEGIAIGEDEGIAIGEDEGIA"; // tiene problemas pero sigue bien
+        static string _patronHisto_4323 = "GEDEGIAIGEHFHDEGIA"; // perfecto
+        static string _patronHisto_4319 = "DEGIAIGEDEGIAIGED"; // perfecto
+        static string _patronHisto_4309 = "JA";
+        static string _patronHisto_4349 = "AIGEDEGIAIGEDEGIAIGEDHFHDEGIA";
+        static string _patronHisto_4267 = "DCDEGIAIGEDHFHD";
+        static string _patronHisto_3809 = "DDDHCDDDHDD";
+        static string _patronHisto_4361 = "DEGIAIGEDEGIGEDD";
+        static string _patronHisto_4325 = "IGEDEGIAIGEDHD";
+        static string _patronHisto_4354 = "DEGIAIGEHFHDEGIAIGEDEGIAIGED";
+
         static void Main(string[] args)
         {
-            var patronesOrdenados = _patronesRaw
+            var patronesOrdenados = _patronesRaw2
                 .OrderByDescending  (p => p.Length) // ordeno por tamaño
                 .ThenBy             (p => p)        // entonces lexicográficamente
                 .ToList             ()              // convierto todo en una lista
@@ -59,7 +96,7 @@ namespace PatronesReco
                 Console.WriteLine(patronX);
             }
 
-            Reconocer(patronesOrdenados, _patronHisto1);
+            Reconocer(patronesOrdenados, _patronHisto_4354);
         }
 
         static void Reconocer(List<string> patrones, string patronHistorico)
