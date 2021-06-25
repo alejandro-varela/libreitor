@@ -8,12 +8,6 @@ using System.Text;
 
 namespace PruebaLecturaDeRecorridos
 {
-    public class PuntoHistorico
-    { 
-        public DateTime Fecha { get; set; }
-        public Punto    Punto { get; set; }
-    }
-
     public class Historia
     {
         public int Ficha { get; set; }
@@ -65,10 +59,8 @@ namespace PruebaLecturaDeRecorridos
 
                 puntosHistoricos.Add(new PuntoHistorico { 
                     Fecha = fechaHoraX,
-                    Punto = new Punto { 
-                        Lat = latX,
-                        Lng = lngX,
-                    }
+                    Lat = latX,
+                    Lng = lngX,
                 });
             }
 
@@ -140,11 +132,8 @@ namespace PruebaLecturaDeRecorridos
                 puntosHistoricos.Add(new PuntoHistorico
                 {
                     Fecha = fechaHoraX,
-                    Punto = new PuntoRecorrido
-                    {
-                        Lat = latX,
-                        Lng = lngX,
-                    }
+                    Lat = latX,
+                    Lng = lngX,
                 });
             }
 

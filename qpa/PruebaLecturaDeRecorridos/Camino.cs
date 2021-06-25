@@ -10,7 +10,7 @@ namespace PruebaLecturaDeRecorridos
     public class Grupoide
     { 
         public string Nombre { get; set; }
-        public List<PuntoCamino> Nodos { get; set; } = new List<PuntoCamino>();
+        public List<PuntoCamino> Nodos { get; set; } = new();
 
         public override string ToString()
         {
@@ -20,7 +20,7 @@ namespace PruebaLecturaDeRecorridos
 
     public class Camino
     {   
-        private class PuntoTristate
+        class PuntoTristate
         {
             public enum PuntoTristateType
             {

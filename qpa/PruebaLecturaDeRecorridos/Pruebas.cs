@@ -59,7 +59,7 @@ namespace PruebaLecturaDeRecorridos
                 var perfect = 0;
                 var bias = 0;
 
-                var casillero = Casillero.Create(topes2D, phX.Punto, GRANU);
+                var casillero = Casillero.Create(topes2D, phX, GRANU);
                 if (casilleros.Contains(casillero))
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -218,8 +218,8 @@ namespace PruebaLecturaDeRecorridos
                     Console.ForegroundColor = ConsoleColor.Green;
                 }
 
-                var casilleroActual = Casillero.Create(topes2D, phx.Punto, GRANU);
-                Console.Write(phx.Punto);
+                var casilleroActual = Casillero.Create(topes2D, phx, GRANU);
+                Console.Write(phx);
                 foreach (var key in casillerosXLinBan.Keys)
                 {
                     // if (casillerosXBandera[key].Contains(casilleroActual))
@@ -352,7 +352,7 @@ namespace PruebaLecturaDeRecorridos
             var linea = int.Parse(kvp.Key.Substring(0, 4));
             var bande = int.Parse(kvp.Key.Substring(4, 4));
 
-            var puntos = kvp.Value.Select(ph => ph.Punto).ToList();
+            var puntos = kvp.Value.Select(ph => (Punto)ph).ToList();
 
             return ConcuerdaPorCuenta(
                 linea,
@@ -444,11 +444,8 @@ namespace PruebaLecturaDeRecorridos
                 yield return new PuntoHistorico
                 {
                     Fecha = fechaHoraX,
-                    Punto = new Punto
-                    {
-                        Lat = latX,
-                        Lng = lngX,
-                    }
+                    Lat = latX,
+                    Lng = lngX,
                 };
             }
 

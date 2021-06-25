@@ -55,7 +55,7 @@ namespace PruebaLecturaDeRecorridos
         {
             foreach (var punta in puntas)
             {
-                var dist = Haversine.GetDist(punta, ph.Punto);
+                var dist = Haversine.GetDist(punta, ph);
                 if (dist <= radioEnMetros)
                 {
                     return true;
