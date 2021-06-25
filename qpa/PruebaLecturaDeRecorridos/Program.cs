@@ -120,6 +120,7 @@ namespace PruebaLecturaDeRecorridos
             Console.WriteLine(caminoFromHisto.Description);
             Console.WriteLine(caminoFromHisto.DescriptionRaw);
             Console.WriteLine(caminoFromHisto.DescriptionRawSinSimplificar);
+            var pepepep = caminoFromHisto.Grupoides;
 
             int falifruli = 0;
 

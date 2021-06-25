@@ -7,8 +7,19 @@ using System.Threading.Tasks;
 
 namespace PruebaLecturaDeRecorridos
 {
+    public class Grupoide
+    { 
+        public string Nombre { get; set; }
+        public List<PuntoCamino> Nodos { get; set; } = new List<PuntoCamino>();
+
+        public override string ToString()
+        {
+            return $"{Nombre} {Nodos.Count}";
+        }
+    }
+
     public class Camino
-    {
+    {   
         private class PuntoTristate
         {
             public enum PuntoTristateType
@@ -22,19 +33,34 @@ namespace PruebaLecturaDeRecorridos
             public PuntaLinea Punta { get; set; }
         }
 
-        public List<PuntaLinea> Nodos = new();
+        public List<PuntoCamino> Nodos = new();
+
+        public List<Grupoide> Grupoides
+        {
+            get
+            {
+                List<Grupoide> ret = new();
+                string actual = null;
+
+                foreach (PuntoCamino nodox in Nodos)
+                {
+                    if (actual != nodox.PuntaDeLinea.Nombre)
+                    {
+                        actual = nodox.PuntaDeLinea.Nombre;
+                        ret.Add(new Grupoide { Nombre = nodox.PuntaDeLinea.Nombre });
+                    }
+                    
+                    ret[ret.Count - 1].Nodos.Add(nodox);
+                }
+
+                return ret;
+            }
+        }
 
         public string Description
         {
             get
             {
-                //var arr = Nodos
-                //    .Select(pl => pl.Nombre)
-                //    .Simplificar((nombre1, nombre2) => nombre1 == nombre2)
-                //    .Where(s => s != "." && s != "?")
-                //    .ToArray()
-                //;
-
                 var arr = DescriptionRawSinRuido
                     .Where(s => s != '.' && s != '?')
                     .ToArray()
@@ -57,7 +83,7 @@ namespace PruebaLecturaDeRecorridos
             get
             {
                 var arr = Nodos
-                    .Select(pl => pl.Nombre)
+                    .Select(puntoCamino => puntoCamino.PuntaDeLinea.Nombre)
                     .Simplificar((nombre1, nombre2) => nombre1 == nombre2)
                     .ToArray()
                 ;
@@ -71,7 +97,7 @@ namespace PruebaLecturaDeRecorridos
             get
             {
                 var arr = Nodos
-                    .Select(pl => pl.Nombre)
+                    .Select(puntoCamino => puntoCamino.PuntaDeLinea.Nombre)
                     .ToArray()
                 ;
 
@@ -145,13 +171,25 @@ namespace PruebaLecturaDeRecorridos
                 switch (puntaTristate.Type)
                 {
                     case PuntoTristate.PuntoTristateType.Punta:
-                        camino.Nodos.Add(puntaTristate.Punta);
+                        camino.Nodos.Add(new PuntoCamino
+                        {
+                            PuntaDeLinea  = puntaTristate.Punta,
+                            PuntoAsociado = puntoX
+                        });
                         break;
                     case PuntoTristate.PuntoTristateType.Normal:
-                        camino.Nodos.Add(new PuntaLinea { Nombre = "." });
+                        camino.Nodos.Add(new PuntoCamino
+                        {
+                            PuntaDeLinea  = new PuntaLinea { Nombre = "." },
+                            PuntoAsociado = puntoX
+                        });
                         break;
                     case PuntoTristate.PuntoTristateType.Indet:
-                        camino.Nodos.Add(new PuntaLinea { Nombre = "?" });
+                        camino.Nodos.Add(new PuntoCamino
+                        {
+                            PuntaDeLinea  = new PuntaLinea { Nombre = "?" },
+                            PuntoAsociado = puntoX
+                        });
                         break;
                 }
             }
