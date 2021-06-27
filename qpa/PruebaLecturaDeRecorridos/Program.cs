@@ -1,4 +1,5 @@
-﻿using Recorridos;
+﻿using Comun;
+using Pinturas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,45 +14,21 @@ using System.Drawing.Imaging;
 
 namespace PruebaLecturaDeRecorridos
 {
-    ///////////////////////////////////////////////////////////////////////////////////////////
-    // TODO: reforzar los dibujos
-    //          dibujador bmp
-    //          dibujador ascii art
-    //          dibujador de línea temporal (rectangulo con las rayitas)
-    // TODO: reforzar las puntas de linea, cortar si es posible, no dar bola a falsos cortes
-    // TODO: se pueden probar con distintas distancias a las puntas de linea para ver cual da mejor resultado con las subhistorias...
-    ///////////////////////////////////////////////////////////////////////////////////////////
-    
-    // 4267
-    // DCDEGIAIGEDHFHD
-    // ??
-    //   DEGIA
-    //       AIGED
-    //           DHF
-    //             FHD
-
+ 
     partial class Program
     {
-        //static readonly ConnectionMultiplexer _muxer = ConnectionMultiplexer.Connect("localhost:6379");
-        //const string GEO_PUNTAS_LINEA = "geo_puntas_de_linea"; // poner una guid y una fecha para ser borrado mas tarde...
-        //const string GEOHASH = "geoda";
+        // 1 Para hacer crecer el RADIO de una punta de linea, se puede observar todos los recorridos que la cruzen y ver si tienen una sola MANCHA en ves de 2 o mas...
+        // 2 Hacer el cálculo monolínea, esto es, por línea se calcula que recorridos tiene primero se busca la línea con mayor nro de "matches" si hay pozos entre esos matches se trata de inferir algo sobre esos pozos, talvez con otras líneas... el proceso se repite hasta que no se pueda bajar el nro  de indeterminación...
+
 
         const int GRANULARIDAD = 500;
 
         static void Main(string[] args)
         {
-            //var tete = "AAABBBCCCAAABBBCCC"
-            //    .Simplificar((c1, c2) => c1 == c2)
-            //    .Stringificar("___")
-            //;
-
             var start = Environment.TickCount;
 
             // Leo una colección de recorridos a partir de las líneas dadas (contienen linea y banderas), puede filtrarse
-            var recorridosRBus = LeerRecorridosPorArchivos("../../../REC203/", new int[] { 159, 163, 127 }, DateTime.Now);
-
-            //foreach (var petex in PuntasDeLinea.Get(recorridosRBus))
-            //    Console.WriteLine(petex);
+            var recorridosRBus = LeerRecorridosPorArchivos("../../../REC203/", new int[] { 159, 163, 127, 166  }, DateTime.Now);
 
             var puntasDeLinea = PuntasDeLinea
                 .Get    (recorridosRBus)
@@ -68,9 +45,9 @@ namespace PruebaLecturaDeRecorridos
             var topes2D = Topes2D.CreateFromPuntos(puntosLinBan.Select(plinban => (PuntoRecorrido)plinban));
 
 
-            var RADIO_PUNTAS = 1000;
+            var RADIO_PUNTAS = 750;
             //var puntasNombradas = PuntasDeLinea.GetPuntasNombradas(recorridosRBus.Where(reco => reco.Linea == 163), radio: RADIO_PUNTAS);
-            var puntasNombradas = PuntasDeLinea.GetPuntasNombradas(recorridosRBus, radio: RADIO_PUNTAS);
+            var puntasNombradas = PuntasDeLinea.GetPuntasNombradas(recorridosRBus, radio: 150);
 
             foreach (var recoX in recorridosRBus)
             {
@@ -146,11 +123,23 @@ namespace PruebaLecturaDeRecorridos
 
             var desde1 = new DateTime(2021, 06, 02, 0, 0, 0); // new DateTime(2021, 06, 02, 13, 0, 0);
             var hasta1 = desde1.AddDays(1);
-            var histor = Historia.GetFromCSV(3850, desde1, hasta1, puntasDeLinea, 400, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true });
+            //var histor = Historia.GetFromCSV(3850, desde1, hasta1, puntasDeLinea, 800, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true });
+            var histor = Historia.GetFromCSV(3850, desde1, hasta1, puntasNombradas.Select(pn => pn.Punto), RADIO_PUNTAS, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true });
 
             var starti = Environment.TickCount;
-            foreach (var recoX in recorridosRBus.Where(reco => reco.Linea == 163))
+            foreach (var recoX in recorridosRBus /*.Where(reco => reco.Linea == 163)*/)
             {
+                var sizeRadio = 0;
+
+                if (recoX.Linea == 166 || recoX.Linea == 167)
+                {
+                    sizeRadio = RADIO_PUNTAS / 30;
+                }
+                else
+                {
+                    sizeRadio = RADIO_PUNTAS / 10;
+                }
+
                 new PintorDeRecorrido(topes2D: topes2D, granularidad: 20)
                     .SetColorFondo(Color.FromArgb(255, 50, 50, 50))
                     //.PintarRadios(puntasNombradas.Select(punta => punta.Punto), Color.LimeGreen, size: RADIO_PUNTAS / 10) // punta de línea
@@ -159,7 +148,7 @@ namespace PruebaLecturaDeRecorridos
                     //.PintarPuntos(puntosLinBan.Where(plb => plb.Linea == 127).Select(plb => (Punto)plb), Color.Lime, size: 1)
                     .PintarPuntos(puntosLinBan.Where(plb => plb.Linea == 159).Select(plb => (Punto)plb), Color.Red, size: 1)
                     .PintarPuntos(puntosLinBan.Where(plb => plb.Linea == 163).Select(plb => (Punto)plb), Color.Cyan, size: 1)
-                    .PintarRadiosNombrados(puntasNombradas.Select(puntaNombrada => (puntaNombrada.Punto, puntaNombrada.Nombre)), Color.Pink, size: RADIO_PUNTAS / 10)
+                    .PintarRadiosNombrados(puntasNombradas.Select(puntaNombrada => (puntaNombrada.Punto, puntaNombrada.Nombre)), Color.Pink, size: sizeRadio)
                     .PintarPuntos(histor.Puntos.Select(ph => ph), Color.HotPink, 3)
                     .PintarPuntos(new[] { recoX.PuntoSalida }, Color.Fuchsia, size: 20)
                     .PintarPuntos(new[] { recoX.PuntoLlegada }, Color.Blue, size: 20)

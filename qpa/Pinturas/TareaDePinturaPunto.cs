@@ -1,7 +1,7 @@
-﻿using Recorridos;
-using System.Drawing;
+﻿using System.Drawing;
+using Comun;
 
-namespace PruebaLecturaDeRecorridos
+namespace Pinturas
 {
     public class TareaDePinturaPunto : ITareaDePintura
     {

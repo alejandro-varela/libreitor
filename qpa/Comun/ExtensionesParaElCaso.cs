@@ -1,10 +1,10 @@
-﻿using Recorridos;
+﻿using Comun;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace PruebaLecturaDeRecorridos
+namespace Comun
 {
     public static class ExtensionesParaElCaso
     {

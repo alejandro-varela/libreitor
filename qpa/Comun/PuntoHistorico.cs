@@ -1,7 +1,7 @@
-﻿using Recorridos;
+﻿using Comun;
 using System;
 
-namespace PruebaLecturaDeRecorridos
+namespace Comun
 {
     public class PuntoHistorico : Punto
     { 

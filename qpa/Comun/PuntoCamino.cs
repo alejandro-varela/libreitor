@@ -1,6 +1,6 @@
-﻿using Recorridos;
+﻿using Comun;
 
-namespace PruebaLecturaDeRecorridos
+namespace Comun
 {
     public class PuntoCamino
     {

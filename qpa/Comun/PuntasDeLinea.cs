@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Recorridos;
+using Comun;
 
-namespace PruebaLecturaDeRecorridos
+namespace Comun
 {
     public class PuntasDeLinea
     {
@@ -36,7 +36,7 @@ namespace PruebaLecturaDeRecorridos
 
             var varios = new List<Tuple<int, int>>();
             varios.Add(new Tuple<int, int>(linea, bandera));
-            var nombre = ((char)(n + 'A')).ToString();
+            var nombre = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz"[n].ToString();
             puntas.Add(new PuntaLinea { Punto = punto, Nombre = nombre, Varios = varios, Radio = radio });
 
             return n + 1;
@@ -72,5 +72,10 @@ namespace PruebaLecturaDeRecorridos
         public string Nombre { get; set; }
         public int Radio { get; set; }
         public List<Tuple<int, int>> Varios { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ Nombre } { Punto.Lat.ToString().Replace(',', '.') }, { Punto.Lng.ToString().Replace(',', '.') }";
+        }
     }
 }

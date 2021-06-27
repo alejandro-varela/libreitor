@@ -1,8 +1,7 @@
-﻿using Recorridos;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
-namespace PruebaLecturaDeRecorridos
+namespace Comun
 {
     //public struct Casillero
     public class Casillero : IEquatable<Casillero>

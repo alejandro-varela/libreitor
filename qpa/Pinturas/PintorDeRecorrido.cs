@@ -1,9 +1,9 @@
-﻿using Recorridos;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using Comun;
 
-namespace PruebaLecturaDeRecorridos
+namespace Pinturas
 {
     public partial class PintorDeRecorrido
     {

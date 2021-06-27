@@ -1,9 +1,8 @@
-﻿using Recorridos;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PruebaLecturaDeRecorridos
+namespace Comun
 {
     // es un trapezio
     public class Topes2D

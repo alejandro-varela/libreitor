@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PruebaLecturaDeRecorridos
+namespace Comun
 {
     public static class ExtensionesRepeticion
     {

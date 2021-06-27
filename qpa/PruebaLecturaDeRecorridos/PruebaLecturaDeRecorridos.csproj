@@ -12,10 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Recorridos\Recorridos.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="StackExchange.Redis" Version="2.2.4" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
@@ -23,6 +19,11 @@
 
   <ItemGroup>
     <Folder Include="REC203\0127\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Comun\Comun.csproj" />
+    <ProjectReference Include="..\Pinturas\Pinturas.csproj" />
   </ItemGroup>
 
 </Project>

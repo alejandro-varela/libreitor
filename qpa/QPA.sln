@@ -5,13 +5,15 @@ VisualStudioVersion = 16.0.31313.79
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PruebaRegex", "PruebaRegex\PruebaRegex.csproj", "{3D7BC8B3-514C-4A65-B380-6C141A0A5B05}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recorridos", "Recorridos\Recorridos.csproj", "{F866D5A2-A128-4D20-A9AD-42BE09E878C0}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PruebaLecturaDeRecorridos", "PruebaLecturaDeRecorridos\PruebaLecturaDeRecorridos.csproj", "{99465F4A-25B8-433C-808E-71B86BDD9A83}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PatronesReco", "PatronesReco\PatronesReco.csproj", "{0BD13EA8-D347-44DC-90CA-72FDB0CE5051}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModeladoControlDeFlota", "ModeladoControlDeFlota\ModeladoControlDeFlota.csproj", "{AD92834B-8814-46C9-B61E-81DB9995031B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModeladoControlDeFlota", "ModeladoControlDeFlota\ModeladoControlDeFlota.csproj", "{AD92834B-8814-46C9-B61E-81DB9995031B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pinturas", "Pinturas\Pinturas.csproj", "{8BE24644-9298-4C73-B4DE-BD521459499C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Comun", "Comun\Comun.csproj", "{28FE0772-B142-4AA5-A284-84BEE2AE0116}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +25,6 @@ Global
 		{3D7BC8B3-514C-4A65-B380-6C141A0A5B05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3D7BC8B3-514C-4A65-B380-6C141A0A5B05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D7BC8B3-514C-4A65-B380-6C141A0A5B05}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F866D5A2-A128-4D20-A9AD-42BE09E878C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F866D5A2-A128-4D20-A9AD-42BE09E878C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F866D5A2-A128-4D20-A9AD-42BE09E878C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F866D5A2-A128-4D20-A9AD-42BE09E878C0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{99465F4A-25B8-433C-808E-71B86BDD9A83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{99465F4A-25B8-433C-808E-71B86BDD9A83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99465F4A-25B8-433C-808E-71B86BDD9A83}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,6 +37,14 @@ Global
 		{AD92834B-8814-46C9-B61E-81DB9995031B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD92834B-8814-46C9-B61E-81DB9995031B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD92834B-8814-46C9-B61E-81DB9995031B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BE24644-9298-4C73-B4DE-BD521459499C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BE24644-9298-4C73-B4DE-BD521459499C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BE24644-9298-4C73-B4DE-BD521459499C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BE24644-9298-4C73-B4DE-BD521459499C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28FE0772-B142-4AA5-A284-84BEE2AE0116}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28FE0772-B142-4AA5-A284-84BEE2AE0116}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28FE0772-B142-4AA5-A284-84BEE2AE0116}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28FE0772-B142-4AA5-A284-84BEE2AE0116}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

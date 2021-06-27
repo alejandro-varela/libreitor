@@ -1,7 +1,7 @@
-﻿using Recorridos;
+﻿using Comun;
 using System.Drawing;
 
-namespace PruebaLecturaDeRecorridos
+namespace Pinturas
 {
     public class TareaDePinturaRadio : ITareaDePintura
     {
@@ -15,16 +15,23 @@ namespace PruebaLecturaDeRecorridos
         {
             var casillero = Casillero.Create(Topes2D, Centro, Granularidad);
 
+            // para centrar objetos
             int despX = (Size / 2);
             int despY = (Size / 2);
 
+            int x = casillero.IndexHorizontal;
+            int y = casillero.IndexVertical;
+
             g.DrawEllipse(
                 pen: new Pen(Color), 
-                x: casillero.IndexHorizontal - despX, 
-                y: casillero.IndexVertical   - despY, 
+                x: x - despX,
+                y: y - despY, 
                 width: Size, 
                 height: Size
-            ); 
+            );
+
+            var rect = new Rectangle(x, y, 1, 1);
+            g.FillRectangle(new SolidBrush(Color), rect);
         }
     }
 

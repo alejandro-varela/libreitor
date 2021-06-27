@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace PruebaLecturaDeRecorridos
+namespace Pinturas
 {
     public interface ITareaDePintura
     {
