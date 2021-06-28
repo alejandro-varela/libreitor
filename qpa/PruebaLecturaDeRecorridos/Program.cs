@@ -3,7 +3,6 @@ using Pinturas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using StackExchange.Redis;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
@@ -436,28 +435,28 @@ namespace PruebaLecturaDeRecorridos
             return ret;
         }
 
-        public static void AgregarPuntoAlGeoHash(IDatabase redis, string nombreGeoHash, Punto punto, string nombrePunto)
-        {
-            redis.GeoAdd(nombreGeoHash, punto.Lng, punto.Lat, nombrePunto);
-        }
+        //public static void AgregarPuntoAlGeoHash(IDatabase redis, string nombreGeoHash, Punto punto, string nombrePunto)
+        //{
+        //    redis.GeoAdd(nombreGeoHash, punto.Lng, punto.Lat, nombrePunto);
+        //}
 
-        public static IEnumerable<string> DameNombresCercanosA(IDatabase redis, string nombreGeoHash, Punto punto, int radioEnMetros, int limiteCantResultados = -1)
-        {
-            var result = redis.GeoRadius(
-                nombreGeoHash, 
-                punto.Lng, 
-                punto.Lat,
-                radioEnMetros, 
-                GeoUnit.Meters, 
-                limiteCantResultados, 
-                Order.Ascending, 
-                GeoRadiusOptions.Default
-            );
+        //public static IEnumerable<string> DameNombresCercanosA(IDatabase redis, string nombreGeoHash, Punto punto, int radioEnMetros, int limiteCantResultados = -1)
+        //{
+        //    var result = redis.GeoRadius(
+        //        nombreGeoHash, 
+        //        punto.Lng, 
+        //        punto.Lat,
+        //        radioEnMetros, 
+        //        GeoUnit.Meters, 
+        //        limiteCantResultados, 
+        //        Order.Ascending, 
+        //        GeoRadiusOptions.Default
+        //    );
 
-            foreach (var rx in result)
-            {
-                yield return rx.Member;
-            }
-        }
+        //    foreach (var rx in result)
+        //    {
+        //        yield return rx.Member;
+        //    }
+        //}
     }
 }
