@@ -162,61 +162,61 @@ namespace PruebaLecturaDeRecorridos
             //////////////////////////////////////////////////////////////////////////////////////////////////////////
             //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            Console.Clear();
+            //Console.Clear();
             //DibujarPuntosLinBan(puntosLinBan, topes2D);
-            DibujarPuntos(puntosLinBan.Select(plb=> (Punto)plb), topes2D, GRANULARIDAD, '.', ConsoleColor.Green);
+            //DibujarPuntos(puntosLinBan.Select(plb=> (Punto)plb), topes2D, GRANULARIDAD, '.', ConsoleColor.Green);
             //DibujarPuntos(puntasDeLinea, topes2D, GRANULARIDAD, 'X', ConsoleColor.Blue);
 
 
-            // Chusmeo algunas cosas aca para ver que los puntos vienen como quiero
-            var cantidadTotalDePuntos   = puntosLinBan.Count();
-            var paraMirarMientrasDepuro = puntosLinBan.ToList();
+            //// Chusmeo algunas cosas aca para ver que los puntos vienen como quiero
+            //var cantidadTotalDePuntos   = puntosLinBan.Count();
+            //var paraMirarMientrasDepuro = puntosLinBan.ToList();
 
-            // Ahora tenemos que crear una colección de casilleros por recorrido...
-            // Si, una colección de nombres que esté relacionada con casilleros "virtuales" y los puntos dados...
-            // Se podria generar una lista nueva con los puntos y sus casilleros correspondientes...
-            // Asi cada vez que se haga referencia a un casillero se puede relacionar con los puntos que se encuentren en él
-            // La información debe transformarse, pero debe seguir un hilo no destructivo, para poder fluir en su génesis
+            //// Ahora tenemos que crear una colección de casilleros por recorrido...
+            //// Si, una colección de nombres que esté relacionada con casilleros "virtuales" y los puntos dados...
+            //// Se podria generar una lista nueva con los puntos y sus casilleros correspondientes...
+            //// Asi cada vez que se haga referencia a un casillero se puede relacionar con los puntos que se encuentren en él
+            //// La información debe transformarse, pero debe seguir un hilo no destructivo, para poder fluir en su génesis
 
-            //Dictionary<Casillero, List<PuntoRecorridoLinBan>> dicPuntosLinBanXCasillero = new();
-            List<(int, int, string)> patrones = new();
-            List<(int, int, Regex)> regexes = new();
+            ////Dictionary<Casillero, List<PuntoRecorridoLinBan>> dicPuntosLinBanXCasillero = new();
+            //List<(int, int, string)> patrones = new();
+            //List<(int, int, Regex)> regexes = new();
 
-            foreach (var recorridoRBusX in recorridosRBus)
-            {
-                var casillerosParaEsteRecorrido = new List<Casillero>();
+            //foreach (var recorridoRBusX in recorridosRBus)
+            //{
+            //    var casillerosParaEsteRecorrido = new List<Casillero>();
 
-                foreach (var puntoRecorridoX in recorridoRBusX.Puntos)
-                {
-                    var casillero = Casillero.Create(topes2D, puntoRecorridoX, GRANULARIDAD);
+            //    foreach (var puntoRecorridoX in recorridoRBusX.Puntos)
+            //    {
+            //        var casillero = Casillero.Create(topes2D, puntoRecorridoX, GRANULARIDAD);
 
-                    //// meto info en un diccionario, a lo mejor es util en el futuro...
-                    //var key = casillero;
-                    //if (!dicPuntosLinBanXCasillero.ContainsKey(key))
-                    //{
-                    //    dicPuntosLinBanXCasillero.Add(key, new List<PuntoRecorridoLinBan>());
-                    //}
-                    //var puntoAGuardar = new PuntoRecorridoLinBan(puntoRecorridoX, recorridoRBusX.Linea, recorridoRBusX.Bandera);
-                    //dicPuntosLinBanXCasillero[key].Add(puntoAGuardar);
+            //        //// meto info en un diccionario, a lo mejor es util en el futuro...
+            //        //var key = casillero;
+            //        //if (!dicPuntosLinBanXCasillero.ContainsKey(key))
+            //        //{
+            //        //    dicPuntosLinBanXCasillero.Add(key, new List<PuntoRecorridoLinBan>());
+            //        //}
+            //        //var puntoAGuardar = new PuntoRecorridoLinBan(puntoRecorridoX, recorridoRBusX.Linea, recorridoRBusX.Bandera);
+            //        //dicPuntosLinBanXCasillero[key].Add(puntoAGuardar);
 
-                    // creo la lista de casilleros
-                    casillerosParaEsteRecorrido.Add(casillero);
-                }
+            //        // creo la lista de casilleros
+            //        casillerosParaEsteRecorrido.Add(casillero);
+            //    }
 
-                var pattern = casillerosParaEsteRecorrido
-                    //.Simplificar((c1, c2) =>
-                    //    c1.IndexHorizontal == c2.IndexHorizontal &&
-                    //    c1.IndexVertical == c2.IndexVertical
-                    //)
-                    .Select(s => $"({s})*")
-                    .Stringificar()
-                ;
+            //    var pattern = casillerosParaEsteRecorrido
+            //        //.Simplificar((c1, c2) =>
+            //        //    c1.IndexHorizontal == c2.IndexHorizontal &&
+            //        //    c1.IndexVertical == c2.IndexVertical
+            //        //)
+            //        .Select(s => $"({s})*")
+            //        .Stringificar()
+            //    ;
 
-                patrones.Add((recorridoRBusX.Linea, recorridoRBusX.Bandera, pattern));
-                regexes.Add((recorridoRBusX.Linea, recorridoRBusX.Bandera, new Regex(pattern, RegexOptions.Compiled)));
+            //    patrones.Add((recorridoRBusX.Linea, recorridoRBusX.Bandera, pattern));
+            //    regexes.Add((recorridoRBusX.Linea, recorridoRBusX.Bandera, new Regex(pattern, RegexOptions.Compiled)));
 
-                //Console.WriteLine($"{recorridoRBusX.Linea} {recorridoRBusX.Bandera} :: {pattern}");
-            }
+            //    //Console.WriteLine($"{recorridoRBusX.Linea} {recorridoRBusX.Bandera} :: {pattern}");
+            //}
 
             //Console.WriteLine($"{Environment.TickCount - start} milis");
 
@@ -235,96 +235,92 @@ namespace PruebaLecturaDeRecorridos
             // 4337 2 jun (pico 163) nada
             // 3850 2 jun (pico 163) 
 
-            var desde = new DateTime(2021, 06, 02);
-            var hasta = desde.AddDays(1);
-            var historia = Historia.GetFromCSV(3850, desde, hasta, puntasDeLinea, 400, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true });
+            //var desde = new DateTime(2021, 06, 02);
+            //var hasta = desde.AddDays(1);
+            //var historia = Historia.GetFromCSV(3850, desde, hasta, puntasDeLinea, 400, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true });
 
-            foreach (var subHistoriaX in historia.SubHistorias)
-            {
-                if (subHistoriaX.Count < 3)
-                {
-                    continue;
-                }
+            //foreach (var subHistoriaX in historia.SubHistorias)
+            //{
+            //    if (subHistoriaX.Count < 3)
+            //    {
+            //        continue;
+            //    }
 
-                DibujarPuntos(puntosLinBan.Select(plb => (Punto)plb), topes2D, GRANULARIDAD, '.', ConsoleColor.DarkGray);
-                DibujarPuntos(subHistoriaX.Select(ph => ph), topes2D, GRANULARIDAD, '#', ConsoleColor.DarkCyan);
-                DibujarPuntos(puntasDeLinea, topes2D, GRANULARIDAD, 'P', ConsoleColor.Red);
+            //    DibujarPuntos(puntosLinBan.Select(plb => (Punto)plb), topes2D, GRANULARIDAD, '.', ConsoleColor.DarkGray);
+            //    DibujarPuntos(subHistoriaX.Select(ph => ph), topes2D, GRANULARIDAD, '#', ConsoleColor.DarkCyan);
+            //    DibujarPuntos(puntasDeLinea, topes2D, GRANULARIDAD, 'P', ConsoleColor.Red);
 
-                IEnumerable<Punto> pts2777 = recorridosRBus
-                    .First(recx => recx.Bandera == 2777 && recx.Linea == 163)
-                    .Puntos
-                    .Select(prec => (Punto)prec)
-                ;
+            //    IEnumerable<Punto> pts2777 = recorridosRBus
+            //        .First(recx => recx.Bandera == 2777 && recx.Linea == 163)
+            //        .Puntos
+            //        .Select(prec => (Punto)prec)
+            //    ;
 
-                Console.ReadKey();
-                DibujarPuntos(pts2777, topes2D, GRANULARIDAD, '%', ConsoleColor.Yellow);
-                Console.ReadKey();
-                Console.Clear();
-            }
+            //    Console.ReadKey();
+            //    DibujarPuntos(pts2777, topes2D, GRANULARIDAD, '%', ConsoleColor.Yellow);
+            //    Console.ReadKey();
+            //    Console.Clear();
+            //}
 
-            var firma = historia.Puntos
-                .Select(ph => ph)
-                .Select(p => Casillero.Create(topes2D, p, GRANULARIDAD))
-                .Simplificar((c1, c2) => c1.IndexHorizontal == c2.IndexHorizontal && c1.IndexVertical == c2.IndexVertical)
-                .Stringificar()
-            ;
+            //var firma = historia.Puntos
+            //    .Select(ph => ph)
+            //    .Select(p => Casillero.Create(topes2D, p, GRANULARIDAD))
+            //    .Simplificar((c1, c2) => c1.IndexHorizontal == c2.IndexHorizontal && c1.IndexVertical == c2.IndexVertical)
+            //    .Stringificar()
+            //;
 
-            var flen = firma.Length;
+            //var flen = firma.Length;
 
-            int foo2 = 0;
+            //int foo2 = 0;
         }
 
-        private static void DibujarPuntos(IEnumerable<Punto> puntos, Topes2D topes2D, int granularidad, char pen, ConsoleColor color)
-        {
-            ConsoleColor old = Console.ForegroundColor;
-            Console.ForegroundColor = color;
-            HashSet<string> nombresCasilleros = new();
+        //private static void DibujarPuntos(IEnumerable<Punto> puntos, Topes2D topes2D, int granularidad, char pen, ConsoleColor color)
+        //{
+        //    ConsoleColor old = Console.ForegroundColor;
+        //    Console.ForegroundColor = color;
+        //    HashSet<string> nombresCasilleros = new();
 
-            int n = 0;
-            foreach (Punto px in puntos)
-            {
-                var casillero = Casillero.Create(topes2D, px, granularidad);
-                var casilleroKey = casillero.ToString();
-                if (nombresCasilleros.Contains(casilleroKey) && pen != '%')
-                {
-                    continue;
-                }
+        //    int n = 0;
+        //    foreach (Punto px in puntos)
+        //    {
+        //        var casillero = Casillero.Create(topes2D, px, granularidad);
+        //        var casilleroKey = casillero.ToString();
+        //        if (nombresCasilleros.Contains(casilleroKey) && pen != '%')
+        //        {
+        //            continue;
+        //        }
 
-                Console.CursorLeft = casillero.IndexHorizontal;
-                Console.CursorTop = 65 - casillero.IndexVertical;
-                Console.Write(pen);
+        //        Console.CursorLeft = casillero.IndexHorizontal;
+        //        Console.CursorTop = 65 - casillero.IndexVertical;
+        //        Console.Write(pen);
 
-                n++;
-                if (pen == '%' && n % 5 == 0)
-                    System.Threading.Thread.Sleep(1);
+        //        n++;
+        //        if (pen == '%' && n % 5 == 0)
+        //            System.Threading.Thread.Sleep(1);
 
-                nombresCasilleros.Add(casilleroKey);
-            }
+        //        nombresCasilleros.Add(casilleroKey);
+        //    }
 
-            ///////////// EN CASO DE % //////////////
-            if (pen == '#')
-            {
-                var primero = puntos.First();
-                var casillerop = Casillero.Create(topes2D, primero, granularidad);
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.CursorLeft = casillerop.IndexHorizontal;
-                Console.CursorTop = 65 - casillerop.IndexVertical;
-                Console.Write('S');
+        //    ///////////// EN CASO DE % //////////////
+        //    if (pen == '#')
+        //    {
+        //        var primero = puntos.First();
+        //        var casillerop = Casillero.Create(topes2D, primero, granularidad);
+        //        Console.ForegroundColor = ConsoleColor.Green;
+        //        Console.CursorLeft = casillerop.IndexHorizontal;
+        //        Console.CursorTop = 65 - casillerop.IndexVertical;
+        //        Console.Write('S');
 
-                var ultimo = puntos.Last();
-                var casillerou = Casillero.Create(topes2D, ultimo, granularidad);
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.CursorLeft = casillerou.IndexHorizontal;
-                Console.CursorTop = 65 - casillerou.IndexVertical;
-                Console.Write('L');
-            }
-            ///////////// DIBUJO ULTIMO PUNTO //////////////
-            
-
-
-
-            Console.ForegroundColor = old;
-        }
+        //        var ultimo = puntos.Last();
+        //        var casillerou = Casillero.Create(topes2D, ultimo, granularidad);
+        //        Console.ForegroundColor = ConsoleColor.Green;
+        //        Console.CursorLeft = casillerou.IndexHorizontal;
+        //        Console.CursorTop = 65 - casillerou.IndexVertical;
+        //        Console.Write('L');
+        //    }
+        //    ///////////// DIBUJO ULTIMO PUNTO //////////////
+        //    Console.ForegroundColor = old;
+        //}
 
         //private static void DibujarPuntosLinBan(IEnumerable<PuntoRecorridoLinBan> puntosLinBan, Topes2D topes2D)
         //{
