@@ -28,7 +28,7 @@ namespace PruebaLecturaDeRecorridos
             var start = Environment.TickCount;
 
             // Leo una colección de recorridos a partir de las líneas dadas (contienen linea y banderas), puede filtrarse
-            var recorridosRBus = LeerRecorridosPorArchivos("../../../REC203/", new int[] { 159, 163, 127, 166  }, DateTime.Now);
+            var recorridosRBus = LeerRecorridosPorArchivos("../../../../Datos/ZipRepo/", new int[] { 159, 163, 127, 166  }, DateTime.Now);
 
             var puntasDeLinea = PuntasDeLinea
                 .Get    (recorridosRBus)
