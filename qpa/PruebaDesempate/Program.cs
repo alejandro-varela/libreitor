@@ -14,7 +14,7 @@ namespace PruebaDesempate
 
             // recorridos de '159' (203-PILAR) y '163' (203-MORENO)
             var recorridosRBus = Recorrido.LeerRecorridosPorArchivos("../../../../Datos/ZipRepo/", new int[] { 159, 163 }, fechaConsulta)
-                .Select(reco => SanitizarRecorrido(reco))
+                .Select(reco => SanitizarRecorrido(reco, granularidad: 20))
                 .ToList()
             ;
 
@@ -99,13 +99,13 @@ namespace PruebaDesempate
         }
 
         // TODO: pasar esta función a RecorridoLinBan
-        static RecorridoLinBan SanitizarRecorrido(RecorridoLinBan reco)
+        static RecorridoLinBan SanitizarRecorrido(RecorridoLinBan reco, int granularidad)
         {
             return new RecorridoLinBan
             {
                 Bandera = reco.Bandera,
                 Linea   = reco.Linea,
-                Puntos  = reco.Puntos.HacerGranular(20),
+                Puntos  = reco.Puntos.HacerGranular(granularidad),
             };
         }
 
