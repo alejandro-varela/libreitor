@@ -101,6 +101,26 @@ namespace PatronesReco
 
         static void Reconocer(List<string> patrones, string patronHistorico)
         {
+            if (patronHistorico == null)
+            {
+                Console.WriteLine("Patron Nulo");
+                Console.WriteLine("FINE");
+                return;
+            }
+
+            if (patronHistorico == string.Empty)
+            {
+                Console.WriteLine("Patron Vacío");
+                Console.WriteLine("FINE");
+                return;
+            }
+
+            var patronesOrdenados = patrones
+                .OrderByDescending(p => p.Length)   // ordeno por tamaño
+                .ThenBy(p => p)                     // entonces lexicográficamente
+                .ToList()                           // convierto todo en una lista
+            ;
+
             int ptr = 0;
 
             for (; ; )
@@ -108,8 +128,9 @@ namespace PatronesReco
                 var puntaInicial = patronHistorico[ptr].ToString();
                 Console.Write($"para la punta {puntaInicial} ");
 
-                var patronesPosibles = patrones
+                var patronesPosibles = patronesOrdenados
                     .Where(pattern => pattern.StartsWith(puntaInicial))
+                    .Distinct()
                     .ToList()
                 ;
 
@@ -117,7 +138,7 @@ namespace PatronesReco
                 {
                     Console.WriteLine($"No hay patrones para '{puntaInicial}'");
                     ptr++;
-                    if (ptr == patronHistorico.Length - 1)
+                    if (ptr >= patronHistorico.Length - 1)
                     {
                         Console.WriteLine("FINE");
                         break;
@@ -148,7 +169,7 @@ namespace PatronesReco
                 {
                     Console.WriteLine("ERROR!!!!!!!");
                     ptr++;
-                    if (ptr == patronHistorico.Length - 1)
+                    if (ptr >= patronHistorico.Length - 1)
                     {
                         Console.WriteLine("FINE");
                         break;
@@ -160,7 +181,7 @@ namespace PatronesReco
                     ptr += patronElegido.Length - 1;
                 }
 
-                if (ptr == patronHistorico.Length - 1)
+                if (ptr >= patronHistorico.Length - 1)
                 {
                     Console.WriteLine("FINE");
                     break;
