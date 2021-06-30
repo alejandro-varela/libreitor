@@ -1,0 +1,26 @@
+﻿//3850 ok
+//4267 ok
+//4334 ok
+//4380 ok
+//4366 ok
+//4323 ok
+//4307 ok
+//3851 ok en galpón (TODO: hacer un reconocedor de galpón)
+//3856 ok tiene problema en una parte del patrón porque falta la D en un AIGE?EGIA, TODO: ¿se podría adivinar?
+//4319 ok
+//4372 ok (no tiene datos)
+//4368 ok
+//4309 ok en galpón (TODO: hacer un reconocedor de galpón)
+//4338 ok (no tiene datos)
+//4262 ok (no tiene datos)
+//3847 ok en galpón (TODO: hacer un reconocedor de galpón)
+//4349 ok
+//4336 ok en galpón (TODO: hacer un reconocedor de galpón)
+//4267 ok
+//4377 ok
+//3809 reconoció parcial, pero es un desastre...
+//4361 ok
+//4103 ok
+//4313 ok (no tiene datos)
+//4360 ok
+//4325 ok

@@ -19,6 +19,11 @@ namespace Comun
             return $"p{IndexHorizontal:00000}{IndexVertical:00000}";
         }
 
+        public bool PresenteFlexEn(HashSet<Casillero> casilleros, int granularidad)
+        {
+            return HashSetContieneCasilleroFlex(casilleros, this, granularidad);
+        }
+
         public static Casillero Create(Topes2D topes2D, Punto puntoide, int granularidad)
         {
             // se puede precalcular
@@ -82,6 +87,48 @@ namespace Comun
         public static bool operator !=(Casillero left, Casillero right)
         {
             return !(left == right);
+        }
+
+        public static bool HashSetContieneCasilleroFlex(HashSet<Casillero> casilleros, Casillero casillero, int granularidad)
+        {
+            if (casilleros.Contains(casillero))
+            {
+                return true;
+            }
+            else if (casilleros.Contains(new Casillero { IndexHorizontal = casillero.IndexHorizontal + 0, IndexVertical = casillero.IndexVertical - 1 })) // norte
+            {
+                return true;
+            }
+            else if (casilleros.Contains(new Casillero { IndexHorizontal = casillero.IndexHorizontal - 1, IndexVertical = casillero.IndexVertical - 1 })) // nor oeste
+            {
+                return true;
+            }
+            else if (casilleros.Contains(new Casillero { IndexHorizontal = casillero.IndexHorizontal + 1, IndexVertical = casillero.IndexVertical - 1 })) // nor este
+            {
+                return true;
+            }
+            else if (casilleros.Contains(new Casillero { IndexHorizontal = casillero.IndexHorizontal + 0, IndexVertical = casillero.IndexVertical + 1 })) // sur
+            {
+                return true;
+            }
+            else if (casilleros.Contains(new Casillero { IndexHorizontal = casillero.IndexHorizontal - 1, IndexVertical = casillero.IndexVertical + 1 })) // sur oeste
+            {
+                return true;
+            }
+            else if (casilleros.Contains(new Casillero { IndexHorizontal = casillero.IndexHorizontal + 1, IndexVertical = casillero.IndexVertical + 1 })) // sur este
+            {
+                return true;
+            }
+            else if (casilleros.Contains(new Casillero { IndexHorizontal = casillero.IndexHorizontal - 1, IndexVertical = casillero.IndexVertical + 0 })) // oeste
+            {
+                return true;
+            }
+            else if (casilleros.Contains(new Casillero { IndexHorizontal = casillero.IndexHorizontal + 1, IndexVertical = casillero.IndexVertical + 0 })) // este
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

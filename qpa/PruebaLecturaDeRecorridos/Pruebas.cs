@@ -223,7 +223,7 @@ namespace PruebaLecturaDeRecorridos
                 foreach (var key in casillerosXLinBan.Keys)
                 {
                     // if (casillerosXBandera[key].Contains(casilleroActual))
-                    if (ContieneCasilleroFlex(casillerosXLinBan[key], casilleroActual, GRANU))
+                    if (Casillero.HashSetContieneCasilleroFlex(casillerosXLinBan[key], casilleroActual, GRANU))
                     {
                         if (!esPunta)
                         {
@@ -360,48 +360,6 @@ namespace PruebaLecturaDeRecorridos
                 puntos,
                 recorridosRBus
             );
-        }
-
-        static bool ContieneCasilleroFlex(HashSet<Casillero> casilleros, Casillero casillero, int granularidad)
-        {
-            if (casilleros.Contains(casillero))
-            {
-                return true;
-            }
-            else if (casilleros.Contains(new Casillero { IndexHorizontal = casillero.IndexHorizontal + 0, IndexVertical = casillero.IndexVertical - 1 })) // norte
-            {
-                return true;
-            }
-            else if (casilleros.Contains(new Casillero { IndexHorizontal = casillero.IndexHorizontal - 1, IndexVertical = casillero.IndexVertical - 1 })) // nor oeste
-            {
-                return true;
-            }
-            else if (casilleros.Contains(new Casillero { IndexHorizontal = casillero.IndexHorizontal + 1, IndexVertical = casillero.IndexVertical - 1 })) // nor este
-            {
-                return true;
-            }
-            else if (casilleros.Contains(new Casillero { IndexHorizontal = casillero.IndexHorizontal + 0, IndexVertical = casillero.IndexVertical + 1 })) // sur
-            {
-                return true;
-            }
-            else if (casilleros.Contains(new Casillero { IndexHorizontal = casillero.IndexHorizontal - 1, IndexVertical = casillero.IndexVertical + 1 })) // sur oeste
-            {
-                return true;
-            }
-            else if (casilleros.Contains(new Casillero { IndexHorizontal = casillero.IndexHorizontal + 1, IndexVertical = casillero.IndexVertical + 1 })) // sur este
-            {
-                return true;
-            }
-            else if (casilleros.Contains(new Casillero { IndexHorizontal = casillero.IndexHorizontal - 1, IndexVertical = casillero.IndexVertical + 0 })) // oeste
-            {
-                return true;
-            }
-            else if (casilleros.Contains(new Casillero { IndexHorizontal = casillero.IndexHorizontal + 1, IndexVertical = casillero.IndexVertical + 0 })) // este
-            {
-                return true;
-            }
-
-            return false;
         }
 
         public static IEnumerable<PuntoHistorico> GetFromCSV(string path, int ficha, DateTime desde, DateTime hasta, PuntosHistoricosGetFromCSVConfig config)

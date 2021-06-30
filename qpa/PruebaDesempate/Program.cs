@@ -9,12 +9,16 @@ namespace PruebaDesempate
     {
         static void Main(string[] args)
         {
+            // granularidad de trabajo: 20 mts
+            const int GRANULARIDAD = 20;
+            const int RADIO_PUNTAS = 800;
+
             // 2 Junio 2021
             var fechaConsulta = new DateTime(2021, 6, 2, 0, 0, 0);
 
             // recorridos de '159' (203-PILAR) y '163' (203-MORENO)
             var recorridosRBus = Recorrido.LeerRecorridosPorArchivos("../../../../Datos/ZipRepo/", new int[] { 159, 163 }, fechaConsulta)
-                .Select(reco => SanitizarRecorrido(reco, granularidad: 20))
+                .Select(reco => SanitizarRecorrido(reco, granularidad: GRANULARIDAD))
                 .ToList()
             ;
 
@@ -28,47 +32,27 @@ namespace PruebaDesempate
             var topes2d = Topes2D.CreateFromPuntos(todosLosPuntosDeLosRecorridos);
 
             // puntas de línea
-            var puntas = PuntasDeLinea.GetPuntasNombradas(recorridosRBus, 800);
+            var puntas = PuntasDeLinea.GetPuntasNombradas(recorridosRBus, RADIO_PUNTAS);
 
             // caminos de los recos
-            var patronesReco = new List<string>();
+            var recoPatterns = new Dictionary<string, List<KeyValuePair<int,int>>>();
             foreach (var recox in recorridosRBus)
             {
                 var camino = Camino.CreateFromRecorrido(puntas, recox);
-                patronesReco.Add(camino.Description);
+
+                if (! recoPatterns.ContainsKey(camino.Description))
+                {
+                    recoPatterns.Add(camino.Description, new List<KeyValuePair<int, int>>());
+                }
+
+                recoPatterns[camino.Description].Add(new KeyValuePair<int, int>(recox.Linea, recox.Bandera));
+
                 Console.WriteLine($"{recox.Linea,-3} {recox.Bandera, -4} {camino.Description}");
             }
 
-            //3850 ok
-            //4267 ok
-            //4334 ok
-            //4380 ok
-            //4366 ok
-            //4323 ok
-            //4307 ok
-            //3851 ok en galpón (TODO: hacer un reconocedor de galpón)
-            //3856 ok tiene problema en una parte del patrón porque falta la D en un AIGE?EGIA, TODO: ¿se podría adivinar?
-            //4319 ok
-            //4372 ok (no tiene datos)
-            //4368 ok
-            //4309 ok en galpón (TODO: hacer un reconocedor de galpón)
-            //4338 ok (no tiene datos)
-            //4262 ok (no tiene datos)
-            //3847 ok en galpón (TODO: hacer un reconocedor de galpón)
-            //4349 ok
-            //4336 ok en galpón (TODO: hacer un reconocedor de galpón)
-            //4267 ok
-            //4377 ok
-            //3809 reconoció parcial, pero es un desastre...
-            //4361 ok
-            //4103 ok
-            //4313 ok (no tiene datos)
-            //4360 ok
-            //4325 ok
-
             // historia real
             var puntosHistoricos = Historia.GetRaw(
-                4325,
+                4267,
                 fechaConsulta, 
                 fechaConsulta.AddDays(1), 
                 new PuntosHistoricosGetFromCSVConfig
@@ -84,16 +68,17 @@ namespace PruebaDesempate
             Console.WriteLine(caminoHistorico.Description);
 
             // ¿reconocer?
-            Reconocer(patronesReco, caminoHistorico.Description);
-            var unidadesDeRecon = Reconocer2(patronesReco, caminoHistorico.Description);
+            Reconocer(recoPatterns.Keys.ToList(), caminoHistorico.Description);
+            var unidadesDeRecon = Reconocer2(recoPatterns.Keys.ToList(), caminoHistorico.Description);
 
             // ok, ahora que ya se tienen los patrones, debo ver a que recorrido pertenece cada patron...
             // algunos patrones tienen múltiples recorridos asociados por lo cual debe haber un "desempate"
             // esto se puede hacer por pertenencia de esos puntos a la pizza...
-            Console.ForegroundColor = ConsoleColor.Cyan;
+            
             Console.WriteLine("Análisis real");
             foreach (var unidadDeReconX in unidadesDeRecon)
             {
+                Console.ForegroundColor = ConsoleColor.Gray;
                 if (unidadDeReconX is RecognitionUnitError)
                 {
 
@@ -101,10 +86,22 @@ namespace PruebaDesempate
                 else if (unidadDeReconX is RecognitionUnitMatch)
                 {
                     var uni = unidadDeReconX as RecognitionUnitMatch;
-                    Console.WriteLine("\t -> " + uni.Pattern);
+                    
+                    Console.WriteLine($"\t -> {uni.Pattern} (Index: {uni.Index} Largo: {uni.Pattern.Length})");
+                    Console.ForegroundColor = recoPatterns[uni.Pattern].Count == 1 ? 
+                        ConsoleColor.Green : ConsoleColor.DarkGray;
+
+                    foreach (var kvp in recoPatterns[uni.Pattern])
+                    {
+                        Console.WriteLine($"\t\tLínea: {kvp.Key} Bandera:{kvp.Value}");
+                    }
+
+                    if (recoPatterns[uni.Pattern].Count > 1) // si hay varias banderas en un patrón debo desempatar...
+                    {
+                        Desempatar(caminoHistorico, recorridosRBus, recoPatterns[uni.Pattern], uni.Index, uni.Pattern, GRANULARIDAD, topes2d);
+                    }
                 }
             }
-
 
             // TODO: hacer un "reconocedor de galpón"
             // TODO: hacer que se informe el porcentaje reconocido y no reconocido...
@@ -318,6 +315,125 @@ namespace PruebaDesempate
             }
 
             return ret;
+        }
+
+        static List<KeyValuePair<KeyValuePair<int, int>, int>> Desempatar(Camino caminoHistorico, List<RecorridoLinBan> recorridosRBus, List<KeyValuePair<int, int>> recorridosADesempatar, int index, string pattern, int granularidad, Topes2D topes2D)
+        {
+            int myIndex = -1;
+            int myLen = 0;
+            int lenRealEnGrupoides = 0;
+            int indexRealEnGrupoides = -1;
+            bool yaEmpezo = false;
+            bool yaTermino = false;
+
+            foreach (var ggg in caminoHistorico.Grupoides)
+            {
+                if (ggg.Nombre != "." && ggg.Nombre != "?")
+                {
+                    // Index
+                    myIndex += 1;
+                    if (myIndex == index)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        yaEmpezo = true;
+                        indexRealEnGrupoides = indexRealEnGrupoides + 1; // una sola vez
+                    }
+
+                    // Len
+                    if (yaEmpezo)
+                        myLen += 1;
+                }
+
+                if (!yaEmpezo)
+                {
+                    indexRealEnGrupoides += 1;
+                }
+
+                if (yaEmpezo && !yaTermino)
+                {
+                    lenRealEnGrupoides += 1;
+                }
+
+                Console.WriteLine($"\t\t\t{ggg.Nombre} {myIndex} {myLen} {yaEmpezo} {lenRealEnGrupoides} {indexRealEnGrupoides}");
+
+                if (myLen == pattern.Length)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    yaTermino = true;
+                }
+            }
+
+            var grupoidesElegidos = caminoHistorico.Grupoides
+                .Skip(indexRealEnGrupoides)
+                .Take(lenRealEnGrupoides)
+                .ToList()
+            ;
+
+            grupoidesElegidos = grupoidesElegidos
+                .Skip(1)
+                .SkipLast(1)
+                .ToList()
+            ;
+
+            var puntosAplanados = grupoidesElegidos
+                .SelectMany
+                (
+                    (grupx) => grupx.Nodos, 
+                    (grupx, nodox) => nodox.PuntoAsociado
+                )
+                .ToList()
+            ;
+
+            // para cada recorrido a desempatar...
+            var stats = new List<KeyValuePair<KeyValuePair<int, int>, int>>();
+            foreach (var linban in recorridosADesempatar)
+            {
+                var linea = linban.Key;
+                var bandera = linban.Value;
+                Console.WriteLine($"Desempatando: {linea} {bandera}");
+                var recorridoTeorico = recorridosRBus
+                    .Where(recox => recox.Linea == linea && recox.Bandera == bandera)
+                    .First()
+                ;
+                
+                var cuantos = ComparacionGeometrica(puntosAplanados, recorridoTeorico, granularidad, topes2D);
+                stats.Add(new KeyValuePair<KeyValuePair<int, int>, int>(linban, cuantos));
+            }
+
+            return stats;
+        }
+
+        static int ComparacionGeometrica(
+            IEnumerable<Punto> puntosReales, 
+            RecorridoLinBan recorridoTeorico, 
+            int granularidad, 
+            Topes2D topes2D
+        )
+        {
+            int positivos = 0;
+
+            HashSet<Casillero> casillerosTeoricos = new();
+
+            foreach (var preco in recorridoTeorico.Puntos)
+            {
+                var casTeorico = Casillero.Create(topes2D, preco, granularidad);
+                casillerosTeoricos.Add(casTeorico);
+            }
+
+            // averiguo que cantidad de puntos entran en ese recorrido...
+            foreach (var puntoX in puntosReales)
+            {
+                var casReal  = Casillero.Create(topes2D, puntoX, granularidad);
+                //var presente = casReal.PresenteFlexEn(casillerosTeoricos, granularidad);
+                var presente = casillerosTeoricos.Contains(casReal);
+
+                if (presente)
+                {
+                    positivos++;
+                }
+            }
+
+            return positivos;
         }
     }
 
