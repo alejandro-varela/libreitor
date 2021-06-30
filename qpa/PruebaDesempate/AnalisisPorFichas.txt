@@ -16,11 +16,11 @@
 //3847 ok en galpón (TODO: hacer un reconocedor de galpón)
 //4349 ok
 //4336 ok en galpón (TODO: hacer un reconocedor de galpón)
-//4267 ok
+//4267 ok!
 //4377 ok
 //3809 reconoció parcial, pero es un desastre...
 //4361 ok
-//4103 ok
+//4103 ok!
 //4313 ok (no tiene datos)
-//4360 ok
-//4325 ok
+//4360 ok!
+//4325 ok!

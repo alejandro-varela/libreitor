@@ -52,7 +52,7 @@ namespace PruebaDesempate
 
             // historia real
             var puntosHistoricos = Historia.GetRaw(
-                4267,
+                3850,
                 fechaConsulta, 
                 fechaConsulta.AddDays(1), 
                 new PuntosHistoricosGetFromCSVConfig
@@ -98,7 +98,16 @@ namespace PruebaDesempate
 
                     if (recoPatterns[uni.Pattern].Count > 1) // si hay varias banderas en un patrón debo desempatar...
                     {
-                        Desempatar(caminoHistorico, recorridosRBus, recoPatterns[uni.Pattern], uni.Index, uni.Pattern, GRANULARIDAD, topes2d);
+                        var stats = Desempatar(
+                            caminoHistorico,
+                            recorridosRBus,
+                            recoPatterns[uni.Pattern],
+                            uni.Index,
+                            uni.Pattern,
+                            GRANULARIDAD,
+                            topes2d
+                        );
+
                     }
                 }
             }
@@ -424,8 +433,8 @@ namespace PruebaDesempate
             foreach (var puntoX in puntosReales)
             {
                 var casReal  = Casillero.Create(topes2D, puntoX, granularidad);
-                //var presente = casReal.PresenteFlexEn(casillerosTeoricos, granularidad);
-                var presente = casillerosTeoricos.Contains(casReal);
+                var presente = casReal.PresenteFlexEn(casillerosTeoricos, granularidad);
+                //var presente = casillerosTeoricos.Contains(casReal);
 
                 if (presente)
                 {
