@@ -85,11 +85,26 @@ namespace PruebaDesempate
 
             // ¿reconocer?
             Reconocer(patronesReco, caminoHistorico.Description);
-            var pepe = Reconocer2(patronesReco, caminoHistorico.Description);
+            var unidadesDeRecon = Reconocer2(patronesReco, caminoHistorico.Description);
 
             // ok, ahora que ya se tienen los patrones, debo ver a que recorrido pertenece cada patron...
-            // algunos patrones tienen multiples recorridos asociados por lo cual debe haber un "desempate"
+            // algunos patrones tienen múltiples recorridos asociados por lo cual debe haber un "desempate"
             // esto se puede hacer por pertenencia de esos puntos a la pizza...
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("Análisis real");
+            foreach (var unidadDeReconX in unidadesDeRecon)
+            {
+                if (unidadDeReconX is RecognitionUnitError)
+                {
+
+                }
+                else if (unidadDeReconX is RecognitionUnitMatch)
+                {
+                    var uni = unidadDeReconX as RecognitionUnitMatch;
+                    Console.WriteLine("\t -> " + uni.Pattern);
+                }
+            }
+
 
             // TODO: hacer un "reconocedor de galpón"
             // TODO: hacer que se informe el porcentaje reconocido y no reconocido...

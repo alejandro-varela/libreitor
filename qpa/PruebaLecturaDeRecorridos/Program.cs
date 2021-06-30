@@ -27,7 +27,7 @@ namespace PruebaLecturaDeRecorridos
             var start = Environment.TickCount;
 
             // Leo una colección de recorridos a partir de las líneas dadas (contienen linea y banderas), puede filtrarse
-            var recorridosRBus = Recorrido.LeerRecorridosPorArchivos("../../../../Datos/ZipRepo/", new int[] { 159, 163, 127, 166  }, DateTime.Now);
+            var recorridosRBus = Recorrido.LeerRecorridosPorArchivos("../../../../Datos/ZipRepo/", new int[] { 159, 163, 127 }, DateTime.Now);
 
             var puntasDeLinea = PuntasDeLinea
                 .Get    (recorridosRBus)
@@ -46,7 +46,7 @@ namespace PruebaLecturaDeRecorridos
 
             var RADIO_PUNTAS = 750;
             //var puntasNombradas = PuntasDeLinea.GetPuntasNombradas(recorridosRBus.Where(reco => reco.Linea == 163), radio: RADIO_PUNTAS);
-            var puntasNombradas = PuntasDeLinea.GetPuntasNombradas(recorridosRBus, radio: 150);
+            var puntasNombradas = PuntasDeLinea.GetPuntasNombradas(recorridosRBus, radio: 800);
 
             foreach (var recoX in recorridosRBus)
             {
