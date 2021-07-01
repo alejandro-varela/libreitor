@@ -52,7 +52,7 @@ namespace PruebaDesempate
 
             // historia real
             var puntosHistoricos = Historia.GetRaw(
-                3850,
+                4377,
                 fechaConsulta, 
                 fechaConsulta.AddDays(1), 
                 new PuntosHistoricosGetFromCSVConfig
@@ -68,7 +68,7 @@ namespace PruebaDesempate
             Console.WriteLine(caminoHistorico.Description);
 
             // ¿reconocer?
-            Reconocer(recoPatterns.Keys.ToList(), caminoHistorico.Description);
+            // Reconocer(recoPatterns.Keys.ToList(), caminoHistorico.Description);
             var unidadesDeRecon = Reconocer2(recoPatterns.Keys.ToList(), caminoHistorico.Description);
 
             // ok, ahora que ya se tienen los patrones, debo ver a que recorrido pertenece cada patron...
@@ -108,6 +108,10 @@ namespace PruebaDesempate
                             topes2d
                         );
 
+                        MostrarStats(stats, ConsoleColor.DarkCyan, "Desempatar: ");
+
+                        var ganadores = DameEstadisticaGanadora(stats);
+                        MostrarStats(ganadores, ConsoleColor.Cyan, "Ganadora  : ");
                     }
                 }
             }
@@ -117,6 +121,30 @@ namespace PruebaDesempate
             // TODO: si no se empieza con un galpon, se puede ampliar los bordes (unas horas) hasta encontrar un galpón...
 
             int foo = 0;
+        }
+
+        static void MostrarStats(List<KeyValuePair<KeyValuePair<int, int>, int>> ganadores, ConsoleColor consoleColor, string prefix)
+        {
+            foreach (var stat in ganadores)
+            {
+                var linea = stat.Key.Key;
+                var bandera = stat.Key.Value;
+                var puntaje = stat.Value;
+                var ccanterior = Console.ForegroundColor;
+                Console.ForegroundColor = consoleColor;
+                Console.WriteLine($"{prefix}Lin={linea} Ban={bandera} : {puntaje}");
+                Console.ForegroundColor = ccanterior;
+            }
+        }
+
+        private static List<KeyValuePair<KeyValuePair<int, int>, int>> DameEstadisticaGanadora(List<KeyValuePair<KeyValuePair<int, int>, int>> stats)
+        {
+            return stats
+                .GroupBy(stat => stat.Value)
+                .OrderByDescending(g => g.Key)
+                .First()
+                .ToList()
+            ;
         }
 
         // TODO: pasar esta función a RecorridoLinBan
@@ -131,97 +159,100 @@ namespace PruebaDesempate
         }
 
         // TODO: pasar esto a una librería
-        static void Reconocer(List<string> patrones, string patronHistorico)
-        {
-            if (patronHistorico == null)
-            {
-                Console.WriteLine("Patron Nulo");
-                Console.WriteLine("FINE");
-                return;
-            }
+        //static void Reconocer(List<string> patrones, string patronHistorico)
+        //{
+        //    if (patronHistorico == null)
+        //    {
+        //        Console.WriteLine("Patron Nulo");
+        //        Console.WriteLine("FINE");
+        //        return;
+        //    }
 
-            if (patronHistorico == string.Empty)
-            {
-                Console.WriteLine("Patron Vacío");
-                Console.WriteLine("FINE");
-                return;
-            }
+        //    if (patronHistorico == string.Empty)
+        //    {
+        //        Console.WriteLine("Patron Vacío");
+        //        Console.WriteLine("FINE");
+        //        return;
+        //    }
 
-            var patronesOrdenados = patrones
-                .OrderByDescending(p => p.Length)   // ordeno por tamaño
-                .ThenBy(p => p)                     // entonces lexicográficamente
-                .ToList()                           // convierto todo en una lista
-            ;
+        //    var patronesOrdenados = patrones
+        //        .OrderByDescending(p => p.Length)   // ordeno por tamaño
+        //        .ThenBy(p => p)                     // entonces lexicográficamente
+        //        .ToList()                           // convierto todo en una lista
+        //    ;
 
-            int ptr = 0;
+        //    int ptr = 0;
 
-            for (; ; )
-            {
-                var puntaInicial = patronHistorico[ptr].ToString();
-                Console.Write($"para la punta {puntaInicial} ");
+        //    for (; ; )
+        //    {
+        //        var puntaInicial = patronHistorico[ptr].ToString();
+        //        Console.Write($"para la punta {puntaInicial} ");
 
-                var patronesPosibles = patronesOrdenados
-                    .Where(pattern => pattern.StartsWith(puntaInicial))
-                    .Distinct()
-                    .ToList()
-                ;
+        //        var patronesPosibles = patronesOrdenados
+        //            .Where(pattern => pattern.StartsWith(puntaInicial))
+        //            .Distinct()
+        //            .ToList()
+        //        ;
 
-                if (patronesPosibles.Count == 0)
-                {
-                    Console.WriteLine($"No hay patrones para '{puntaInicial}'");
-                    ptr++;
-                    if (ptr >= patronHistorico.Length - 1)
-                    {
-                        Console.WriteLine("FINE");
-                        break;
-                    }
-                    continue;
-                }
+        //        if (patronesPosibles.Count == 0)
+        //        {
+        //            Console.WriteLine($"No hay patrones para '{puntaInicial}'");
+        //            ptr++;
+        //            if (ptr >= patronHistorico.Length - 1)
+        //            {
+        //                Console.WriteLine("FINE");
+        //                break;
+        //            }
+        //            continue;
+        //        }
 
-                Console.WriteLine("existen los patrones: ");
-                patronesPosibles
-                    .ToList()
-                    .ForEach((pattern) => Console.WriteLine($"\t{pattern}"));
+        //        Console.WriteLine("existen los patrones: ");
+        //        patronesPosibles
+        //            .ToList()
+        //            .ForEach((pattern) => Console.WriteLine($"\t{pattern}"));
 
-                // de mayor a menor me fijo si encaja...
-                string patronElegido = null;
-                foreach (var patronPosible in patronesPosibles)
-                {
-                    if (patronHistorico.Substring(ptr).StartsWith(patronPosible)) // también se puede hacer patronHistorico[ptr..]
-                    {
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine($"El patron {patronPosible} es bueno para {patronHistorico} en index:{ptr}");
-                        Console.ForegroundColor = ConsoleColor.Gray;
-                        patronElegido = patronPosible;
-                        break;
-                    }
-                }
+        //        // de mayor a menor me fijo si encaja...
+        //        string patronElegido = null;
+        //        foreach (var patronPosible in patronesPosibles)
+        //        {
+        //            if (patronHistorico.Substring(ptr).StartsWith(patronPosible)) // también se puede hacer patronHistorico[ptr..]
+        //            {
+        //                Console.ForegroundColor = ConsoleColor.Green;
+        //                Console.WriteLine($"El patron {patronPosible} es bueno para {patronHistorico} en index:{ptr}");
+        //                Console.ForegroundColor = ConsoleColor.Gray;
+        //                patronElegido = patronPosible;
+        //                break;
+        //            }
+        //        }
 
-                if (patronElegido == null)
-                {
-                    Console.WriteLine("ERROR!!!!!!!");
-                    ptr++;
-                    if (ptr >= patronHistorico.Length - 1)
-                    {
-                        Console.WriteLine("FINE");
-                        break;
-                    }
-                    continue;
-                }
-                else
-                {
-                    ptr += patronElegido.Length - 1;
-                }
+        //        if (patronElegido == null)
+        //        {
+        //            Console.WriteLine("ERROR!!!!!!!");
+        //            ptr++;
+        //            if (ptr >= patronHistorico.Length - 1)
+        //            {
+        //                Console.WriteLine("FINE");
+        //                break;
+        //            }
+        //            continue;
+        //        }
+        //        else
+        //        {
+        //            ptr += patronElegido.Length - 1;
+        //        }
 
-                if (ptr >= patronHistorico.Length - 1)
-                {
-                    Console.WriteLine("FINE");
-                    break;
-                }
+        //        if (ptr >= patronHistorico.Length - 1)
+        //        {
+        //            Console.WriteLine("FINE");
+        //            break;
+        //        }
 
-                int fafafa = 0;
-            }
-        }
+        //        int fafafa = 0;
+        //    }
+        //}
+
+        
+        // TODO: pasar esto a una librería
 
         static List<RecognitionUnit> Reconocer2(List<string> patrones, string patronHistorico)
         {
@@ -399,7 +430,7 @@ namespace PruebaDesempate
             {
                 var linea = linban.Key;
                 var bandera = linban.Value;
-                Console.WriteLine($"Desempatando: {linea} {bandera}");
+                //Console.WriteLine($"Desempatando: {linea} {bandera}");
                 var recorridoTeorico = recorridosRBus
                     .Where(recox => recox.Linea == linea && recox.Bandera == bandera)
                     .First()

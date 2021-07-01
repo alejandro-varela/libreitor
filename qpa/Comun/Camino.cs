@@ -105,6 +105,7 @@ namespace Comun
             }
         }
 
+        // TODO: explicar
         static string QuitarRuido(string sRuidosa)
         {
             var simbols = sRuidosa
