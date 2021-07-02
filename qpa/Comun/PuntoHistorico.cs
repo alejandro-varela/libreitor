@@ -9,7 +9,7 @@ namespace Comun
 
         public override string ToString()
         {
-            return $"{base.ToString()} {Fecha}";
+            return $"{base.ToString()} Fecha={Fecha}";
         }
     }
 }

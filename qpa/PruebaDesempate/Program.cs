@@ -120,7 +120,21 @@ namespace PruebaDesempate
             // TODO: hacer que se informe el porcentaje reconocido y no reconocido...
             // TODO: si no se empieza con un galpon, se puede ampliar los bordes (unas horas) hasta encontrar un galpón...
 
+            MostrarHorasDeLosGrupoides(caminoHistorico);
+
             int foo = 0;
+        }
+
+        private static void MostrarHorasDeLosGrupoides(Camino caminoHistorico)
+        {
+            foreach (var grupoideX in caminoHistorico.Grupoides)
+            {
+                var fecha_start = (grupoideX.Nodos.First().PuntoAsociado as PuntoHistorico).Fecha;
+                var fecha_end   = (grupoideX.Nodos.Last().PuntoAsociado as PuntoHistorico).Fecha;
+                var durac = (fecha_end - fecha_start).TotalSeconds;
+                int papa = 0;
+                Console.WriteLine($"{grupoideX.Nombre} {fecha_start} {fecha_end} {durac / 60}");
+            }
         }
 
         static void MostrarStats(List<KeyValuePair<KeyValuePair<int, int>, int>> ganadores, ConsoleColor consoleColor, string prefix)
@@ -132,7 +146,9 @@ namespace PruebaDesempate
                 var puntaje = stat.Value;
                 var ccanterior = Console.ForegroundColor;
                 Console.ForegroundColor = consoleColor;
-                Console.WriteLine($"{prefix}Lin={linea} Ban={bandera} : {puntaje}");
+                var msg = $"{prefix}Lin={linea} Ban={bandera} : {puntaje}";
+                //Console.WriteLine(new string('-', msg.Length));
+                Console.WriteLine(msg);
                 Console.ForegroundColor = ccanterior;
             }
         }
