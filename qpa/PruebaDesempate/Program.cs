@@ -120,20 +120,81 @@ namespace PruebaDesempate
             // TODO: hacer que se informe el porcentaje reconocido y no reconocido...
             // TODO: si no se empieza con un galpon, se puede ampliar los bordes (unas horas) hasta encontrar un galpón...
 
-            MostrarHorasDeLosGrupoides(caminoHistorico);
+            //MostrarHorasDeLosGrupoides(caminoHistorico);
+            foreach (Grupoide gx in caminoHistorico.Grupoides)
+            {
+                //if (gx.Nombre == "." || gx.Nombre == "?") { continue; }
+                MostrarTiemposDelGrupoide(gx);
+            }
 
             int foo = 0;
         }
 
-        private static void MostrarHorasDeLosGrupoides(Camino caminoHistorico)
+        static void MostrarHorasDeLosGrupoides(Camino caminoHistorico)
         {
             foreach (var grupoideX in caminoHistorico.Grupoides)
             {
+                if (grupoideX.Nombre == "." || grupoideX.Nombre == "?")
+                {
+                    continue;
+                }
+
                 var fecha_start = (grupoideX.Nodos.First().PuntoAsociado as PuntoHistorico).Fecha;
                 var fecha_end   = (grupoideX.Nodos.Last().PuntoAsociado as PuntoHistorico).Fecha;
                 var durac = (fecha_end - fecha_start).TotalSeconds;
                 int papa = 0;
+
                 Console.WriteLine($"{grupoideX.Nombre} {fecha_start} {fecha_end} {durac / 60}");
+                MostrarTiemposDelGrupoide(grupoideX);
+            }
+        }
+
+        static void MostrarTiemposDelGrupoide(Grupoide grupoideX)
+        {
+            Console.Write($"[{grupoideX.Nombre}] ");
+            foreach (var despl in DameDesplazamientosGrupoide(grupoideX))
+            {
+                if (despl > 1)
+                {
+                    Console.Write('|');
+                }
+                else if (despl > 0.6)
+                {
+                    Console.Write(':');
+                }
+                else if (despl > 0.1)
+                {
+                    Console.Write('_');
+                }
+                else
+                {
+                    Console.Write('_');
+                }
+                
+                //Console.Write(despl);
+                //Console.Write(" ");
+            }
+            Console.WriteLine();
+        }
+
+        static IEnumerable<double> DameDesplazamientosGrupoide(Grupoide grupoide)
+        {
+            PuntoHistorico anterior = null;
+
+            foreach (var nodoX in grupoide.Nodos)
+            {
+                if (anterior == null) 
+                {
+                    anterior = nodoX.PuntoAsociado as PuntoHistorico;
+                    continue;
+                }
+
+                var distMetros   = Haversine.GetDist(anterior, nodoX.PuntoAsociado);
+                var distSegundos = ((nodoX.PuntoAsociado as PuntoHistorico).Fecha - anterior.Fecha).TotalSeconds;
+
+                anterior = nodoX.PuntoAsociado as PuntoHistorico;
+
+                yield return distMetros / distSegundos;
             }
         }
 
