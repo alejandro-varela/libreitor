@@ -69,9 +69,11 @@ namespace Comun
     public class PuntaLinea
     {
         public Punto Punto { get; set; }
+        public Punto Centroide { get { return Punto; } }
         public string Nombre { get; set; }
         public int Radio { get; set; }
         public List<Tuple<int, int>> Varios { get; set; }
+        
 
         public override string ToString()
         {

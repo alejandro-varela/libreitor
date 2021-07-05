@@ -50,9 +50,9 @@ namespace PruebaLecturaDeRecorridos
 
             foreach (var recoX in recorridosRBus)
             {
-                var caminoFromReco = Camino.CreateFromRecorrido(
+                var caminoFromReco = Camino<PuntoRecorrido>.CreateFromPuntos(
                     puntasNombradas,
-                    recoX
+                    recoX.Puntos
                 );
                 var caminoDescr = caminoFromReco.Description;
                 Console.WriteLine($"{recoX.Linea:0000} {recoX.Bandera:0000} : {caminoFromReco.Description} : RAW_SR: {caminoFromReco.DescriptionRawSinRuido} RAW: {caminoFromReco.DescriptionRaw} ");
@@ -60,7 +60,7 @@ namespace PruebaLecturaDeRecorridos
 
             var desdi = new DateTime(2021, 6, 2);
             var hasti = desdi.AddDays(1);
-            var caminoFromHisto = Camino.CreateFromPuntos(
+            var caminoFromHisto = Camino<PuntoHistorico>.CreateFromPuntos(
                 puntasNombradas,
                 //              Historia.GetRaw(3850, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }))
                 //              Historia.GetRaw(4267, desdi, hasti, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }))

@@ -38,7 +38,8 @@ namespace PruebaDesempate
             var recoPatterns = new Dictionary<string, List<KeyValuePair<int,int>>>();
             foreach (var recox in recorridosRBus)
             {
-                var camino = Camino.CreateFromRecorrido(puntas, recox);
+                //var camino = Camino<PuntoRecorrido>.CreateFromRecorrido(puntas, recox);
+                var camino = Camino<PuntoRecorrido>.CreateFromPuntos(puntas, recox.Puntos);
 
                 if (! recoPatterns.ContainsKey(camino.Description))
                 {
@@ -52,7 +53,7 @@ namespace PruebaDesempate
 
             // historia real
             var puntosHistoricos = Historia.GetRaw(
-                4377,
+                4366, //4380, //4334 h!!!, // 4377, // 3850
                 fechaConsulta, 
                 fechaConsulta.AddDays(1), 
                 new PuntosHistoricosGetFromCSVConfig
@@ -64,11 +65,13 @@ namespace PruebaDesempate
             );
 
             // camino histórico
-            var caminoHistorico = Camino.CreateFromPuntos(puntas, puntosHistoricos);
+            var caminoHistorico = Camino<PuntoHistorico>.CreateFromPuntos(puntas, puntosHistoricos);
             Console.WriteLine(caminoHistorico.Description);
-
+            caminoHistorico.Grupoides[0].GetDescansos();
             // ¿reconocer?
             // Reconocer(recoPatterns.Keys.ToList(), caminoHistorico.Description);
+
+            var reconocimiento = ReconocedorDeCamino.Reconocer(caminoHistorico, recoPatterns.Keys.ToList());
             var unidadesDeRecon = Reconocer2(recoPatterns.Keys.ToList(), caminoHistorico.Description);
 
             // ok, ahora que ya se tienen los patrones, debo ver a que recorrido pertenece cada patron...
@@ -76,25 +79,55 @@ namespace PruebaDesempate
             // esto se puede hacer por pertenencia de esos puntos a la pizza...
             
             Console.WriteLine("Análisis real");
-            foreach (var unidadDeReconX in unidadesDeRecon)
+            
+            //foreach (var unidadDeReconX in unidadesDeRecon)
+            foreach (var unidadDeReconX in reconocimiento.Unidades)
             {
                 Console.ForegroundColor = ConsoleColor.Gray;
-                if (unidadDeReconX is RecognitionUnitError)
+                if (unidadDeReconX is ReconocimientoUnidadError)
                 {
 
                 }
-                else if (unidadDeReconX is RecognitionUnitMatch)
+                else if (unidadDeReconX is ReconocimientoUnidadMatch)
                 {
-                    var uni = unidadDeReconX as RecognitionUnitMatch;
-                    
-                    Console.WriteLine($"\t -> {uni.Pattern} (Index: {uni.Index} Largo: {uni.Pattern.Length})");
+                    var uni = unidadDeReconX as ReconocimientoUnidadMatch;
+
+                    Console.WriteLine($"\t -> {uni.Pattern} (Index: {uni.IndexNombres} Largo: {uni.Pattern.Length})");
                     Console.ForegroundColor = recoPatterns[uni.Pattern].Count == 1 ? 
                         ConsoleColor.Green : ConsoleColor.DarkGray;
 
-                    foreach (var kvp in recoPatterns[uni.Pattern])
+                    // SALE
+                    var grupoideSale = caminoHistorico.Grupoides[uni.IndexInicialGrupoide];
+                    var horaSalida = DateTime.MinValue;
+                    if (grupoideSale.GetDescansos().Count > 0)
                     {
-                        Console.WriteLine($"\t\tLínea: {kvp.Key} Bandera:{kvp.Value}");
+                        Console.WriteLine($"SALE : {grupoideSale.GetDescansos()[^1].FinDescanso}");
                     }
+                    else
+                    {
+                        // hacer el calculo del punto medio aca...
+                        //Console.WriteLine($"SALE : {grupoideSale.Nodos[^1].PuntoAsociado.Fecha}");
+                        Console.WriteLine($"SALE : {grupoideSale.GetPuntoMasCentral().PuntoAsociado.Fecha}");
+                    }
+
+                    // Llega
+                    var grupoideLlega = caminoHistorico.Grupoides[uni.IndexFinalGrupoide];
+                    var horaLlegada = DateTime.MinValue;
+                    if (grupoideLlega.GetDescansos().Count > 0)
+                    {
+                        Console.WriteLine($"LLEGA: {grupoideLlega.GetDescansos()[0].InicioDescanso}");
+                    }
+                    else
+                    {
+                        // hacer el calculo del punto medio aca...
+                        Console.WriteLine($"LLEGA: {grupoideLlega.GetPuntoMasCentral().PuntoAsociado.Fecha}");
+                    }
+
+                    //muestra las banderas del patron reconocido
+                    //foreach (var kvp in recoPatterns[uni.Pattern])
+                    //{
+                    //    Console.WriteLine($"\t\tLínea: {kvp.Key} Bandera:{kvp.Value}");
+                    //}
 
                     if (recoPatterns[uni.Pattern].Count > 1) // si hay varias banderas en un patrón debo desempatar...
                     {
@@ -102,13 +135,13 @@ namespace PruebaDesempate
                             caminoHistorico,
                             recorridosRBus,
                             recoPatterns[uni.Pattern],
-                            uni.Index,
+                            uni.IndexNombres,
                             uni.Pattern,
                             GRANULARIDAD,
                             topes2d
                         );
 
-                        MostrarStats(stats, ConsoleColor.DarkCyan, "Desempatar: ");
+                        //MostrarStats(stats, ConsoleColor.DarkCyan, "Desempatar: ");
 
                         var ganadores = DameEstadisticaGanadora(stats);
                         MostrarStats(ganadores, ConsoleColor.Cyan, "Ganadora  : ");
@@ -120,83 +153,45 @@ namespace PruebaDesempate
             // TODO: hacer que se informe el porcentaje reconocido y no reconocido...
             // TODO: si no se empieza con un galpon, se puede ampliar los bordes (unas horas) hasta encontrar un galpón...
 
-            //MostrarHorasDeLosGrupoides(caminoHistorico);
-            foreach (Grupoide gx in caminoHistorico.Grupoides)
-            {
-                //if (gx.Nombre == "." || gx.Nombre == "?") { continue; }
-                MostrarTiemposDelGrupoide(gx);
-            }
+            ////MostrarHorasDeLosGrupoides(caminoHistorico);
+            //foreach (var gx in caminoHistorico.Grupoides)
+            //{
+            //    //if (gx.Nombre == "." || gx.Nombre == "?") { continue; }
+            //    MostrarTiemposDelGrupoide(gx);
+            //}
 
             int foo = 0;
         }
 
-        static void MostrarHorasDeLosGrupoides(Camino caminoHistorico)
-        {
-            foreach (var grupoideX in caminoHistorico.Grupoides)
-            {
-                if (grupoideX.Nombre == "." || grupoideX.Nombre == "?")
-                {
-                    continue;
-                }
+        //static int GetIndexGrupoide(int offset, string pattern, List<Grupoide<PuntoHistorico>> grupoides)
+        //{
+        //    int index = 0;
+        //    string acum = "";
 
-                var fecha_start = (grupoideX.Nodos.First().PuntoAsociado as PuntoHistorico).Fecha;
-                var fecha_end   = (grupoideX.Nodos.Last().PuntoAsociado as PuntoHistorico).Fecha;
-                var durac = (fecha_end - fecha_start).TotalSeconds;
-                int papa = 0;
+        //    foreach (var g in grupoides)
+        //    {
+        //        // esto ignorará los grupoides que tenga nombres que no esten en el patron...
+        //        if (!pattern.Contains(g.Nombre, StringComparison.Ordinal))
+        //        {
+        //            index++;
+        //            continue;
+        //        }
 
-                Console.WriteLine($"{grupoideX.Nombre} {fecha_start} {fecha_end} {durac / 60}");
-                MostrarTiemposDelGrupoide(grupoideX);
-            }
-        }
+        //        if (index >= offset)
+        //        {
+        //            acum += g.Nombre;
 
-        static void MostrarTiemposDelGrupoide(Grupoide grupoideX)
-        {
-            Console.Write($"[{grupoideX.Nombre}] ");
-            foreach (var despl in DameDesplazamientosGrupoide(grupoideX))
-            {
-                if (despl > 1)
-                {
-                    Console.Write('|');
-                }
-                else if (despl > 0.6)
-                {
-                    Console.Write(':');
-                }
-                else if (despl > 0.1)
-                {
-                    Console.Write('_');
-                }
-                else
-                {
-                    Console.Write('_');
-                }
-                
-                //Console.Write(despl);
-                //Console.Write(" ");
-            }
-            Console.WriteLine();
-        }
+        //            if (acum == pattern)
+        //            {
+        //                break;
+        //            }
+        //        }
 
-        static IEnumerable<double> DameDesplazamientosGrupoide(Grupoide grupoide)
-        {
-            PuntoHistorico anterior = null;
+        //        index++;
+        //    }
 
-            foreach (var nodoX in grupoide.Nodos)
-            {
-                if (anterior == null) 
-                {
-                    anterior = nodoX.PuntoAsociado as PuntoHistorico;
-                    continue;
-                }
-
-                var distMetros   = Haversine.GetDist(anterior, nodoX.PuntoAsociado);
-                var distSegundos = ((nodoX.PuntoAsociado as PuntoHistorico).Fecha - anterior.Fecha).TotalSeconds;
-
-                anterior = nodoX.PuntoAsociado as PuntoHistorico;
-
-                yield return distMetros / distSegundos;
-            }
-        }
+        //    return index;
+        //}
 
         static void MostrarStats(List<KeyValuePair<KeyValuePair<int, int>, int>> ganadores, ConsoleColor consoleColor, string prefix)
         {
@@ -234,117 +229,23 @@ namespace PruebaDesempate
                 Puntos  = reco.Puntos.HacerGranular(granularidad),
             };
         }
-
-        // TODO: pasar esto a una librería
-        //static void Reconocer(List<string> patrones, string patronHistorico)
-        //{
-        //    if (patronHistorico == null)
-        //    {
-        //        Console.WriteLine("Patron Nulo");
-        //        Console.WriteLine("FINE");
-        //        return;
-        //    }
-
-        //    if (patronHistorico == string.Empty)
-        //    {
-        //        Console.WriteLine("Patron Vacío");
-        //        Console.WriteLine("FINE");
-        //        return;
-        //    }
-
-        //    var patronesOrdenados = patrones
-        //        .OrderByDescending(p => p.Length)   // ordeno por tamaño
-        //        .ThenBy(p => p)                     // entonces lexicográficamente
-        //        .ToList()                           // convierto todo en una lista
-        //    ;
-
-        //    int ptr = 0;
-
-        //    for (; ; )
-        //    {
-        //        var puntaInicial = patronHistorico[ptr].ToString();
-        //        Console.Write($"para la punta {puntaInicial} ");
-
-        //        var patronesPosibles = patronesOrdenados
-        //            .Where(pattern => pattern.StartsWith(puntaInicial))
-        //            .Distinct()
-        //            .ToList()
-        //        ;
-
-        //        if (patronesPosibles.Count == 0)
-        //        {
-        //            Console.WriteLine($"No hay patrones para '{puntaInicial}'");
-        //            ptr++;
-        //            if (ptr >= patronHistorico.Length - 1)
-        //            {
-        //                Console.WriteLine("FINE");
-        //                break;
-        //            }
-        //            continue;
-        //        }
-
-        //        Console.WriteLine("existen los patrones: ");
-        //        patronesPosibles
-        //            .ToList()
-        //            .ForEach((pattern) => Console.WriteLine($"\t{pattern}"));
-
-        //        // de mayor a menor me fijo si encaja...
-        //        string patronElegido = null;
-        //        foreach (var patronPosible in patronesPosibles)
-        //        {
-        //            if (patronHistorico.Substring(ptr).StartsWith(patronPosible)) // también se puede hacer patronHistorico[ptr..]
-        //            {
-        //                Console.ForegroundColor = ConsoleColor.Green;
-        //                Console.WriteLine($"El patron {patronPosible} es bueno para {patronHistorico} en index:{ptr}");
-        //                Console.ForegroundColor = ConsoleColor.Gray;
-        //                patronElegido = patronPosible;
-        //                break;
-        //            }
-        //        }
-
-        //        if (patronElegido == null)
-        //        {
-        //            Console.WriteLine("ERROR!!!!!!!");
-        //            ptr++;
-        //            if (ptr >= patronHistorico.Length - 1)
-        //            {
-        //                Console.WriteLine("FINE");
-        //                break;
-        //            }
-        //            continue;
-        //        }
-        //        else
-        //        {
-        //            ptr += patronElegido.Length - 1;
-        //        }
-
-        //        if (ptr >= patronHistorico.Length - 1)
-        //        {
-        //            Console.WriteLine("FINE");
-        //            break;
-        //        }
-
-        //        int fafafa = 0;
-        //    }
-        //}
-
-        
+       
         // TODO: pasar esto a una librería
 
-        static List<RecognitionUnit> Reconocer2(List<string> patrones, string patronHistorico)
+        static List<ReconocimientoUnidad> Reconocer2(List<string> patrones, string patronHistorico)
         {
             if (patronHistorico == null)
             {
                 //Console.WriteLine("Patron Nulo");
                 //Console.WriteLine("FINE");
-                return new List<RecognitionUnit>();
+                return new List<ReconocimientoUnidad>();
             }
 
             if (patronHistorico == string.Empty)
             {
                 //Console.WriteLine("Patron Vacío");
                 //Console.WriteLine("FINE");
-                return new List<RecognitionUnit>();
+                return new List<ReconocimientoUnidad>();
             }
 
             var patronesOrdenados = patrones
@@ -353,7 +254,7 @@ namespace PruebaDesempate
                 .ToList()                           // convierto todo en una lista
             ;
 
-            List<RecognitionUnit> ret = new();
+            List<ReconocimientoUnidad> ret = new();
             int ptr = 0;
 
             for (; ; )
@@ -370,18 +271,15 @@ namespace PruebaDesempate
                 if (patronesPosibles.Count == 0)
                 {
                     //Console.WriteLine($"No hay patrones para '{puntaInicial}'");
-                    ret.Add(new RecognitionUnitError { 
-                        Index = ptr, 
-                        ErrDescription = $"No hay patrones para '{puntaInicial}'" 
-                    });
+                    ret.Add(new ReconocimientoUnidadError { IndexNombres = ptr, ErrDescription = $"No hay patrones para '{puntaInicial}'" });
 
                     ptr++;
 
                     if (ptr >= patronHistorico.Length - 1)
                     {
-                        //Console.WriteLine("FINE");
                         break;
                     }
+
                     continue;
                 }
 
@@ -400,7 +298,7 @@ namespace PruebaDesempate
                         //Console.ForegroundColor = ConsoleColor.Green;
                         //Console.WriteLine($"El patron {patronPosible} es bueno para {patronHistorico} en index:{ptr}");
                         //Console.ForegroundColor = ConsoleColor.Gray;
-                        ret.Add(new RecognitionUnitMatch { Index = ptr, Pattern = patronPosibleX });
+                        ret.Add(new ReconocimientoUnidadMatch { IndexNombres = ptr, Pattern = patronPosibleX });
                         patronElegido = patronPosibleX;
                         break;
                     }
@@ -434,7 +332,8 @@ namespace PruebaDesempate
             return ret;
         }
 
-        static List<KeyValuePair<KeyValuePair<int, int>, int>> Desempatar(Camino caminoHistorico, List<RecorridoLinBan> recorridosRBus, List<KeyValuePair<int, int>> recorridosADesempatar, int index, string pattern, int granularidad, Topes2D topes2D)
+        static List<KeyValuePair<KeyValuePair<int, int>, int>> Desempatar<TPunto>(Camino<TPunto> caminoHistorico, List<RecorridoLinBan> recorridosRBus, List<KeyValuePair<int, int>> recorridosADesempatar, int index, string pattern, int granularidad, Topes2D topes2D)
+            where TPunto : Punto
         {
             int myIndex = -1;
             int myLen = 0;
@@ -471,7 +370,8 @@ namespace PruebaDesempate
                     lenRealEnGrupoides += 1;
                 }
 
-                Console.WriteLine($"\t\t\t{ggg.Nombre} {myIndex} {myLen} {yaEmpezo} {lenRealEnGrupoides} {indexRealEnGrupoides}");
+                //muestro mucha info sobre lo reconocido
+                //Console.WriteLine($"\t\t\t{ggg.Nombre} {myIndex} {myLen} {yaEmpezo} {lenRealEnGrupoides} {indexRealEnGrupoides}");
 
                 if (myLen == pattern.Length)
                 {
@@ -552,20 +452,5 @@ namespace PruebaDesempate
 
             return positivos;
         }
-    }
-
-    public abstract class RecognitionUnit
-    {
-        public int Index { get; set; }
-    }
-
-    public class RecognitionUnitMatch : RecognitionUnit
-    { 
-        public string Pattern { get; set; }
-    }
-
-    public class RecognitionUnitError : RecognitionUnit
-    {
-        public string ErrDescription { get; set; }
     }
 }

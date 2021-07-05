@@ -44,5 +44,77 @@ namespace Comun
                 anterior = t;
             }
         }
+
+        public static IEnumerable<Agrupado<T>> AgruparConContador<T>(
+            this IEnumerable<T> source, 
+            Func<T, T, bool> compareFunction
+        )
+        {
+            // si source es null tiro error
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            // si source no tiene elementos corto 
+            if (!source.Any())
+            {
+                yield break;
+            }
+
+            var ret = new List<Agrupado<T>>();
+
+            // tengo elemento anterior y si fue inicializado...
+            T anterior = default;
+            bool init = false;
+
+            var index = 0;
+
+            // para cada elemento en source...
+            foreach (T t in source)
+            {
+                // si no no hubo inicialización, esto es si estamos en el primer elemento, retorno el actual
+                if (!init)
+                {
+                    //ret.Add(new KeyValuePair<T, int>(t, 1));
+                    ret.Add(new Agrupado<T> { Elemento = t, Count = 1, SourceIndex = index });
+                }
+                // en caso contrario y si el anterior es distinto que el actual, retorno el actual
+                else if (compareFunction(anterior, t))
+                {
+                    // igual
+                    var ultimoAgrupado = ret[ret.Count - 1];
+                    //ret[ret.Count - 1] = new KeyValuePair<T, int>(ultimoKvp.Key, ultimoKvp.Value + 1);
+                    ultimoAgrupado.Count += 1;
+                }
+                else if (!compareFunction(anterior, t))
+                {
+                    //distinto
+                    ret.Add(new Agrupado<T> { Elemento = t, Count = 1, SourceIndex = index });
+                }
+
+                init = true; // ya pasamos por el primer elemento (init <- true)                
+                anterior = t; // guardo el elemento actual en "anterior"
+                index++;
+            }
+
+            // retorno
+            foreach (var x in ret)
+            {
+                yield return x;
+            }
+        }
+    }
+
+    public class Agrupado<T>
+    {
+        public T Elemento { get; set; }
+        public int Count { get; set; }
+        public int SourceIndex { get; set; }
+
+        public override string ToString()
+        {
+            return $"Elem={Elemento} Count={Count} SourceIndex={SourceIndex}";
+        }
     }
 }

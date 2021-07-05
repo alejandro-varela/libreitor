@@ -2,9 +2,9 @@
 
 namespace Comun
 {
-    public class PuntoCamino
+    public class PuntoCamino<TPunto> where TPunto : Punto
     {
-        public Punto        PuntoAsociado   { get; set; }
+        public TPunto       PuntoAsociado   { get; set; }
         public PuntaLinea   PuntaDeLinea    { get; set; }
     }
 }

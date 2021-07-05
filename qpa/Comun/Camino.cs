@@ -7,53 +7,32 @@ using Comun;
 
 namespace Comun
 {
-    public class Grupoide
-    { 
-        public string Nombre { get; set; }
-        public List<PuntoCamino> Nodos { get; set; } = new();
-
-        public override string ToString()
-        {
-            return $"{Nombre} {Nodos.Count}";
-        }
-    }
-
-    public class Camino
+    public partial class Camino<TPunto> where TPunto : Punto
     {   
-        class PuntoTristate
-        {
-            public enum PuntoTristateType
-            {
-                Indet,
-                Punta,
-                Normal,
-            }
+        public List<PuntoCamino<TPunto>> Nodos { get; set; }  = new();
 
-            public PuntoTristateType Type { get; set; }
-            public PuntaLinea Punta { get; set; }
-        }
-
-        public List<PuntoCamino> Nodos = new();
-
-        public List<Grupoide> Grupoides
+        public List<Grupoide<TPunto>> Grupoides
         {
             get
             {
-                List<Grupoide> ret = new();
+                List<Grupoide<TPunto>> ret = new();
                 string actual = null;
 
-                foreach (PuntoCamino nodox in Nodos)
+                foreach (PuntoCamino<TPunto> nodox in Nodos)
                 {
                     if (actual != nodox.PuntaDeLinea.Nombre)
                     {
                         actual = nodox.PuntaDeLinea.Nombre;
-                        ret.Add(new Grupoide { Nombre = nodox.PuntaDeLinea.Nombre });
+                        ret.Add(new Grupoide<TPunto> { 
+                            Nombre = nodox.PuntaDeLinea.Nombre, 
+                            PuntaLinea = nodox.PuntaDeLinea 
+                        });
                     }
                     
                     ret[ret.Count - 1].Nodos.Add(nodox);
                 }
 
-                return ret;
+                return QuitarRuido( ret );
             }
         }
 
@@ -116,8 +95,6 @@ namespace Comun
                 .ToArray()
             ;
 
-            var newString = string.Empty;
-
             foreach (var simbol in simbols)
             {
                 string deforme = $"{simbol}?{simbol}";
@@ -127,11 +104,93 @@ namespace Comun
             return sRuidosa;
         }
 
+        static List<Grupoide<T>> QuitarRuido<T>(List<Grupoide<T>> grupoidesRuidosos) 
+            where T : Punto
+        {
+            var nombresDeGrupoides = grupoidesRuidosos
+                .Select(g => g.Nombre)
+                .Distinct()
+                .Where(n => n != "?")
+                .Where(n => n != ".")
+                .ToArray()
+            ;
+
+            var nuevaLista = grupoidesRuidosos;
+
+            foreach (var nombre in nombresDeGrupoides)
+            {
+                for (; ; )
+                {
+                    var indexRuido = IndexPatronRuidoso(nuevaLista, nombre);
+
+                    if (indexRuido == -1)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        nuevaLista = ReemplazarPatronRuidoso(nuevaLista, indexRuido);
+                    }
+                }
+            }
+
+            return nuevaLista;
+        }
+
+        static List<Grupoide<T>> ReemplazarPatronRuidoso<T>(List<Grupoide<T>> grupoides, int indexRuido)
+            where T : Punto
+        {
+            List<Grupoide<T>> ret = new();
+
+            for (int i = 0; i < grupoides.Count; i++)
+            {
+                if (i < indexRuido)
+                {
+                    ret.Add(grupoides[i]);
+                }
+                else if (i == indexRuido)
+                {
+                    Grupoide<T> grupoideNuevo = new()
+                    {
+                        Nombre = grupoides[i].Nombre
+                    };
+
+                    grupoideNuevo.Nodos.AddRange(grupoides[i + 0].Nodos);
+                    grupoideNuevo.Nodos.AddRange(grupoides[i + 1].Nodos);
+                    grupoideNuevo.Nodos.AddRange(grupoides[i + 2].Nodos);
+
+                    ret.Add(grupoideNuevo);
+                }
+                else if (i > indexRuido + 2)
+                {
+                    ret.Add(grupoides[i]);
+                }
+            }
+
+            return ret;
+        }
+
+        static int IndexPatronRuidoso<T>(List<Grupoide<T>> grupoides, string nombre) 
+            where T : Punto
+        {
+            for (int i = 0; i < grupoides.Count - 2; i++)
+            {
+                if (grupoides[i + 0].Nombre == nombre &&
+                    grupoides[i + 1].Nombre == "?" &&
+                    grupoides[i + 2].Nombre == nombre)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
         // debe retornar tres cosas:
         //    enpunta...
         //    no punta...
         //    indet (por estar muy cerca del borde de lo que es una punta o no)
-        static PuntoTristate EnPuntaTristate(Punto punto, IEnumerable<PuntaLinea> puntas)
+        static CaminoParteTristate EnPuntaTristate(Punto punto, IEnumerable<PuntaLinea> puntas)
         {
             foreach (var puntaX in puntas)
             {
@@ -139,31 +198,31 @@ namespace Comun
 
                 if (dist < puntaX.Radio)
                 {
-                    return new PuntoTristate
+                    return new CaminoParteTristate
                     {
-                        Type = PuntoTristate.PuntoTristateType.Punta,
+                        Type = CaminoParteTristate.PuntoTristateType.Punta,
                         Punta = puntaX
                     };
                 }
 
                 if (dist < (puntaX.Radio + 150))
                 {
-                    return new PuntoTristate
+                    return new CaminoParteTristate
                     {
-                        Type = PuntoTristate.PuntoTristateType.Indet
+                        Type = CaminoParteTristate.PuntoTristateType.Indet
                     };
                 }
             }
 
-            return new PuntoTristate
+            return new CaminoParteTristate
             {
-                Type = PuntoTristate.PuntoTristateType.Normal
+                Type = CaminoParteTristate.PuntoTristateType.Normal
             };
         }
 
-        public static Camino CreateFromPuntos(IEnumerable<PuntaLinea> puntas, IEnumerable<Punto> puntos)
+        public static Camino<TPunto> CreateFromPuntos(IEnumerable<PuntaLinea> puntas, IEnumerable<TPunto> puntos) 
         {
-            Camino camino = new();
+            Camino<TPunto> camino = new();
 
             foreach (var puntoX in puntos)
             {
@@ -171,22 +230,22 @@ namespace Comun
 
                 switch (puntaTristate.Type)
                 {
-                    case PuntoTristate.PuntoTristateType.Punta:
-                        camino.Nodos.Add(new PuntoCamino
+                    case CaminoParteTristate.PuntoTristateType.Punta:
+                        camino.Nodos.Add(new PuntoCamino<TPunto>
                         {
                             PuntaDeLinea  = puntaTristate.Punta,
                             PuntoAsociado = puntoX
                         });
                         break;
-                    case PuntoTristate.PuntoTristateType.Normal:
-                        camino.Nodos.Add(new PuntoCamino
+                    case CaminoParteTristate.PuntoTristateType.Normal:
+                        camino.Nodos.Add(new PuntoCamino<TPunto>
                         {
                             PuntaDeLinea  = new PuntaLinea { Nombre = "." },
                             PuntoAsociado = puntoX
                         });
                         break;
-                    case PuntoTristate.PuntoTristateType.Indet:
-                        camino.Nodos.Add(new PuntoCamino
+                    case CaminoParteTristate.PuntoTristateType.Indet:
+                        camino.Nodos.Add(new PuntoCamino<TPunto>
                         {
                             PuntaDeLinea  = new PuntaLinea { Nombre = "?" },
                             PuntoAsociado = puntoX
@@ -196,11 +255,6 @@ namespace Comun
             }
 
             return camino;
-        }
-
-        public static Camino CreateFromRecorrido(IEnumerable<PuntaLinea> puntas, RecorridoLinBan recorridoLinBan)
-        {
-            return CreateFromPuntos(puntas, recorridoLinBan.Puntos);
         }
     }
 }
