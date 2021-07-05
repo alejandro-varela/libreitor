@@ -93,35 +93,32 @@ namespace PruebaDesempate
                     var uni = unidadDeReconX as ReconocimientoUnidadMatch;
 
                     Console.WriteLine($"\t -> {uni.Pattern} (Index: {uni.IndexNombres} Largo: {uni.Pattern.Length})");
-                    Console.ForegroundColor = recoPatterns[uni.Pattern].Count == 1 ? 
+                    Console.ForegroundColor = recoPatterns[uni.Pattern].Count == 1 ?
                         ConsoleColor.Green : ConsoleColor.DarkGray;
 
                     // SALE
                     var grupoideSale = caminoHistorico.Grupoides[uni.IndexInicialGrupoide];
-                    var horaSalida = DateTime.MinValue;
-                    if (grupoideSale.GetDescansos().Count > 0)
-                    {
-                        Console.WriteLine($"SALE : {grupoideSale.GetDescansos()[^1].FinDescanso}");
-                    }
-                    else
-                    {
-                        // hacer el calculo del punto medio aca...
-                        //Console.WriteLine($"SALE : {grupoideSale.Nodos[^1].PuntoAsociado.Fecha}");
-                        Console.WriteLine($"SALE : {grupoideSale.GetPuntoMasCentral().PuntoAsociado.Fecha}");
-                    }
+                    var horaSalida = (grupoideSale.GetDescansos().Count > 0) ?
+                        grupoideSale.GetDescansos()[^1].FinDescanso :
+                        grupoideSale.GetPuntoMasCentral().PuntoAsociado.Fecha
+                    ;
+                    Console.WriteLine($"SALE : {horaSalida}");
 
                     // Llega
                     var grupoideLlega = caminoHistorico.Grupoides[uni.IndexFinalGrupoide];
-                    var horaLlegada = DateTime.MinValue;
-                    if (grupoideLlega.GetDescansos().Count > 0)
-                    {
-                        Console.WriteLine($"LLEGA: {grupoideLlega.GetDescansos()[0].InicioDescanso}");
-                    }
-                    else
-                    {
-                        // hacer el calculo del punto medio aca...
-                        Console.WriteLine($"LLEGA: {grupoideLlega.GetPuntoMasCentral().PuntoAsociado.Fecha}");
-                    }
+                    var horaLlegada = (grupoideLlega.GetDescansos().Count > 0) ?
+                        grupoideLlega.GetDescansos()[0].InicioDescanso :
+                        grupoideLlega.GetPuntoMasCentral().PuntoAsociado.Fecha
+                    ;
+                    Console.WriteLine($"LLEGA: {horaLlegada}");
+
+                    // Duración
+                    var duracion = horaLlegada - horaSalida;
+                    var duracionHoras = Convert.ToInt32(Math.Floor(duracion.TotalSeconds / 3600));
+                    var duracionMinutos = Convert.ToInt32(Math.Floor(duracion.TotalMinutes - (duracionHoras * 60)));
+                    var duracionSegundos = Convert.ToInt32( Math.Floor(duracion.TotalSeconds - (duracionHoras * 3600) - (duracionMinutos * 60)));
+
+                    Console.WriteLine($"DURAC: {duracionHoras:00}:{duracionMinutos:00}:{duracionSegundos:00} ({duracion.TotalSeconds} segs)");
 
                     //muestra las banderas del patron reconocido
                     //foreach (var kvp in recoPatterns[uni.Pattern])
@@ -129,7 +126,7 @@ namespace PruebaDesempate
                     //    Console.WriteLine($"\t\tLínea: {kvp.Key} Bandera:{kvp.Value}");
                     //}
 
-                    if (recoPatterns[uni.Pattern].Count > 1) // si hay varias banderas en un patrón debo desempatar...
+                    //if (recoPatterns[uni.Pattern].Count > 1) // si hay varias banderas en un patrón debo desempatar...
                     {
                         var stats = Desempatar(
                             caminoHistorico,
