@@ -27,7 +27,7 @@ namespace PruebaLecturaDeRecorridos
             var start = Environment.TickCount;
 
             // Leo una colección de recorridos a partir de las líneas dadas (contienen linea y banderas), puede filtrarse
-            var recorridosRBus = Recorrido.LeerRecorridosPorArchivos("../../../../Datos/ZipRepo/", new int[] { 159, 163, 127 }, DateTime.Now);
+            var recorridosRBus = Recorrido.LeerRecorridosPorArchivos("../../../../Datos/ZipRepo/", new int[] { 159, 163 }, DateTime.Now);
 
             var puntasDeLinea = PuntasDeLinea
                 .Get    (recorridosRBus)
@@ -44,7 +44,7 @@ namespace PruebaLecturaDeRecorridos
             var topes2D = Topes2D.CreateFromPuntos(puntosLinBan.Select(plinban => (PuntoRecorrido)plinban));
 
 
-            var RADIO_PUNTAS = 750;
+            var RADIO_PUNTAS = 800;
             //var puntasNombradas = PuntasDeLinea.GetPuntasNombradas(recorridosRBus.Where(reco => reco.Linea == 163), radio: RADIO_PUNTAS);
             var puntasNombradas = PuntasDeLinea.GetPuntasNombradas(recorridosRBus, radio: 800);
 
@@ -130,15 +130,6 @@ namespace PruebaLecturaDeRecorridos
             {
                 var sizeRadio = 0;
 
-                if (recoX.Linea == 166 || recoX.Linea == 167)
-                {
-                    sizeRadio = RADIO_PUNTAS / 30;
-                }
-                else
-                {
-                    sizeRadio = RADIO_PUNTAS / 10;
-                }
-
                 new PintorDeRecorrido(topes2D: topes2D, granularidad: 20)
                     .SetColorFondo(Color.FromArgb(255, 50, 50, 50))
                     //.PintarRadios(puntasNombradas.Select(punta => punta.Punto), Color.LimeGreen, size: RADIO_PUNTAS / 10) // punta de línea
@@ -148,7 +139,7 @@ namespace PruebaLecturaDeRecorridos
                     .PintarPuntos(puntosLinBan.Where(plb => plb.Linea == 159).Select(plb => (Punto)plb), Color.Red, size: 1)
                     .PintarPuntos(puntosLinBan.Where(plb => plb.Linea == 163).Select(plb => (Punto)plb), Color.Cyan, size: 1)
                     .PintarRadiosNombrados(puntasNombradas.Select(puntaNombrada => (puntaNombrada.Punto, puntaNombrada.Nombre)), Color.Pink, size: sizeRadio)
-                    .PintarPuntos(histor.Puntos.Select(ph => ph), Color.HotPink, 3)
+                    //.PintarPuntos(histor.Puntos.Select(ph => ph), Color.HotPink, 3)
                     .PintarPuntos(new[] { recoX.PuntoSalida }, Color.Fuchsia, size: 20)
                     .PintarPuntos(new[] { recoX.PuntoLlegada }, Color.Blue, size: 20)
                     .Render()
