@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PruebaTiempos", "PruebaTiem
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Datos", "Datos\Datos.csproj", "{1F0AE94A-4831-4826-88F2-29AA3BB89CF4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PruebaDesempate", "PruebaDesempate\PruebaDesempate.csproj", "{3D2BCC3F-800D-455C-9827-A3886251EA6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PruebaDesempate", "PruebaDesempate\PruebaDesempate.csproj", "{3D2BCC3F-800D-455C-9827-A3886251EA6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PruebaApiSUBE", "PruebaApiSUBE\PruebaApiSUBE.csproj", "{7E89E3E9-F111-4AD4-9392-2E87D895862D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{3D2BCC3F-800D-455C-9827-A3886251EA6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3D2BCC3F-800D-455C-9827-A3886251EA6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D2BCC3F-800D-455C-9827-A3886251EA6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E89E3E9-F111-4AD4-9392-2E87D895862D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E89E3E9-F111-4AD4-9392-2E87D895862D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E89E3E9-F111-4AD4-9392-2E87D895862D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E89E3E9-F111-4AD4-9392-2E87D895862D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
