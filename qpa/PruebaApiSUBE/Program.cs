@@ -8,6 +8,8 @@ using Newtonsoft.Json;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using System.IO;
+using System.Threading;
+using System.Text;
 
 namespace PruebaApiSUBE
 {
@@ -18,17 +20,92 @@ namespace PruebaApiSUBE
 
         static void Main(string[] args)
         {
-            Uri uri         = ConstruirUri();
-            var uriString   = uri.ToString(); // debug
-            //var json        = GetString(uri);
-            var json = File.ReadAllText("..\\..\\..\\ejemplo.json");
-
-            foreach (var container in ParseRespuesta(json))
+            var outputDir = ".\\output\\";
+            if (!Directory.Exists(outputDir))
             {
-                Console.WriteLine($"{container.Vehicle.Pos.Lat} {container.Vehicle.Pos.Lng} {container.Vehicle.Info.Label}");
+                Directory.CreateDirectory(outputDir);
             }
 
-            int esto_es_para_debuguear = 0; // debug
+            var ahora = DateTime.Now;
+            var ano = ahora.Year;
+            var mes = ahora.Month;
+            var dia = ahora.Day;
+            var hora = ahora.Hour;
+            var minuto = ahora.Minute;
+            var segundo = ahora.Second;
+
+            for (; ; )
+            {
+                for (; ; )
+                {
+                    ahora = DateTime.Now;
+
+                    if (ahora.Minute != minuto)
+                    {
+                        ano = ahora.Year;
+                        mes = ahora.Month;
+                        dia = ahora.Day;
+                        hora = ahora.Hour;
+                        minuto = ahora.Minute;
+                        segundo = ahora.Second;
+
+                        var nombreArchivo = $"{ano:0000}{mes:00}{dia:00}-{hora:00}{minuto:00}.txt";
+                        var pathArchivo = Path.Combine(outputDir, nombreArchivo);
+
+                        try
+                        {
+                            Console.WriteLine($"{ano}{mes}{dia} {hora}:{minuto}:{segundo}");
+                            Console.WriteLine("\tTratando de obtener contenido...");
+                            
+                            DateTime start = DateTime.Now;
+                            
+                            string contenido = DameContenidosApi(mock: false);
+                            
+                            DateTime end = DateTime.Now;
+                            var elapsedMilis = (end - start).TotalMilliseconds;
+                            Console.WriteLine($"\tRespuesta en {elapsedMilis} milis");
+                            
+                            Console.WriteLine($"\tContenido tiene { Encoding.UTF8.GetBytes(contenido).Length } bytes");
+
+                            File.WriteAllText(pathArchivo, contenido);
+                        }
+                        catch (Exception exx)
+                        {
+                            string sExx = exx.ToString();
+                            File.WriteAllText(pathArchivo, sExx);
+                            Console.WriteLine($"\t{sExx}");
+                        }
+
+                        break;
+                    }
+
+                    Thread.Sleep(100);
+                }
+            }
+            
+            //foreach (var container in ParseRespuesta(json))
+            //{
+            //    Console.WriteLine($"{container.Vehicle.Pos.Lat} {container.Vehicle.Pos.Lng} {container.Vehicle.Info.Label}");
+            //}
+            // int esto_es_para_debuguear = 0; // debug
+        }
+
+        public static string DameContenidosApi(bool mock = false)
+        {
+            Uri uri = ConstruirUri();
+            var uriString = uri.ToString(); // debug
+            string json;
+
+            if (mock)
+            {
+                json = File.ReadAllText("..\\..\\..\\ejemplo.json");
+            }
+            else
+            {
+                json = GetString(uri);
+            }
+
+            return json;
         }
 
         public static IEnumerable<VehicleContainer> ParseRespuesta(string json)
@@ -104,7 +181,6 @@ namespace PruebaApiSUBE
         static string GetString (Uri uri)
         {
             using WebClient webClient = new();
-
             string json = webClient.DownloadString(uri);
 
             return json;
