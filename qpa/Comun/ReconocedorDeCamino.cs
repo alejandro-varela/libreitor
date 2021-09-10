@@ -21,7 +21,7 @@ namespace Comun
                 .ToList()                           // convierto todo en una lista
             ;
 
-            List<ReconocimientoUnidad> ret = new();
+            List<ReconocimientoUnidad> ret = new List<ReconocimientoUnidad>();
             int ptr = 0;
             int ptrNombres = 0;
 
@@ -105,7 +105,7 @@ namespace Comun
 
         static bool TienePatronPosibleEn(string patronHistorico, string patronPosibleX, int ptr, ref int incrementoPtr)
         {
-            StringBuilder sbAcum = new();
+            StringBuilder sbAcum = new StringBuilder();
             int i = ptr;
 
             for (; i < patronHistorico.Length; i++)
@@ -129,7 +129,7 @@ namespace Comun
 
     public class Reconocimento
     {
-        public List<ReconocimientoUnidad> Unidades { get; set; } = new();
+        public List<ReconocimientoUnidad> Unidades { get; set; } = new List<ReconocimientoUnidad>();
     }
 
     public abstract class ReconocimientoUnidad

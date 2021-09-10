@@ -12,7 +12,7 @@ namespace Comun
         // las puntas se podrían agrupar usando el algoritmo "#" y mirando la superficie del cuadrado enmarcado
         public static IEnumerable<PuntaLinea> GetPuntasNombradas(IEnumerable<RecorridoLinBan> recorridos, int radio)
         {
-            List<PuntaLinea> puntas = new();
+            List<PuntaLinea> puntas = new List<PuntaLinea>();
             int n = 0;
             foreach (var recorrido in recorridos)
             {

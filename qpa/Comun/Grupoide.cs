@@ -6,7 +6,7 @@ namespace Comun
     { 
         public string Nombre { get; set; }
         public PuntaLinea PuntaLinea { get; set; }
-        public List<PuntoCamino<TPunto>> Nodos { get; set; } = new();
+        public List<PuntoCamino<TPunto>> Nodos { get; set; } = new List<PuntoCamino<TPunto>>();
 
         public override string ToString()
         {

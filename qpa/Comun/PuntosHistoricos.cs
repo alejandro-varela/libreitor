@@ -64,7 +64,7 @@ namespace Comun
             }
 
             // ahora tengo que dividir los puntos en subhistorias
-            List<List<PuntoHistorico>> subHistorias = new();
+            List<List<PuntoHistorico>> subHistorias = new List<List<PuntoHistorico>>();
 
             List<PuntoHistorico> subActual = new List<PuntoHistorico>();
             foreach (PuntoHistorico ph in puntosHistoricos)

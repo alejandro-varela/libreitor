@@ -9,13 +9,13 @@ namespace Comun
 {
     public partial class Camino<TPunto> where TPunto : Punto
     {   
-        public List<PuntoCamino<TPunto>> Nodos { get; set; }  = new();
+        public List<PuntoCamino<TPunto>> Nodos { get; set; }  = new List<PuntoCamino<TPunto>>();
 
         public List<Grupoide<TPunto>> Grupoides
         {
             get
             {
-                List<Grupoide<TPunto>> ret = new();
+                List<Grupoide<TPunto>> ret = new List<Grupoide<TPunto>>();
                 string actual = null;
 
                 foreach (PuntoCamino<TPunto> nodox in Nodos)
@@ -140,7 +140,7 @@ namespace Comun
         static List<Grupoide<T>> ReemplazarPatronRuidoso<T>(List<Grupoide<T>> grupoides, int indexRuido)
             where T : Punto
         {
-            List<Grupoide<T>> ret = new();
+            List<Grupoide<T>> ret = new List<Grupoide<T>>();
 
             for (int i = 0; i < grupoides.Count; i++)
             {
@@ -150,7 +150,7 @@ namespace Comun
                 }
                 else if (i == indexRuido)
                 {
-                    Grupoide<T> grupoideNuevo = new()
+                    Grupoide<T> grupoideNuevo = new Grupoide<T>()
                     {
                         Nombre = grupoides[i].Nombre
                     };
@@ -222,7 +222,7 @@ namespace Comun
 
         public static Camino<TPunto> CreateFromPuntos(IEnumerable<PuntaLinea> puntas, IEnumerable<TPunto> puntos) 
         {
-            Camino<TPunto> camino = new();
+            Camino<TPunto> camino = new Camino<TPunto>();
 
             foreach (var puntoX in puntos)
             {
