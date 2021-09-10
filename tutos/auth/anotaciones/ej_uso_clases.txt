@@ -1,0 +1,15 @@
+clase_1
+
+	recurso_1 // no tiene autorización siempre da false
+
+	[noAuth]  // no tiene autorización siempre da false (puede pasar otros parametros, pero para la auth es lo mismo)
+	recurso_2
+
+	[auth("clase_1/recurso_3")]	// hay que buscar la autorización para el usuario actual en "clase_1/recurso_3"
+	recurso_3
+
+clase_2
+	[auth("clase_2/recurso_1")] // hay que buscar la autorización para el usuario actual en "clase_2/recurso_1"
+	recurso_1
+	
+	recurso_2 

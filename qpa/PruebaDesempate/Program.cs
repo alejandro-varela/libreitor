@@ -3,6 +3,67 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+/*
+ select * from
+(
+	select	'CCA' as tabla, 
+			nro_equipo as equipo,
+			nro_ficha as ficha,
+			fechaHora as fecha,
+			latitud as lat,
+			longitud as lng
+	from	log_gpsConCalculoAtraso
+
+	union
+
+	select	'SCA' as tabla,
+			nro_equipo as equipo,
+			nro_ficha as ficha,
+			fechaHora as fecha,
+			latitud as lat,
+			longitud as lng
+	from	log_gpsSinCalculoAtraso
+
+	union
+
+	select	'CCX' as tabla,
+			nro_equipo as equipo,
+			nro_ficha as ficha,
+			fechaHora as fecha,
+			latitud as lat,
+			longitud as lng
+	from	log_gpsConCalculoAtrasoYExcesoVelocidad
+
+	union
+
+	select	'SCX' as tabla,
+			nro_equipo as equipo,
+			nro_ficha as ficha,
+			fechaHora as fecha,
+			latitud as lat,
+			longitud as lng
+	from	log_gpsSinCalculoAtrasoYExcesoVelocidad
+
+) as todo
+
+where
+	ficha > 0
+	and
+	fecha >= '2021-09-02T00:00:00'
+	and
+	fecha <  '2021-09-03T00:00:00'
+	and
+	equipo >= 3000000
+	and
+	equipo < 4000000
+	and
+	lat > 0
+	and
+	lng > 0
+order by ficha, fecha
+
+ */
+
 namespace PruebaDesempate
 {
     class Program
@@ -14,7 +75,7 @@ namespace PruebaDesempate
             const int RADIO_PUNTAS = 800;
 
             // 2 Junio 2021
-            var fechaConsulta = new DateTime(2021, 6, 2, 0, 0, 0);
+            var fechaConsulta = new DateTime(2021, 9, 2, 0, 0, 0);
 
             // recorridos de '159' (203-PILAR) y '163' (203-MORENO)
             var recorridosRBus = Recorrido.LeerRecorridosPorArchivos("../../../../Datos/ZipRepo/", new int[] { 159, 163 }, fechaConsulta)
@@ -53,7 +114,7 @@ namespace PruebaDesempate
 
             // historia real
             var puntosHistoricos = Historia.GetRaw(
-                4366, //4380, //4334 h!!!, // 4377, // 3850
+                3330, //4380, //4334 h!!!, // 4377, // 3850
                 fechaConsulta, 
                 fechaConsulta.AddDays(1), 
                 new PuntosHistoricosGetFromCSVConfig

@@ -1,0 +1,110 @@
+ok, yo ya tengo un usuario que me viene por json
+el usuario está relacionado con:
+	-un rol
+	o
+	-con autorizaciones muy laxas (de tipo programa / asm / clase / método)
+	o
+	-ambos esquemas...
+	o
+	-¿esquemas de conjuntos?
+
+	consideraciones:
+	================
+	1) rosariobus ha usado historicamente el esquema de "autorizaciones laxas" dando a cada usuario una autorización única.
+	2) el esquema de roles soluciona el problema "hagamos un reporte para sacar los permisos de pepito para asi asignarselos a juanito"
+	3) como es muy difícil lograr concensos se pueden usar una combinación de esquemas
+	4) modelos de "multitenancy":
+		base de datos única , el usuario deberá tener un id de empresa
+		base de datos propia, nada que hacer
+
+	la tabla de usuarios:
+	=====================
+	id    name    enabled    email     hashPwd      hashSalt    hashAlgo
+	--------------------------------------------------------------------
+	1     "ale"   true       "x@z.com" "e239e03a23" "232442141" "SHA1"
+	2     "pepe"  true       "y@z.com" "fwej39eu23" "123423432" "SHA1"
+	.
+	.
+	.
+
+	la tabla de roles:
+	==================
+	id    description
+	-----------------
+	1     "root"
+	2     "admin"
+	3     "pusher"
+	4     "reader"
+	5     "nop" # rol que no hace nada
+	.
+	.
+	.
+
+	la tabla de usuariosXRoles:       <<<<<<<<<<<<<<< CREAR DE NUEVO ESTA TABLA PARA VER QUE PASAS CON LAS KEYS
+	===========================
+	userId    roleId
+	------------------
+	1         2        # ale  es admin
+	2         1        # pepe es root
+	.
+	.
+	.
+
+	la tabla de "paths":
+	====================
+	id        description
+	------------------------------------------------------------------------------------------------------------------------------------------------
+	1         "SistemaDePendorchos/PendorchadorAutomatico/PendorcharPorId"
+	2         "SistemaDePendorchos/PendorchadorAutomatico/DespendorcharTodo/"
+	3         "SistemaDePendorchos/PendorchadorAutomatico/DespendorcharUnPoco/"
+	4         "ApiCoches/CochesCRUD/InsertarCoche/"
+	5         "ApiCoches/CochesCRUD/DameCochePos/"
+	6         "~( *.*)~ La ruta puede tener cualquier forma, pero en lo posible debe representar el recurso de manera obvia, no como esta ruta"
+	.
+	.
+	.
+
+	la tabla de roles por paths:
+	============================
+	roleId    pathId
+	----------------
+	1         1
+	1         2
+	1         3
+	1         4
+	1         5
+	1         6
+	2         1
+	2         4
+	2         5
+	2         6
+	.
+	.
+	.
+
+	la vista para una fácil lectura (para cargar en una estructura de datos tipo cache)
+	===================================================================================
+	userId    userName    enabled    role    pathDescription ... >
+	----------------------------------------------------------------------------------
+	1         "ale"       true       "admin" "SistemaDePendorchos/PendorchadorAutomatico/PendorcharPorId"
+	.
+	.
+
+abm usuarios
+------------
+	agregar un usuario
+	habilitar un usuario
+	borrar un usuario
+
+abm roles
+---------
+
+abm paths
+---------
+
+otros
+-----
+	asignar un rol a un usuario en particular
+	
+
+

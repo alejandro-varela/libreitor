@@ -28,7 +28,7 @@ namespace Comun
             double latInverter = config.InvertLat ? -1 : 1;
             double lngInverter = config.InvertLng ? -1 : 1;
 
-            foreach (string line in File.ReadLines("2021-06-02.csv"))
+            foreach (string line in File.ReadLines("2021-09-02.csv"))
             {
                 // parto la linea
                 string[] lineParts = line.Split(config.Separator);
@@ -100,7 +100,7 @@ namespace Comun
             double latInverter = config.InvertLat ? -1 : 1;
             double lngInverter = config.InvertLng ? -1 : 1;
 
-            foreach (string line in File.ReadLines("2021-06-02.csv"))
+            foreach (string line in File.ReadLines("2021-09-02.csv"))
             {
                 // parto la linea
                 string[] lineParts = line.Split(config.Separator);
@@ -158,7 +158,7 @@ namespace Comun
         public int FechaHoraPos { get; set; } = 3;
         public int LatitudPos   { get; set; } = 4;
         public int LongitudPos  { get; set; } = 5;
-        public string Separator { get; set; } = ";";
+        public string Separator { get; set; } = "\t";
         public bool HasTitles { get; set; } = false;
     }
 }

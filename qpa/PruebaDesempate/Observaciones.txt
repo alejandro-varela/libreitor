@@ -1,0 +1,7 @@
+﻿- Pasar PruebaDesempate a una librería
+- Necesito un proveedor genérico de recorridos
+- Necesito un proveedor genérico de puntos historicos
+- Debo poder vincular los puntos historicos con cancelaciones SUBE / Rbus
+- Reconocedor de galpón
+- Reconocedor de caminos alternativos (o poner los caminos alternativos en el proveedor de recorridos...)
+- Hacer un reporte con parte visual en HTML5 pero con archivos de respaldo zipeados mostrando con que datos se hizo el cálculo
