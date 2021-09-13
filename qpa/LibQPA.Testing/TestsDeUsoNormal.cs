@@ -2,6 +2,7 @@ using LibQPA.ProveedoresHistoricos.DbXBus;
 using LibQPA.ProveedoresTecnobus;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -20,16 +21,6 @@ namespace LibQPA.Testing
             int foo = 0;
         }
 
-        public ProveedorVersionesTecnobus CrearProveedorVersionesTecnobus(int[] lineas)
-        {
-            return new ProveedorVersionesTecnobus(
-                dirRepos: new[] {
-                    Configu.Repos["MockRepo1"],
-                    Configu.Repos["MockRepo2"],
-                }
-            );
-        }
-
         [TestMethod]
         public void HayRepos()
         {
@@ -40,13 +31,16 @@ namespace LibQPA.Testing
             }
         }
 
+        string[] DameMockRepos()
+        {
+            return new[] { Configu.Repos["MockRepo1"], Configu.Repos["MockRepo2"] };
+        }
+
         [TestMethod]
         public void FuncionaProveedorVersionesHoy()
         {
-            var proveedor = CrearProveedorVersionesTecnobus(
-                new int[] { 159 }
-            );
-            
+            var proveedor = new ProveedorVersionesTecnobus(dirRepos: DameMockRepos());
+
             var recorridos = proveedor.Get(
                 new int[] { 159 },
                 DateTime.Today
@@ -72,6 +66,24 @@ namespace LibQPA.Testing
             var ienm= prov.Get(ayer, hoy).ToList();
 
             int foo = 0;
+        }
+
+        [TestMethod]
+        public void TestQPA1()
+        {
+            QPAConfiguration conf = new QPAConfiguration
+            {
+                ProveedorRecorridosTeoricos = new ProveedorVersionesTecnobus(dirRepos: DameMockRepos()),
+                ProveedorPuntosHistoricos = new ProveedorHistoricoDbXBus(new ProveedorHistoricoDbXBus.Configuracion {
+                    CommandTimeout = 600,
+                    ConnectionString = Configu.ConnectionString,
+                    Tipo = ProveedorHistoricoDbXBus.TipoEquipo.PICOBUS
+                })
+            };
+
+            QPAProcessor processor = conf.BuildProcessor();
+
+            processor.Procesar(new int[] { 159, 163 }, DateTime.Today);
         }
     }
 }

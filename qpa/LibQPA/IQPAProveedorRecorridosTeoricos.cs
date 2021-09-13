@@ -6,6 +6,6 @@ namespace LibQPA
 {
     public interface IQPAProveedorRecorridosTeoricos
     {
-        List<RecorridoLinBan> Get(int[] lineas, DateTime vigenteEn);
+        IEnumerable<RecorridoLinBan> Get(int[] lineas, DateTime vigenteEn);
     }
 }

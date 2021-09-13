@@ -8,35 +8,18 @@ namespace LibQPA
 {
     public class QPAProcessor
     {
-        QPAConfiguration _conf = null;
+        QPAConfiguration Configu { get; set; }
 
-        public QPAProcessor(QPAConfiguration conf)
+        public QPAProcessor(QPAConfiguration configuration)
         {
-            _conf = conf;
+            Configu = configuration;
         }
 
-        public QPAResult Procesar(int [] lineas, DateTime fechaDesde)
+        public QPAResult Procesar(int[] lineas, DateTime fechaDesde)
         {
-            /* Primera parte */
-
-            //// EN CONF
-            //// granularidad de trabajo: 20 mts
-            //const int GRANULARIDAD = 20;
-            //const int RADIO_PUNTAS = 800;
-
-            //// EN CONF
-            //// 2 Junio 2021
-            //var fechaConsulta = new DateTime(2021, 9, 2, 0, 0, 0);
-
-            //// CAMBIADO POR...
-            //// recorridos de '159' (203-PILAR) y '163' (203-MORENO)
-            //var recorridosTeoricos = Recorrido.LeerRecorridosPorArchivos("../../../../Datos/ZipRepo/", new int[] { 159, 163 }, fechaConsulta)
-            //    .Select(reco => SanitizarRecorrido(reco, granularidad: GRANULARIDAD))
-            //    .ToList()
-            //;
-
-            var recorridosTeoricos = _conf.ProveedorRecorridosTeoricos.Get(lineas, fechaDesde)
-                .Select(reco => SanitizarRecorrido(reco, _conf.GranularidadMts))
+            // pido recorridos teóricos
+            var recorridosTeoricos = Configu.ProveedorRecorridosTeoricos.Get(lineas, fechaDesde)
+                .Select(reco => SanitizarRecorrido(reco, Configu.GranularidadMts))
                 .ToList()
             ;
 
@@ -50,9 +33,28 @@ namespace LibQPA
             var topes2d = Topes2D.CreateFromPuntos(todosLosPuntosDeLosRecorridos);
 
             // puntas de línea
-            var puntas = PuntasDeLinea.GetPuntasNombradas(recorridosTeoricos, _conf.RadioPuntasMts);
+            var puntas = PuntasDeLinea.GetPuntasNombradas(recorridosTeoricos, Configu.RadioPuntasMts);
 
+            // caminos de los recos, es un diccionario:
+            // ----------------------------------------
+            //  -de clave tiene el patrón de recorrido
+            //  -de valor tiene una lista de pares (linea, bandera) que son las banderas que encajan con ese patrón
 
+            var recoPatterns = new Dictionary<string, List<KeyValuePair<int, int>>>();
+            foreach (var recox in recorridosTeoricos)
+            {
+                // creo un camino (su descripción es la clave)
+                var camino = Camino<PuntoRecorrido>.CreateFromPuntos(puntas, recox.Puntos);
+
+                // si la clave no está en el diccionario la agrego...
+                if (!recoPatterns.ContainsKey(camino.Description))
+                {
+                    recoPatterns.Add(camino.Description, new List<KeyValuePair<int, int>>());
+                }
+
+                // agrego un par (linea, bandera) a la entrada actual...
+                recoPatterns[camino.Description].Add(new KeyValuePair<int, int>(recox.Linea, recox.Bandera));
+            }
 
             return new QPAResult();
         }
