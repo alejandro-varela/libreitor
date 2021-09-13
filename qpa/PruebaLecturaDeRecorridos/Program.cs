@@ -132,7 +132,7 @@ namespace PruebaLecturaDeRecorridos
 
                 new PintorDeRecorrido(topes2D: topes2D, granularidad: 20)
                     .SetColorFondo(Color.FromArgb(255, 50, 50, 50))
-                    //.PintarRadios(puntasNombradas.Select(punta => punta.Punto), Color.LimeGreen, size: RADIO_PUNTAS / 10) // punta de línea
+                    .PintarRadios(puntasNombradas.Select(punta => punta.Punto), Color.LimeGreen, size: RADIO_PUNTAS / 10) // punta de línea
                     .PintarPuntos(recoX.Puntos.Select(prec => (Punto)prec), Color.GreenYellow, 11)
                     .PintarPuntos(puntosLinBan.Select(plb => (Punto)plb), Color.FromArgb(90, 90, 90), 3) // la gran máscara de recorridos
                     //.PintarPuntos(puntosLinBan.Where(plb => plb.Linea == 127).Select(plb => (Punto)plb), Color.Lime, size: 1)

@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LibQPA.ProveedoresHistoricos.DbXBus\LibQPA.ProveedoresHistoricos.DbXBus.csproj" />
     <ProjectReference Include="..\LibQPA.ProveedoresTecnobus\LibQPA.ProveedoresTecnobus.csproj" />
     <ProjectReference Include="..\LibQPA\LibQPA.csproj" />
   </ItemGroup>
