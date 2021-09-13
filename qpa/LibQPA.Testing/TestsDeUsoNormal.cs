@@ -1,27 +1,31 @@
+using LibQPA.ProveedoresHistoricos.DbXBus;
+using LibQPA.ProveedoresTecnobus;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Comun;
-using LibQPA;
-using LibQPA.ProveedoresTecnobus;
-using LibQPA.ProveedoresHistoricos.DbXBus;
 
-namespace LibQPA_Testing
+namespace LibQPA.Testing
 {
     [TestClass]
     public class TestsDeUsoNormal
     {
-        public string DIR_REPO_1 = "..\\..\\..\\..\\Datos\\ZipRepo\\";
-        public string DIR_REPO_2 = "..\\..\\..\\..\\Datos\\ZipRepo\\";
+        TestConfiguration Configu { get; set; }
+
+        [TestInitialize]
+        public void Init()
+        {
+            var configPath = Path.GetFullPath(".");
+            Configu = TestConfiguration.Get(configPath);
+            int foo = 0;
+        }
 
         public ProveedorVersionesTecnobus CrearProveedorVersionesTecnobus(int[] lineas)
         {
             return new ProveedorVersionesTecnobus(
                 dirRepos: new[] {
-                    DIR_REPO_1,
-                    DIR_REPO_2,
+                    Configu.Repos["MockRepo1"],
+                    Configu.Repos["MockRepo2"],
                 }
             );
         }
@@ -29,10 +33,11 @@ namespace LibQPA_Testing
         [TestMethod]
         public void HayRepos()
         {
-            var fullPath1 = Path.GetFullPath(DIR_REPO_1);
-            Assert.IsTrue(Directory.Exists(fullPath1));
-            var fullPath2 = Path.GetFullPath(DIR_REPO_2);
-            Assert.IsTrue(Directory.Exists(fullPath2));
+            foreach (var kvp in Configu.Repos)
+            {
+                var fullPath1 = Path.GetFullPath(Configu.Repos[kvp.Key]);
+                Assert.IsTrue(Directory.Exists(fullPath1));
+            }
         }
 
         [TestMethod]
@@ -42,10 +47,12 @@ namespace LibQPA_Testing
                 new int[] { 159 }
             );
             
-            var foo = proveedor.Get(
+            var recorridos = proveedor.Get(
                 new int[] { 159 },
                 DateTime.Today
             );
+
+            Assert.IsTrue(recorridos.Any(), "No hay recorridos");
         }
 
         [TestMethod]
@@ -54,7 +61,7 @@ namespace LibQPA_Testing
             var config = new ProveedorHistoricoDbXBus.Configuracion
             {
                 CommandTimeout = 600,
-                ConnectionString = "lalalallala",
+                ConnectionString = Configu.ConnectionString,
                 Tipo = ProveedorHistoricoDbXBus.TipoEquipo.PICOBUS,
             };
 
@@ -65,20 +72,6 @@ namespace LibQPA_Testing
             var ienm= prov.Get(ayer, hoy).ToList();
 
             int foo = 0;
-        }
-
-        [TestMethod]
-        public void Foo()
-        {
-            /*
-            QPAProcessor qpaProcessor = new QPAConfiguration()
-                .SetProveedorRecorridosTeoricos (proveedor)
-                .SetProveedorPuntosHistoricos   (null)
-                .BuildProcessor                 ()
-            ;
-
-            qpaProcessor.Procesar(new int[] { 1, 2, 3 }, new DateTime());
-            */
         }
     }
 }
