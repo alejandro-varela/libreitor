@@ -7,6 +7,9 @@ namespace LibQPA.ProveedoresHistoricos.DbXBus
 {
 	public partial class ProveedorHistoricoDbXBus : IQPAProveedorPuntosHistoricos
 	{
+		DateTime _fechaCache = DateTime.MinValue;
+		Dictionary<int, List<PuntoHistorico>> _cache = new Dictionary<int, List<PuntoHistorico>>();
+
 		[Flags]
 		public enum TipoEquipo
 		{
@@ -22,13 +25,64 @@ namespace LibQPA.ProveedoresHistoricos.DbXBus
 		}
 
 		public Configuracion Config { get; private set; }
+		public bool UsarCache { get; set; }
 
-		public ProveedorHistoricoDbXBus(Configuracion config)
+		public ProveedorHistoricoDbXBus(Configuracion config, bool usarCache = true)
 		{
 			Config = config;
+			UsarCache = usarCache;
 		}
 
-		public IEnumerable<PuntoHistorico> Get(DateTime fechaDesde, DateTime fechaHasta)
+		public Dictionary<int, List<PuntoHistorico>> LeerDB(string connString, int equipoDesde, int equipoHasta, DateTime fechaDesde, DateTime fechaHasta)
+		{
+			var ret = new Dictionary<int, List<PuntoHistorico>>();
+
+			// hacer consulta
+			var consulta = ConsultaSQLBasica(
+				equipoDesde,
+				equipoHasta,
+				fechaDesde,
+				fechaHasta
+			);
+
+			using var conn = new SqlConnection(connString);
+			conn.Open();
+			using var cmd = new SqlCommand(consulta, conn);
+			cmd.CommandTimeout = Config.CommandTimeout;
+			using var reader = cmd.ExecuteReader();
+
+			while (reader.Read())
+			{
+				//int equipo = Convert.ToInt32(reader["equipo"] ?? 0);
+				int ficha = Convert.ToInt32(reader["ficha"] ?? 0);
+				DateTime fecha = Convert.ToDateTime(reader["fecha"] ?? DateTime.MinValue);
+				double lat = Convert.ToDouble(reader["lat"] ?? 0.0);
+				double lng = Convert.ToDouble(reader["lng"] ?? 0.0);
+
+				// corrijo la latitud / longitud rosariobusense
+				var latitudCorregida = -Math.Abs(lat);
+				var longitudCorregida = -Math.Abs(lng);
+
+				if (!ret.ContainsKey(ficha))
+				{
+					ret.Add(ficha, new List<PuntoHistorico>());
+				}
+
+				var puntoHistorico = new PuntoHistorico
+				{
+					Alt = 0,
+					Fecha = fecha,
+					Lat = latitudCorregida,
+					Lng = longitudCorregida,
+				};
+
+				ret[ficha].Add(puntoHistorico);
+			}
+
+			return ret;
+		}
+
+		public Dictionary<int, List<PuntoHistorico>> Get(DateTime fechaDesde, DateTime fechaHasta)
         {
 			int equipoDesde = 0;
 			int equipoHasta = 0;
@@ -51,48 +105,19 @@ namespace LibQPA.ProveedoresHistoricos.DbXBus
 			}
 			else
 			{
-				yield break;
+				return new Dictionary<int, List<PuntoHistorico>>();
 			}
 
-			// hacer consulta
-			var consulta = ConsultaSQLBasica(
-				equipoDesde,
-				equipoHasta,
-				fechaDesde, 
-				fechaHasta
-			);
-
-			using var conn = new SqlConnection(Config.ConnectionString);
-			conn.Open();
-			using var cmd = new SqlCommand(consulta, conn);
-			cmd.CommandTimeout = Config.CommandTimeout;
-			using var reader = cmd.ExecuteReader();
-
-			while (reader.Read())
+			if (DateTime.Now.Subtract(_fechaCache) > TimeSpan.FromMinutes(1))
 			{
-				int	equipo = Convert.ToInt32(reader["equipo"] ?? 0);
-				int	ficha  = Convert.ToInt32(reader["ficha" ] ?? 0);
-				DateTime fecha = Convert.ToDateTime(reader["fecha"] ?? DateTime.MinValue);
-				double lat  = Convert.ToDouble(reader["lat"] ?? 0.0);
-				double lng = Convert.ToDouble(reader["lng"] ?? 0.0);
-
-				// corrijo la latitud / longitud rosariobusense
-				var latitudCorregida  = -Math.Abs(lat);
-				var longitudCorregida = -Math.Abs(lng);
-
-				yield return new PuntoHistorico
-				{
-					Alt = 0,
-					Fecha = fecha,
-					Lat = latitudCorregida,
-					Lng = longitudCorregida,
-				};
+				_cache = LeerDB(Config.ConnectionString, equipoDesde, equipoHasta, fechaDesde, fechaHasta);
+				_fechaCache = DateTime.Now;
 			}
 
-			yield break;
+			return _cache;
         }
 
-        public string ConsultaSQLBasica(int equipoDesde, int equipoHasta, DateTime fechaDesde, DateTime fechaHasta)
+		public string ConsultaSQLBasica(int equipoDesde, int equipoHasta, DateTime fechaDesde, DateTime fechaHasta)
         {
 			// 2021-09-02T00:00:00
 			var fechaFmt = "yyyy-MM-ddTHH:mm:ss";

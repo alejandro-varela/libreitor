@@ -18,10 +18,10 @@ namespace LibQPA.ProveedoresTecnobus
             RepoRandom  = repoRandom;
         }
 
-        public IEnumerable<RecorridoLinBan> Get(int[] lineas, DateTime vigenteEn)
+        public IEnumerable<RecorridoLinBan> Get(QPAProvRecoParams @params)
         {
             int index = 0; // TODO: hacer random si se pide en RepoRandom...
-            return LeerRecorridos(DirRepos[index], lineas, vigenteEn);
+            return LeerRecorridos(DirRepos[index], @params.LineasPosibles, @params.FechaVigencia);
         }
 
         public static List<RecorridoLinBan> LeerRecorridos(string dir, int[] codLineas, DateTime vigenteEn)

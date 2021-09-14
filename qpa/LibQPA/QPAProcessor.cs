@@ -8,67 +8,26 @@ namespace LibQPA
 {
     public class QPAProcessor
     {
-        QPAConfiguration Configu { get; set; }
+        public int GranularidadMts { get; set; } = 20;
+        public int RadioPuntasMts  { get; set; } = 800;
 
-        public QPAProcessor(QPAConfiguration configuration)
+        public QPAResult Procesar(
+            List<RecorridoLinBan>   recorridosTeoricos,
+            List<PuntoHistorico>    puntosHistoricos,
+            Topes2D                 topes2D,
+            IEnumerable<PuntaLinea> puntasNombradas,
+            Dictionary<string, List<KeyValuePair<int, int>>> recoPatterns
+        )
         {
-            Configu = configuration;
-        }
+            // camino histórico
+            var caminoHistorico = Camino<PuntoHistorico>.CreateFromPuntos(puntasNombradas, puntosHistoricos);
+            Console.WriteLine(caminoHistorico.DescriptionRawSinRuido);
 
-        public QPAResult Procesar(int[] lineas, DateTime fechaDesde)
-        {
-            // pido recorridos teóricos
-            var recorridosTeoricos = Configu.ProveedorRecorridosTeoricos.Get(lineas, fechaDesde)
-                .Select(reco => SanitizarRecorrido(reco, Configu.GranularidadMts))
-                .ToList()
-            ;
 
-            // puntos aplanados (todos)
-            var todosLosPuntosDeLosRecorridos = recorridosTeoricos.SelectMany(
-                (reco) => reco.Puntos,
-                (reco, puntoReco) => puntoReco
-            );
 
-            // topes
-            var topes2d = Topes2D.CreateFromPuntos(todosLosPuntosDeLosRecorridos);
-
-            // puntas de línea
-            var puntas = PuntasDeLinea.GetPuntasNombradas(recorridosTeoricos, Configu.RadioPuntasMts);
-
-            // caminos de los recos, es un diccionario:
-            // ----------------------------------------
-            //  -de clave tiene el patrón de recorrido
-            //  -de valor tiene una lista de pares (linea, bandera) que son las banderas que encajan con ese patrón
-
-            var recoPatterns = new Dictionary<string, List<KeyValuePair<int, int>>>();
-            foreach (var recox in recorridosTeoricos)
-            {
-                // creo un camino (su descripción es la clave)
-                var camino = Camino<PuntoRecorrido>.CreateFromPuntos(puntas, recox.Puntos);
-
-                // si la clave no está en el diccionario la agrego...
-                if (!recoPatterns.ContainsKey(camino.Description))
-                {
-                    recoPatterns.Add(camino.Description, new List<KeyValuePair<int, int>>());
-                }
-
-                // agrego un par (linea, bandera) a la entrada actual...
-                recoPatterns[camino.Description].Add(new KeyValuePair<int, int>(recox.Linea, recox.Bandera));
-            }
-
-            return new QPAResult();
-        }
-
-        // TODO: pasar esta función a RecorridoLinBan
-        // MMMMMMMMMMMMM no se si hay que hacer eso...
-        // !!!!!!!!!!!!! revisar que tengo para la granularizacion en RULOS... puede ser mejor...
-        static RecorridoLinBan SanitizarRecorrido(RecorridoLinBan reco, int granularidad)
-        {
-            return new RecorridoLinBan
-            {
-                Bandera = reco.Bandera,
-                Linea = reco.Linea,
-                Puntos = reco.Puntos.HacerGranular(granularidad),
+            return new QPAResult 
+            { 
+                Camino = caminoHistorico
             };
         }
     }
