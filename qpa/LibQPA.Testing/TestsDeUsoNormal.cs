@@ -79,8 +79,10 @@ namespace LibQPA.Testing
             int radioPuntasDeLineaMts = 800;
 
             // fechas desde hasta
-            var desde = new DateTime(2021, 09, 10, 00, 00, 00);
-            var hasta = new DateTime(2021, 09, 11, 00, 00, 00);
+            //var desde = new DateTime(2021, 09, 10, 00, 00, 00);
+            //var hasta = new DateTime(2021, 09, 11, 00, 00, 00);
+            var desde = new DateTime(2021, 09, 14, 00, 00, 00);
+            var hasta = new DateTime(2021, 09, 15, 00, 00, 00);
 
             // códigos de las líneas para este cálculo
             var lineasPosibles = new int[] { 159, 163 };
@@ -144,6 +146,8 @@ namespace LibQPA.Testing
             // procesamiento de los datos...
             var qpaProcessor = new QPAProcessor();
             var resultados = new List<QPAResult>();
+            var resulfichas = new List<int>();
+
             foreach (var ficha in fichas)
             {
                 var res = qpaProcessor.Procesar(
@@ -155,6 +159,7 @@ namespace LibQPA.Testing
                 );
 
                 resultados.Add(res);
+                resulfichas.Add(ficha);
             }
 
             var resultadosPosibles = resultados
