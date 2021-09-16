@@ -4,6 +4,23 @@ using System.Linq;
 using System.Text;
 using Comun;
 
+/*
+la ficha 1234 hizo los siguientes recorridos el dia bla/bla:
+
+	BAIG  10:00 - 12:00
+	IGBA  12:15 - 12:55
+	BAIG  13:00 - 14:00
+	IGBA  14:14 - 16:00
+
+tablas de QPA...
+
+	QPAResultados
+	ficha tipoResultado idLinea idBandera fechaHoraDesde   fechaHoraHasta 
+	1234  0             1       667       2021-09-15T09:00 2021-09-15T10:30
+	1234  0             1       668       2021-09-15T10:30 2021-09-15T12:30
+	1234  4             0       0         2021-09-15T12:30 2021-09-15T14:30
+ */
+
 namespace LibQPA
 {
     public class QPAProcessor
@@ -30,6 +47,9 @@ namespace LibQPA
             );
 
             //////////////////////////////////////////////////////////////////////////////////////////////
+
+            var ganadoresResult = new List<LineaBanderaPuntuacion>();
+            var subCaminos = new List<QPASubCamino>();
 
             foreach (var unidadDeReconX in reconocimiento.Unidades)
             {
@@ -61,6 +81,17 @@ namespace LibQPA
                     var duracionMinutos = Convert.ToInt32(Math.Floor(duracion.TotalMinutes - (duracionHoras * 60)));
                     var duracionSegundos = Convert.ToInt32(Math.Floor(duracion.TotalSeconds - (duracionHoras * 3600) - (duracionMinutos * 60)));
 
+                    var subCamino = new QPASubCamino
+                    {
+                        HoraComienzo        = horaSalida,
+                        HoraFin             = horaLlegada,
+                        Duracion            = duracion,
+                        LineasBanderasPuntuaciones = new List<LineaBanderaPuntuacion>(),
+                        Patron              = uni.Pattern,
+                        PatronIndexInicial  = uni.IndexInicialGrupoide,
+                        PatronIndexFinal    = uni.IndexFinalGrupoide,
+                    };
+
                     if (recoPatterns[uni.Pattern].Count > 1) // si hay varias banderas en un patrón debo desempatar...
                     {
                         var stats = Desempatar(
@@ -74,20 +105,50 @@ namespace LibQPA
                         );
 
                         var ganadores = DameEstadisticaGanadora(stats);
-                        //MostrarStats(ganadores, ConsoleColor.Cyan, "Ganadora  : ");
+
+                        foreach (var ganadorX in ganadores)
+                        {
+                            var parLineaBandera = ganadorX.Key;
+                            var linea           = parLineaBandera.Key;
+                            var bandera         = parLineaBandera.Value;
+                            var puntuacion      = ganadorX.Value;
+
+                            var lineaBanderaPuntuacion = new LineaBanderaPuntuacion
+                            {
+                                Linea = linea,
+                                Bandera = bandera,
+                                Puntuacion = puntuacion,
+                            };
+
+                            subCamino.LineasBanderasPuntuaciones.Add(lineaBanderaPuntuacion);
+                        }
                     }
                     else
-                    { 
-                        // un solo ganador...
+                    {
+                        var parLineaBandera = recoPatterns[uni.Pattern].FirstOrDefault();
+                        var linea   = parLineaBandera.Key;
+                        var bandera = parLineaBandera.Value;
+
+                        var lineaBanderaPuntuacion = new LineaBanderaPuntuacion
+                        {
+                            Linea = linea,
+                            Bandera = bandera,
+                            Puntuacion = 0, // no hace falta ver cuantos puntos entraron geométricamente
+                        };
+
+                        subCamino.LineasBanderasPuntuaciones.Add(lineaBanderaPuntuacion);
                     }
+
+                    subCaminos.Add(subCamino);
                 }
             }
 
             /////////////////////////////////////////////////////////////////////////////////////////
 
-            return new QPAResult 
-            { 
-                Camino = caminoHistorico
+            return new QPAResult
+            {
+                Camino = caminoHistorico,
+                SubCaminos = subCaminos,
             };
         }
 

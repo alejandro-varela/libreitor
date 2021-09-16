@@ -143,7 +143,7 @@ namespace LibQPA.Testing
 
             // procesamiento de los datos...
             var qpaProcessor = new QPAProcessor();
-            var resultados = new List<string>();
+            var resultados = new List<QPAResult>();
             foreach (var ficha in fichas)
             {
                 var res = qpaProcessor.Procesar(
@@ -154,7 +154,7 @@ namespace LibQPA.Testing
                     recoPatterns        : recoPatterns
                 );
 
-                resultados.Add(res.Camino.Description);
+                resultados.Add(res);
             }
 
             int foo = 0;
