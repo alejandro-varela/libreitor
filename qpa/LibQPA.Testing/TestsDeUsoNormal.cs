@@ -157,6 +157,38 @@ namespace LibQPA.Testing
                 resultados.Add(res);
             }
 
+            var resultadosPosibles = resultados
+                .Where  (r => !string.IsNullOrEmpty(r.Camino.Description))
+                .Where  (r => NCaracteresDiferentes(r.Camino.Description) > 1)
+                .ToList ()
+            ;
+
+            var resultadosPasables = resultados
+                .Where  (r => (r.PorcentajeReconocido >= 60))
+                .ToList ()
+            ;
+
+            var resultadosMuyBuenos = resultados
+                .Where(r => (r.PorcentajeReconocido >= 80))
+                .ToList()
+            ;
+
+            var resultadosPerfectos = resultados
+                .Where  (r => (r.PorcentajeReconocido >= 100))
+                .ToList ()
+            ;
+
+            /*
+                posibles    248 100% hay 240 fichas con datos que parecen ser un recorrido, los demas son galpon o no hay datos
+                malos        32  13% de los resultados son malos      (menos del 60% de reconocimiento)
+                pasables    216  87% de los resultados son pasables   (se pudo averiguar el 60% o mas)
+                muybuenos   200  80% de los resultados son muy buenos (se pudo averiguar el 80% o mas)
+                perfectos   146  59% de los resultados son perfectos  (se pudo averiguar el 100% de lo que hizo)
+            */
+
+            // TODO:
+            //  RECONOCER SI LA PARTE NO RECONOCIDA ESTÁ EN LOS BORDES
+
             int foo = 0;
         }
 
@@ -171,6 +203,18 @@ namespace LibQPA.Testing
                 Linea = reco.Linea,
                 Puntos = reco.Puntos.HacerGranular(granularidad),
             };
+        }
+
+        static int NCaracteresDiferentes(string s)
+        {
+            var conjunto = new HashSet<char>();
+
+            foreach (var c in s)
+            {
+                conjunto.Add(c);
+            }
+
+            return conjunto.Count;
         }
     }
 }
