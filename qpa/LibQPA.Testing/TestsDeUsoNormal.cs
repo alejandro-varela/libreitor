@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace LibQPA.Testing
 {
@@ -133,18 +134,18 @@ namespace LibQPA.Testing
             }
 
             // puntos históricos
-            //var proveedorPuntosHistoricos = new ProveedorHistoricoDbXBus(
-            //    new ProveedorHistoricoDbXBus.Configuracion {
-            //        CommandTimeout  = 600,
-            //        ConnectionString= Configu.ConnectionString,
-            //        Tipo            = tipoCoches
-            //    });
-
-            var proveedorPuntosHistoricos = new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE(
-                new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE.Configuracion { 
+            var proveedorPuntosHistoricos = new ProveedorHistoricoDbXBus(
+                new ProveedorHistoricoDbXBus.Configuracion {
                     CommandTimeout  = 600,
                     ConnectionString= Configu.ConnectionString,
+                    Tipo            = tipoCoches
                 });
+
+            //var proveedorPuntosHistoricos = new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE(
+            //    new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE.Configuracion { 
+            //        CommandTimeout  = 600,
+            //        ConnectionString= Configu.ConnectionString,
+            //    });
 
             var todosLosPuntosHistoricos = proveedorPuntosHistoricos.Get(desde, hasta);
             var fichas = todosLosPuntosHistoricos.Keys.ToList();
@@ -200,7 +201,46 @@ namespace LibQPA.Testing
             // TODO:
             //  RECONOCER SI LA PARTE NO RECONOCIDA ESTÁ EN LOS BORDES
 
+            PonerResultadosEnUnArchivo(resultados, resulfichas);
+
             int foo = 0;
+        }
+
+        private void PonerResultadosEnUnArchivo(List<QPAResult> resultados, List<int> fichas)
+        {
+            var textosResultados = new List<string>();
+            for (int i = 0; i < resultados.Count; i++)
+            {
+                var resultado = resultados[i];
+                if (resultado.PorcentajeReconocido < 80) 
+                { 
+                    continue;
+                }
+                int ficha = fichas[i];
+                var textoResultado = CrearTexto(resultado, ficha);
+                textosResultados.Add(textoResultado);
+            }
+            File.WriteAllLines("dump.txt", textosResultados.ToArray());
+        }
+
+        private string CrearTexto(QPAResult resultado, int ficha)
+        {
+            var sbResult = new StringBuilder();
+            sbResult.AppendLine(new string('-', 80));
+            sbResult.AppendLine($"Ficha: {ficha}");
+            sbResult.AppendLine($"");
+            foreach (var subCamino in resultado.SubCaminos)
+            {
+                foreach (var linBanPun in subCamino.LineasBanderasPuntuaciones)
+                {
+                    sbResult.AppendLine($"Lin Ban: {linBanPun.Linea} {linBanPun.Bandera}");
+                }
+                sbResult.AppendLine($"\tInicio  : {subCamino.HoraComienzo}");
+                sbResult.AppendLine($"\tFin     : {subCamino.HoraFin}");
+                sbResult.AppendLine($"\tTotMins~: {Convert.ToInt32(subCamino.Duracion.TotalMinutes)}");
+                sbResult.AppendLine($"");
+            }
+            return sbResult.ToString();
         }
 
         // TODO: pasar esta función a RecorridoLinBan
