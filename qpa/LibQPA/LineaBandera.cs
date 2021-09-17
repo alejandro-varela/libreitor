@@ -9,5 +9,10 @@
     public class LineaBanderaPuntuacion : LineaBandera
     {
         public int Puntuacion { get; set; }
+
+        public override string ToString()
+        {
+            return $"Lin={Linea} Ban={Bandera} {Puntuacion} pts";
+        }
     }
 }

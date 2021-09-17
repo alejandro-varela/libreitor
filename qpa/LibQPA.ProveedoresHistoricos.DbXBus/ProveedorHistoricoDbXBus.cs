@@ -24,7 +24,7 @@ namespace LibQPA.ProveedoresHistoricos.DbXBus
 			public string ConnectionString { get; set; }
 		}
 
-		public Configuracion Config { get; private set; }
+		public Configuracion Config { get; set; }
 		public bool UsarCache { get; set; }
 
 		public ProveedorHistoricoDbXBus(Configuracion config, bool usarCache = true)

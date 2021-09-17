@@ -133,11 +133,17 @@ namespace LibQPA.Testing
             }
 
             // puntos históricos
-            var proveedorPuntosHistoricos = new ProveedorHistoricoDbXBus(
-                new ProveedorHistoricoDbXBus.Configuracion {
+            //var proveedorPuntosHistoricos = new ProveedorHistoricoDbXBus(
+            //    new ProveedorHistoricoDbXBus.Configuracion {
+            //        CommandTimeout  = 600,
+            //        ConnectionString= Configu.ConnectionString,
+            //        Tipo            = tipoCoches
+            //    });
+
+            var proveedorPuntosHistoricos = new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE(
+                new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE.Configuracion { 
                     CommandTimeout  = 600,
                     ConnectionString= Configu.ConnectionString,
-                    Tipo            = tipoCoches
                 });
 
             var todosLosPuntosHistoricos = proveedorPuntosHistoricos.Get(desde, hasta);
