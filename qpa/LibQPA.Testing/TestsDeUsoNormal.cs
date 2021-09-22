@@ -1,6 +1,8 @@
 using Comun;
+using ComunSUBE;
 using LibQPA.ProveedoresHistoricos.DbXBus;
 using LibQPA.ProveedoresTecnobus;
+using LibQPA.ProveedoresVentas.DbSUBE;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -54,18 +56,21 @@ namespace LibQPA.Testing
         [TestMethod]
         public void FuncionaProveedorHistorico()
         {
+            var hoy = DateTime.Today;
+            var ayer = hoy.AddDays(-1);
+
             var config = new ProveedorHistoricoDbXBus.Configuracion
             {
                 CommandTimeout = 600,
-                ConnectionString = Configu.ConnectionString,
+                ConnectionString = Configu.ConnectionStringPuntosXBus,
                 Tipo = ProveedorHistoricoDbXBus.TipoEquipo.PICOBUS,
+                FechaDesde = ayer,
+                FechaHasta = hoy,
             };
 
             var proveedor = new ProveedorHistoricoDbXBus(config);
 
-            var hoy = DateTime.Today;
-            var ayer= hoy.AddDays(-1);
-            var fichas = proveedor.Get(ayer, hoy).Keys.ToList();
+            var fichas = proveedor.Get().Keys.ToList();
 
             int foo = 0;
         }
@@ -73,6 +78,10 @@ namespace LibQPA.Testing
         [TestMethod]
         public void TestQPA1()
         {
+            ///////////////////////////////////////////////////////////////////
+            // variables de entrada
+            ///////////////////////////////////////////////////////////////////
+
             // granularidad del cálculo
             int granularidadMts = 20;
 
@@ -80,10 +89,8 @@ namespace LibQPA.Testing
             int radioPuntasDeLineaMts = 800;
 
             // fechas desde hasta
-            //var desde = new DateTime(2021, 09, 10, 00, 00, 00);
-            //var hasta = new DateTime(2021, 09, 11, 00, 00, 00);
-            var desde = new DateTime(2021, 09, 14, 00, 00, 00);
-            var hasta = new DateTime(2021, 09, 15, 00, 00, 00);
+            var desde = new DateTime(2021, 09, 7, 00, 00, 00);
+            var hasta = new DateTime(2021, 09, 8, 00, 00, 00);
 
             // códigos de las líneas para este cálculo
             var lineasPosibles = new int[] { 159, 163 };
@@ -91,7 +98,10 @@ namespace LibQPA.Testing
             // tipos de coches
             var tipoCoches = ProveedorHistoricoDbXBus.TipoEquipo.PICOBUS;
 
-            // recorridos teóricos
+            ///////////////////////////////////////////////////////////////////
+            // recorridos teóricos / topes / puntas nombradas / recopatterns
+            ///////////////////////////////////////////////////////////////////
+            
             var proveedorRecorridosTeoricos = new ProveedorVersionesTecnobus(dirRepos: DameMockRepos());
             var recorridosTeoricos = proveedorRecorridosTeoricos.Get(new QPAProvRecoParams() { 
                 LineasPosibles = lineasPosibles, 
@@ -133,26 +143,68 @@ namespace LibQPA.Testing
                 recoPatterns[camino.Description].Add(new KeyValuePair<int, int>(recox.Linea, recox.Bandera));
             }
 
-            // puntos históricos
-            var proveedorPuntosHistoricos = new ProveedorHistoricoDbXBus(
-                new ProveedorHistoricoDbXBus.Configuracion {
-                    CommandTimeout  = 600,
-                    ConnectionString= Configu.ConnectionString,
-                    Tipo            = tipoCoches
-                });
 
-            //var proveedorPuntosHistoricos = new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE(
-            //    new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE.Configuracion { 
-            //        CommandTimeout  = 600,
-            //        ConnectionString= Configu.ConnectionString,
+            ///////////////////////////////////////////////////////////////////
+            // Datos Empresa-Interno / Ficha
+            //  Sirve para:
+            //      Puntos SUBE
+            //      Ventas de boleto SUBE
+            ///////////////////////////////////////////////////////////////////
+            var datosEmpIntFicha = new ComunSUBE.DatosEmpIntFicha(new ComunSUBE.DatosEmpIntFicha.Configuration()
+            {
+                CommandTimeout  = 600,
+                ConnectionString= Configu.ConnectionStringFichasXEmprIntSUBE,
+                MaxCacheSeconds = 15 * 60,
+            });
+
+            ///////////////////////////////////////////////////////////////////
+            // Puntos históricos
+            ///////////////////////////////////////////////////////////////////
+
+            //var proveedorPuntosHistoricos = new ProveedorHistoricoDbXBus(
+            //    new ProveedorHistoricoDbXBus.Configuracion
+            //    {
+            //        CommandTimeout = 600,
+            //        ConnectionString = Configu.ConnectionStringPuntosXBus,
+            //        Tipo = tipoCoches,
+            //        FechaDesde = desde,
+            //        FechaHasta = hasta,
             //    });
 
-            var todosLosPuntosHistoricos = proveedorPuntosHistoricos.Get(desde, hasta);
+            var proveedorPuntosHistoricos = new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE(
+                new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE.Configuracion
+                {
+                    CommandTimeout = 600,
+                    ConnectionStringPuntos = Configu.ConnectionStringPuntosSUBE,
+                    DatosEmpIntFicha = datosEmpIntFicha,
+                    FechaDesde = desde,
+                    FechaHasta = hasta,
+                });
+
+            var todosLosPuntosHistoricos = proveedorPuntosHistoricos.Get();
             var fichas = todosLosPuntosHistoricos.Keys.ToList();
 
-            // procesamiento de los datos...
-            var qpaProcessor = new QPAProcessor();
-            var resultados = new List<QPAResult>();
+            ///////////////////////////////////////////////////////////////////
+            // Venta de boletos
+            ///////////////////////////////////////////////////////////////////
+
+            var proveedorVentaBoletos = new ProveedorVentaBoletosDbSUBE(
+                new ProveedorVentaBoletosDbSUBE.Configuracion
+                {
+                    CommandTimeout  = 600,
+                    ConnectionString= Configu.ConnectionStringVentasSUBE,
+                    DatosEmpIntFicha= datosEmpIntFicha,
+                    FechaDesde      = desde, 
+                    FechaHasta      = hasta,
+                });
+
+            proveedorVentaBoletos.TieneBoletosEnIntervalo(0, DateTime.Now, DateTime.Now);
+
+            ///////////////////////////////////////////////////////////////////
+            // Procesamiento de los datos (para todas las fichas)
+            ///////////////////////////////////////////////////////////////////
+            var qpaProcessor= new QPAProcessor();
+            var resultados  = new List<QPAResult>();
             var resulfichas = new List<int>();
 
             foreach (var ficha in fichas)
@@ -201,12 +253,12 @@ namespace LibQPA.Testing
             // TODO:
             //  RECONOCER SI LA PARTE NO RECONOCIDA ESTÁ EN LOS BORDES
 
-            PonerResultadosEnUnArchivo(resultados, resulfichas);
+            PonerResultadosEnUnArchivo(resultados, proveedorVentaBoletos, resulfichas);
 
             int foo = 0;
         }
 
-        private void PonerResultadosEnUnArchivo(List<QPAResult> resultados, List<int> fichas)
+        private void PonerResultadosEnUnArchivo(List<QPAResult> resultados, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos, List<int> fichas)
         {
             var textosResultados = new List<string>();
             for (int i = 0; i < resultados.Count; i++)
@@ -217,13 +269,13 @@ namespace LibQPA.Testing
                     continue;
                 }
                 int ficha = fichas[i];
-                var textoResultado = CrearTexto(resultado, ficha);
+                var textoResultado = CrearTexto(resultado, proveedorVentaBoletos, ficha);
                 textosResultados.Add(textoResultado);
             }
             File.WriteAllLines("dump.txt", textosResultados.ToArray());
         }
 
-        private string CrearTexto(QPAResult resultado, int ficha)
+        private string CrearTexto(QPAResult resultado, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos, int ficha)
         {
             var sbResult = new StringBuilder();
             sbResult.AppendLine(new string('-', 80));
@@ -237,7 +289,23 @@ namespace LibQPA.Testing
                 }
                 sbResult.AppendLine($"\tInicio  : {subCamino.HoraComienzo}");
                 sbResult.AppendLine($"\tFin     : {subCamino.HoraFin}");
-                sbResult.AppendLine($"\tTotMins~: {Convert.ToInt32(subCamino.Duracion.TotalMinutes)}");
+
+                if (proveedorVentaBoletos.TieneBoletosEnIntervalo(ficha, subCamino.HoraComienzo, subCamino.HoraFin))
+                {
+                    var sbVentas= new StringBuilder();
+                    var boletos = proveedorVentaBoletos
+                        .GetBoletosEnIntervalo(ficha, subCamino.HoraComienzo, subCamino.HoraFin)
+                        .ToList();
+                    var fechas  = boletos.Select(bol => bol.FechaCancelacion);
+                    var sFechas = string.Join(',', fechas);
+                    sbVentas.Append($"Tiene {boletos.Count} boletos vendidos en: {sFechas}");
+                    sbResult.AppendLine($"\tVenta   : {sbVentas}");
+                }
+                else
+                {
+                    sbResult.AppendLine($"\tVenta   : Sin datos por parte de archivos SUBE");
+                }
+                sbResult.AppendLine($"\tTotMins~: {Convert.ToInt32(subCamino.Duracion.TotalMinutes) }");
                 sbResult.AppendLine($"");
             }
             return sbResult.ToString();

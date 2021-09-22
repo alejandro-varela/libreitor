@@ -26,6 +26,7 @@
     <ProjectReference Include="..\LibQPA.ProveedoresHistoricos.DbSUBE\LibQPA.ProveedoresHistoricos.DbSUBE.csproj" />
     <ProjectReference Include="..\LibQPA.ProveedoresHistoricos.DbXBus\LibQPA.ProveedoresHistoricos.DbXBus.csproj" />
     <ProjectReference Include="..\LibQPA.ProveedoresTecnobus\LibQPA.ProveedoresTecnobus.csproj" />
+    <ProjectReference Include="..\LibQPA.ProveedoresVentas.DbSUBE\LibQPA.ProveedoresVentas.DbSUBE.csproj" />
     <ProjectReference Include="..\LibQPA\LibQPA.csproj" />
   </ItemGroup>
 

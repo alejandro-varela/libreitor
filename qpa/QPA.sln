@@ -29,6 +29,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibQPA.ProveedoresHistorico
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibQPA.ProveedoresHistoricos.DbXBus", "LibQPA.ProveedoresHistoricos.DbXBus\LibQPA.ProveedoresHistoricos.DbXBus.csproj", "{5876CCC9-61CE-4F9F-B3AE-2A94754D377F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibQPA.ProveedoresVentas.DbSUBE", "LibQPA.ProveedoresVentas.DbSUBE\LibQPA.ProveedoresVentas.DbSUBE.csproj", "{96247DF3-ABB5-4611-9412-2DE971BEF7A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComunSUBE", "ComunSUBE\ComunSUBE.csproj", "{47ED8067-23CD-442D-A831-16A0782C62E6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +91,14 @@ Global
 		{5876CCC9-61CE-4F9F-B3AE-2A94754D377F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5876CCC9-61CE-4F9F-B3AE-2A94754D377F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5876CCC9-61CE-4F9F-B3AE-2A94754D377F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96247DF3-ABB5-4611-9412-2DE971BEF7A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96247DF3-ABB5-4611-9412-2DE971BEF7A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96247DF3-ABB5-4611-9412-2DE971BEF7A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96247DF3-ABB5-4611-9412-2DE971BEF7A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47ED8067-23CD-442D-A831-16A0782C62E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47ED8067-23CD-442D-A831-16A0782C62E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47ED8067-23CD-442D-A831-16A0782C62E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47ED8067-23CD-442D-A831-16A0782C62E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

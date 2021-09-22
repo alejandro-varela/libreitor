@@ -1,4 +1,5 @@
 ﻿using Comun;
+using ComunSUBE;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -9,16 +10,20 @@ namespace LibQPA.ProveedoresHistoricos.DbSUBE
 {
     public class ProveedorHistoricoDbSUBE : IQPAProveedorPuntosHistoricos
     {
-        DateTime                                _fechaCache = DateTime.MinValue;
-        Dictionary<int, List<PuntoHistorico>>   _cache      = new Dictionary<int, List<PuntoHistorico>>();
+		DateTime                                _fechaCachePuntosHistoricos = DateTime.MinValue;
+        Dictionary<int, List<PuntoHistorico>>   _cachePuntosHistoricos      = new Dictionary<int, List<PuntoHistorico>>();
         public Configuracion                    Config      { get; set; }
         public bool                             UsarCache   { get; set; }
 
         public class Configuracion
         {
-            public int    CommandTimeout   { get; set; } = 600;
-            public string ConnectionString { get; set; }
-        }
+            public int				CommandTimeout			{ get; set; } = 600;
+            public string			ConnectionStringPuntos	{ get; set; }
+			public int				MaxCacheSeconds			{ get; set; } = 15 * 60; // 15 mins
+			public DatosEmpIntFicha DatosEmpIntFicha		{ get; set; }
+			public DateTime			FechaDesde				{ get; set; }
+			public DateTime			FechaHasta				{ get; set; }
+		}
 
         public ProveedorHistoricoDbSUBE(Configuracion config, bool usarCache = true)
         {
@@ -26,23 +31,27 @@ namespace LibQPA.ProveedoresHistoricos.DbSUBE
             UsarCache = usarCache;
         }
 
-        public Dictionary<int, List<PuntoHistorico>> Get(DateTime desde, DateTime hasta)
+        public Dictionary<int, List<PuntoHistorico>> Get()
         {
-            if (DateTime.Now.Subtract(_fechaCache) > TimeSpan.FromMinutes(1))
+            if (DateTime.Now.Subtract(_fechaCachePuntosHistoricos) > TimeSpan.FromMinutes(5))
             {
-                _cache = LeerDB(Config.ConnectionString, desde, hasta);
-                _fechaCache = DateTime.Now;
+                _cachePuntosHistoricos = LeerDBPuntosHistoricos(Config.ConnectionStringPuntos, Config.FechaDesde, Config.FechaHasta);
+                _fechaCachePuntosHistoricos = DateTime.Now;
             }
 
-            return _cache;
+            return _cachePuntosHistoricos;
         }
 
-        private Dictionary<int, List<PuntoHistorico>> LeerDB(string connString, DateTime fechaDesde, DateTime fechaHasta)
+        private Dictionary<int, List<PuntoHistorico>> LeerDBPuntosHistoricos(
+			string connString, 
+			DateTime fechaDesde, 
+			DateTime fechaHasta
+		)
         {
 			var ret = new Dictionary<int, List<PuntoHistorico>>();
 
 			// hacer consulta
-			var consulta = ConsultaSQLBasica(
+			var consulta = ConsultaPuntosBuilder(
 				fechaDesde,
 				fechaHasta
 			);
@@ -52,13 +61,25 @@ namespace LibQPA.ProveedoresHistoricos.DbSUBE
 			using var cmd = new SqlCommand(consulta, conn);
 			cmd.CommandTimeout = Config.CommandTimeout;
 			using var reader = cmd.ExecuteReader();
+			
+			var malfichos = new List<string>();
 
 			while (reader.Read())
 			{
-				int identificador = 
-					Convert.ToInt32(reader["empresaSube"] ?? 0) * 10000 +
-					Convert.ToInt32(reader["interno"	] ?? 0)
-				;
+				int empresaSUBE = Convert.ToInt32(reader["empresaSube"] ?? 0);
+				int interno = Convert.ToInt32(reader["interno"] ?? 0);
+
+				int identificador = Config.DatosEmpIntFicha.GetFicha(
+					empresa: empresaSUBE, 
+					interno: interno, 
+					@default: -1
+				);
+
+				if (identificador == -1)
+				{
+					malfichos.Add($"Empresa: {empresaSUBE} Interno: {interno} No entcontrados en ficha...");
+					continue;
+				}
 
 				DateTime fecha = Convert.ToDateTime(reader["fechaHoraUTC"] ?? DateTime.MinValue);
 				double lat = Convert.ToDouble(reader["latitud" ] ?? 0.0);
@@ -76,7 +97,7 @@ namespace LibQPA.ProveedoresHistoricos.DbSUBE
 				var puntoHistorico = new PuntoHistorico
 				{
 					Alt = 0,
-					Fecha = fecha,
+					Fecha = fecha.AddHours(-3),
 					Lat = latitudCorregida,
 					Lng = longitudCorregida,
 				};
@@ -87,19 +108,23 @@ namespace LibQPA.ProveedoresHistoricos.DbSUBE
 			return ret;
 		}
 
-        private string ConsultaSQLBasica(DateTime fechaDesde, DateTime fechaHasta)
+        private string ConsultaPuntosBuilder(DateTime fechaDesde, DateTime fechaHasta)
         {
-			return 
+			var consulta =
 				@"
 					select		*
 					from		log_posicionamientoSUBE
-					where		fechaHoraUTC >= '07/09/2021 00:00'
+					where		fechaHoraUTC >= '{{FECHA_DESDE}}'
 								and
-								fechaHoraUTC <  '08/09/2021 00:00'
+								fechaHoraUTC <  '{{FECHA_HASTA}}'
 					order by	fechaHoraUTC asc
 				"
 				.Trim()
+				.Replace("{{FECHA_DESDE}}", fechaDesde.AddHours(3).ToString("dd/MM/yyyy HH:mm:ss"))
+				.Replace("{{FECHA_HASTA}}", fechaHasta.AddHours(3).ToString("dd/MM/yyyy HH:mm:ss"))
 			;
+
+			return consulta;
         }
-    }
+	}
 }

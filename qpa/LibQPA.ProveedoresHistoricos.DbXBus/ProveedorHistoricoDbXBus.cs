@@ -22,7 +22,9 @@ namespace LibQPA.ProveedoresHistoricos.DbXBus
 			public TipoEquipo Tipo { get; set; } = TipoEquipo.TECNOBUS | TipoEquipo.PICOBUS;
 			public int CommandTimeout { get; set; } = 600;
 			public string ConnectionString { get; set; }
-		}
+            public DateTime FechaDesde { get; set; }
+            public DateTime FechaHasta { get; set; }
+        }
 
 		public Configuracion Config { get; set; }
 		public bool UsarCache { get; set; }
@@ -82,7 +84,7 @@ namespace LibQPA.ProveedoresHistoricos.DbXBus
 			return ret;
 		}
 
-		public Dictionary<int, List<PuntoHistorico>> Get(DateTime fechaDesde, DateTime fechaHasta)
+		public Dictionary<int, List<PuntoHistorico>> Get()
         {
 			int equipoDesde = 0;
 			int equipoHasta = 0;
@@ -110,7 +112,7 @@ namespace LibQPA.ProveedoresHistoricos.DbXBus
 
 			if (DateTime.Now.Subtract(_fechaCache) > TimeSpan.FromMinutes(1))
 			{
-				_cache = LeerDB(Config.ConnectionString, equipoDesde, equipoHasta, fechaDesde, fechaHasta);
+				_cache = LeerDB(Config.ConnectionString, equipoDesde, equipoHasta, Config.FechaDesde, Config.FechaHasta);
 				_fechaCache = DateTime.Now;
 			}
 

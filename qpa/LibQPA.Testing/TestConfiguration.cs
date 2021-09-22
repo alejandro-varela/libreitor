@@ -8,8 +8,17 @@ namespace LibQPA.Testing
     // https://weblog.west-wind.com/posts/2018/Feb/18/Accessing-Configuration-in-NET-Core-Test-Projects
     public class TestConfiguration
     {
-        public string ConnectionString { get; set; }
-        public Dictionary<string, string> Repos { get; set; }   
+        // para los puntos
+        public string ConnectionStringPuntosXBus { get; set; }
+        public string ConnectionStringPuntosSUBE { get; set; }
+
+        // para convertir de empresa-interno(SUBE) a ficha de rosariobus
+        public string ConnectionStringFichasXEmprIntSUBE { get; set; }
+
+        // para los boletos
+        public string ConnectionStringVentasSUBE { get; set; }
+
+        public Dictionary<string, string> Repos { get; set; }
 
         public static IConfigurationRoot GetIConfigurationRoot(string outputPath)
         {
