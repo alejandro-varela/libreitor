@@ -4,6 +4,7 @@ using LibQPA.ProveedoresHistoricos.DbXBus;
 using LibQPA.ProveedoresTecnobus;
 using LibQPA.ProveedoresVentas.DbSUBE;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -71,6 +72,100 @@ namespace LibQPA.Testing
             var proveedor = new ProveedorHistoricoDbXBus(config);
 
             var fichas = proveedor.Get().Keys.ToList();
+
+            int foo = 0;
+        }
+
+        [TestMethod]
+        public void TestFusion()
+        {
+            // fechas desde hasta
+            var desde = new DateTime(2021, 09, 7, 00, 00, 00);
+            var hasta = new DateTime(2021, 09, 8, 00, 00, 00);
+
+            // tipos de coches
+            var tipoCoches = ProveedorHistoricoDbXBus.TipoEquipo.PICOBUS;
+
+            ///////////////////////////////////////////////////////////////////
+            // Datos Empresa-Interno / Ficha
+            //  Sirve para:
+            //      Puntos SUBE
+            //      Ventas de boleto SUBE
+            ///////////////////////////////////////////////////////////////////
+            var datosEmpIntFicha = new ComunSUBE.DatosEmpIntFicha(new ComunSUBE.DatosEmpIntFicha.Configuration()
+            {
+                CommandTimeout = 600,
+                ConnectionString = Configu.ConnectionStringFichasXEmprIntSUBE,
+                MaxCacheSeconds = 15 * 60,
+            });
+            
+            ///////////////////////////////////////////////////////////////////
+            // Puntos históricos XBus
+            ///////////////////////////////////////////////////////////////////
+            Dictionary<int, List<PuntoHistorico>> ptsHistoXBusPorFicha;
+            const string ARCHIVO_XBUS = "PtsHistoXBus.json";
+
+            if (File.Exists(ARCHIVO_XBUS))
+            {
+                var json = File.ReadAllText(ARCHIVO_XBUS);
+                ptsHistoXBusPorFicha = JsonConvert.DeserializeObject<Dictionary<int, List<PuntoHistorico>>>(json);
+            }
+            else
+            {
+                var proveedorPtsHistoXBus = new ProveedorHistoricoDbXBus(
+                    new ProveedorHistoricoDbXBus.Configuracion
+                    {
+                        CommandTimeout = 600,
+                        ConnectionString = Configu.ConnectionStringPuntosXBus,
+                        Tipo = tipoCoches,
+                        FechaDesde = desde,
+                        FechaHasta = hasta,
+                    });
+                ptsHistoXBusPorFicha = proveedorPtsHistoXBus.Get();
+                File.WriteAllText(
+                    ARCHIVO_XBUS,
+                    JsonConvert.SerializeObject(ptsHistoXBusPorFicha)
+                );
+            }
+            var fichasXBus = ptsHistoXBusPorFicha.Keys.ToList();
+
+            ///////////////////////////////////////////////////////////////////
+            // Puntos históricos SUBE
+            ///////////////////////////////////////////////////////////////////
+            Dictionary<int, List<PuntoHistorico>> ptsHistoSUBEPorFicha;
+            const string ARCHIVO_SUBE = "PtsHistoSUBE.json";
+
+            if (File.Exists(ARCHIVO_SUBE))
+            {
+                var json = File.ReadAllText(ARCHIVO_SUBE);
+                ptsHistoSUBEPorFicha = JsonConvert.DeserializeObject<Dictionary<int, List<PuntoHistorico>>>(json);
+            }
+            else
+            {
+                var proveedorPtsHistoSUBE = new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE(
+                new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE.Configuracion
+                {
+                    CommandTimeout = 600,
+                    ConnectionStringPuntos = Configu.ConnectionStringPuntosSUBE,
+                    DatosEmpIntFicha = datosEmpIntFicha,
+                    FechaDesde = desde,
+                    FechaHasta = hasta,
+                });
+                ptsHistoSUBEPorFicha = proveedorPtsHistoSUBE.Get();
+                File.WriteAllText(
+                    ARCHIVO_SUBE,
+                    JsonConvert.SerializeObject(ptsHistoSUBEPorFicha)
+                );
+            }
+
+            var fichasSUBE = ptsHistoSUBEPorFicha.Keys.ToList();
+
+            var sumaaa = FusionarPuntos(
+                ptsHistoXBusPorFicha, 
+                ptsHistoSUBEPorFicha
+            );
+
+            var fichasSuma = sumaaa.Keys.ToList();
 
             int foo = 0;
         }
@@ -194,7 +289,11 @@ namespace LibQPA.Testing
             ///////////////////////////////////////////////////////////////////
             // Puntos históricos Suma (XBus + SUBE)
             ///////////////////////////////////////////////////////////////////
-            var ptsHistoSumaPorFicha = new Dictionary<int, List<PuntoHistorico>>();
+            var ptsHistoSumaPorFicha = FusionarPuntos(
+                ptsHistoXBusPorFicha, 
+                ptsHistoSUBEPorFicha
+            );
+
             var fichasSuma = ptsHistoSumaPorFicha.Keys.ToList();
 
             ///////////////////////////////////////////////////////////////////
@@ -218,15 +317,50 @@ namespace LibQPA.Testing
             ///////////////////////////////////////////////////////////////////
 
             var (resultadosSUBE, resulFichasSUBE) = ProcesarTodo(recorridosTeoricos, topes2D, puntasNombradas, recoPatterns, ptsHistoSUBEPorFicha, fichasSUBE);
-            PonerResultadosEnUnArchivo(resultadosSUBE, resulFichasSUBE, proveedorVentaBoletos);
+            PonerResultadosEnUnArchivo("SUBE.txt", resultadosSUBE, resulFichasSUBE, proveedorVentaBoletos);
 
             var (resultadosXBus, resulFichasXBus) = ProcesarTodo(recorridosTeoricos, topes2D, puntasNombradas, recoPatterns, ptsHistoXBusPorFicha, fichasXBus);
-            PonerResultadosEnUnArchivo(resultadosXBus, resulFichasXBus, proveedorVentaBoletos);
+            PonerResultadosEnUnArchivo("XBus.txt", resultadosXBus, resulFichasXBus, proveedorVentaBoletos);
 
             var (resultadosSuma, resulFichasSuma) = ProcesarTodo(recorridosTeoricos, topes2D, puntasNombradas, recoPatterns, ptsHistoSumaPorFicha, fichasSuma);
-            PonerResultadosEnUnArchivo(resultadosSuma, resulFichasSuma, proveedorVentaBoletos);
+            PonerResultadosEnUnArchivo("Suma.txt", resultadosSuma, resulFichasSuma, proveedorVentaBoletos);
 
             int foo = 0;
+        }
+
+        Dictionary<int, List<PuntoHistorico>> FusionarPuntos(params Dictionary<int, List<PuntoHistorico>> [] ptss)
+        {
+            var ret = new Dictionary<int, List<PuntoHistorico>>();
+
+            // para cada diccionario que me pasaron
+            foreach (Dictionary<int, List<PuntoHistorico>> pts in ptss)
+            {
+                // para cada clave del diccionario
+                foreach (var key in pts.Keys)
+                {
+                    // creo la entrada si no existe
+                    if (!ret.ContainsKey(key))
+                    {
+                        ret.Add(key, new List<PuntoHistorico>());
+                    }
+
+                    // agrego los puntos del diccionario a esa entrada
+                    ret[key].AddRange(pts[key]);
+                }
+            }
+
+            // ordeno los puntos por fecha
+            foreach (var key in ret.Keys)
+            {
+                ret[key].Sort(new Comparison<PuntoHistorico>((p1, p2) =>
+                {
+                    if (p1.Fecha > p2.Fecha) return 1;
+                    if (p1.Fecha < p2.Fecha) return -1;
+                    return 0;
+                }));
+            }
+
+            return ret;
         }
 
         private (List<QPAResult>, List<int>) ProcesarTodo(
@@ -244,16 +378,23 @@ namespace LibQPA.Testing
 
             foreach (var ficha in fichas)
             {
-                var res = qpaProcessor.Procesar(
-                    recorridosTeoricos: recorridosTeoricos,
-                    puntosHistoricos: puntosHistoricosPorFicha[ficha],
-                    topes2D: topes2D,
-                    puntasNombradas: puntasNombradas,
-                    recoPatterns: recoPatterns
-                );
+                try
+                {
+                    var res = qpaProcessor.Procesar(
+                        recorridosTeoricos  : recorridosTeoricos,
+                        puntosHistoricos    : puntosHistoricosPorFicha[ficha],
+                        topes2D             : topes2D,
+                        puntasNombradas     : puntasNombradas,
+                        recoPatterns        : recoPatterns
+                    );
 
-                resultados.Add(res);
-                resulfichas.Add(ficha);
+                    resultados.Add(res);
+                    resulfichas.Add(ficha);
+                }
+                catch (Exception exx)
+                {
+                    int foofoo = 0;
+                }
             }
 
             //var resultadosPosibles = resultados
@@ -280,7 +421,7 @@ namespace LibQPA.Testing
             return (resultados, resulfichas);
         }
 
-        private void PonerResultadosEnUnArchivo(List<QPAResult> resultados, List<int> fichas, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos)
+        private void PonerResultadosEnUnArchivo(string nombreArchivo, List<QPAResult> resultados, List<int> fichas, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos)
         {
             var textosResultados = new List<string>();
             for (int i = 0; i < resultados.Count; i++)
@@ -294,7 +435,7 @@ namespace LibQPA.Testing
                 var textoResultado = CrearTexto(resultado, proveedorVentaBoletos, ficha);
                 textosResultados.Add(textoResultado);
             }
-            File.WriteAllLines("dump.txt", textosResultados.ToArray());
+            File.WriteAllLines(nombreArchivo, textosResultados.ToArray());
         }
 
         private string CrearTexto(QPAResult resultado, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos, int ficha)
