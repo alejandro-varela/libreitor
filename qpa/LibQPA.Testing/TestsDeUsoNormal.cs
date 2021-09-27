@@ -101,11 +101,12 @@ namespace LibQPA.Testing
             ///////////////////////////////////////////////////////////////////
             // recorridos teóricos / topes / puntas nombradas / recopatterns
             ///////////////////////////////////////////////////////////////////
-            
+
             var proveedorRecorridosTeoricos = new ProveedorVersionesTecnobus(dirRepos: DameMockRepos());
-            var recorridosTeoricos = proveedorRecorridosTeoricos.Get(new QPAProvRecoParams() { 
-                LineasPosibles = lineasPosibles, 
-                FechaVigencia  = desde
+            var recorridosTeoricos = proveedorRecorridosTeoricos.Get(new QPAProvRecoParams()
+            {
+                LineasPosibles = lineasPosibles,
+                FechaVigencia = desde
             })
                 .Select(reco => SanitizarRecorrido(reco, granularidadMts))
                 .ToList()
@@ -152,26 +153,32 @@ namespace LibQPA.Testing
             ///////////////////////////////////////////////////////////////////
             var datosEmpIntFicha = new ComunSUBE.DatosEmpIntFicha(new ComunSUBE.DatosEmpIntFicha.Configuration()
             {
-                CommandTimeout  = 600,
-                ConnectionString= Configu.ConnectionStringFichasXEmprIntSUBE,
+                CommandTimeout = 600,
+                ConnectionString = Configu.ConnectionStringFichasXEmprIntSUBE,
                 MaxCacheSeconds = 15 * 60,
             });
 
             ///////////////////////////////////////////////////////////////////
-            // Puntos históricos
+            // Puntos históricos XBus
             ///////////////////////////////////////////////////////////////////
 
-            //var proveedorPuntosHistoricos = new ProveedorHistoricoDbXBus(
-            //    new ProveedorHistoricoDbXBus.Configuracion
-            //    {
-            //        CommandTimeout = 600,
-            //        ConnectionString = Configu.ConnectionStringPuntosXBus,
-            //        Tipo = tipoCoches,
-            //        FechaDesde = desde,
-            //        FechaHasta = hasta,
-            //    });
+            var proveedorPtsHistoXBus = new ProveedorHistoricoDbXBus(
+                new ProveedorHistoricoDbXBus.Configuracion
+                {
+                    CommandTimeout = 600,
+                    ConnectionString = Configu.ConnectionStringPuntosXBus,
+                    Tipo = tipoCoches,
+                    FechaDesde = desde,
+                    FechaHasta = hasta,
+                });
+            var ptsHistoXBusPorFicha = proveedorPtsHistoXBus.Get();
+            var fichasXBus = ptsHistoXBusPorFicha.Keys.ToList();
 
-            var proveedorPuntosHistoricos = new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE(
+            ///////////////////////////////////////////////////////////////////
+            // Puntos históricos SUBE
+            ///////////////////////////////////////////////////////////////////
+            
+            var proveedorPtsHistoSUBE = new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE(
                 new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE.Configuracion
                 {
                     CommandTimeout = 600,
@@ -181,8 +188,14 @@ namespace LibQPA.Testing
                     FechaHasta = hasta,
                 });
 
-            var todosLosPuntosHistoricos = proveedorPuntosHistoricos.Get();
-            var fichas = todosLosPuntosHistoricos.Keys.ToList();
+            var ptsHistoSUBEPorFicha = proveedorPtsHistoSUBE.Get();
+            var fichasSUBE = ptsHistoSUBEPorFicha.Keys.ToList();
+
+            ///////////////////////////////////////////////////////////////////
+            // Puntos históricos Suma (XBus + SUBE)
+            ///////////////////////////////////////////////////////////////////
+            var ptsHistoSumaPorFicha = new Dictionary<int, List<PuntoHistorico>>();
+            var fichasSuma = ptsHistoSumaPorFicha.Keys.ToList();
 
             ///////////////////////////////////////////////////////////////////
             // Venta de boletos
@@ -191,11 +204,11 @@ namespace LibQPA.Testing
             var proveedorVentaBoletos = new ProveedorVentaBoletosDbSUBE(
                 new ProveedorVentaBoletosDbSUBE.Configuracion
                 {
-                    CommandTimeout  = 600,
-                    ConnectionString= Configu.ConnectionStringVentasSUBE,
-                    DatosEmpIntFicha= datosEmpIntFicha,
-                    FechaDesde      = desde, 
-                    FechaHasta      = hasta,
+                    CommandTimeout = 600,
+                    ConnectionString = Configu.ConnectionStringVentasSUBE,
+                    DatosEmpIntFicha = datosEmpIntFicha,
+                    FechaDesde = desde,
+                    FechaHasta = hasta,
                 });
 
             proveedorVentaBoletos.TieneBoletosEnIntervalo(0, DateTime.Now, DateTime.Now);
@@ -203,6 +216,28 @@ namespace LibQPA.Testing
             ///////////////////////////////////////////////////////////////////
             // Procesamiento de los datos (para todas las fichas)
             ///////////////////////////////////////////////////////////////////
+
+            var (resultadosSUBE, resulFichasSUBE) = ProcesarTodo(recorridosTeoricos, topes2D, puntasNombradas, recoPatterns, ptsHistoSUBEPorFicha, fichasSUBE);
+            PonerResultadosEnUnArchivo(resultadosSUBE, resulFichasSUBE, proveedorVentaBoletos);
+
+            var (resultadosXBus, resulFichasXBus) = ProcesarTodo(recorridosTeoricos, topes2D, puntasNombradas, recoPatterns, ptsHistoXBusPorFicha, fichasXBus);
+            PonerResultadosEnUnArchivo(resultadosXBus, resulFichasXBus, proveedorVentaBoletos);
+
+            var (resultadosSuma, resulFichasSuma) = ProcesarTodo(recorridosTeoricos, topes2D, puntasNombradas, recoPatterns, ptsHistoSumaPorFicha, fichasSuma);
+            PonerResultadosEnUnArchivo(resultadosSuma, resulFichasSuma, proveedorVentaBoletos);
+
+            int foo = 0;
+        }
+
+        private (List<QPAResult>, List<int>) ProcesarTodo(
+            List<RecorridoLinBan>                               recorridosTeoricos,
+            Topes2D                                             topes2D,
+            IEnumerable<PuntaLinea>                             puntasNombradas,
+            Dictionary<string, List<KeyValuePair<int, int>>>    recoPatterns,
+            Dictionary<int, List<PuntoHistorico>>               puntosHistoricosPorFicha,
+            List<int>                                           fichas
+        )
+        {
             var qpaProcessor= new QPAProcessor();
             var resultados  = new List<QPAResult>();
             var resulfichas = new List<int>();
@@ -210,55 +245,42 @@ namespace LibQPA.Testing
             foreach (var ficha in fichas)
             {
                 var res = qpaProcessor.Procesar(
-                    recorridosTeoricos  : recorridosTeoricos, 
-                    puntosHistoricos    : todosLosPuntosHistoricos[ficha],
-                    topes2D             : topes2D,
-                    puntasNombradas     : puntasNombradas,
-                    recoPatterns        : recoPatterns
+                    recorridosTeoricos: recorridosTeoricos,
+                    puntosHistoricos: puntosHistoricosPorFicha[ficha],
+                    topes2D: topes2D,
+                    puntasNombradas: puntasNombradas,
+                    recoPatterns: recoPatterns
                 );
 
                 resultados.Add(res);
                 resulfichas.Add(ficha);
             }
 
-            var resultadosPosibles = resultados
-                .Where  (r => !string.IsNullOrEmpty(r.Camino.Description))
-                .Where  (r => NCaracteresDiferentes(r.Camino.Description) > 1)
-                .ToList ()
-            ;
+            //var resultadosPosibles = resultados
+            //    .Where(r => !string.IsNullOrEmpty(r.Camino.Description))
+            //    .Where(r => NCaracteresDiferentes(r.Camino.Description) > 1)
+            //    .ToList()
+            //;
 
-            var resultadosPasables = resultados
-                .Where  (r => (r.PorcentajeReconocido >= 60))
-                .ToList ()
-            ;
+            //var resultadosPasables = resultados
+            //    .Where(r => (r.PorcentajeReconocido >= 60))
+            //    .ToList()
+            //;
 
-            var resultadosMuyBuenos = resultados
-                .Where(r => (r.PorcentajeReconocido >= 80))
-                .ToList()
-            ;
+            //var resultadosMuyBuenos = resultados
+            //    .Where(r => (r.PorcentajeReconocido >= 80))
+            //    .ToList()
+            //;
 
-            var resultadosPerfectos = resultados
-                .Where  (r => (r.PorcentajeReconocido >= 100))
-                .ToList ()
-            ;
+            //var resultadosPerfectos = resultados
+            //    .Where(r => (r.PorcentajeReconocido >= 100))
+            //    .ToList()
+            //;
 
-            /*
-                posibles    248 100% hay 240 fichas con datos que parecen ser un recorrido, los demas son galpon o no hay datos
-                malos        32  13% de los resultados son malos      (menos del 60% de reconocimiento)
-                pasables    216  87% de los resultados son pasables   (se pudo averiguar el 60% o mas)
-                muybuenos   200  80% de los resultados son muy buenos (se pudo averiguar el 80% o mas)
-                perfectos   146  59% de los resultados son perfectos  (se pudo averiguar el 100% de lo que hizo)
-            */
-
-            // TODO:
-            //  RECONOCER SI LA PARTE NO RECONOCIDA ESTÁ EN LOS BORDES
-
-            PonerResultadosEnUnArchivo(resultados, proveedorVentaBoletos, resulfichas);
-
-            int foo = 0;
+            return (resultados, resulfichas);
         }
 
-        private void PonerResultadosEnUnArchivo(List<QPAResult> resultados, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos, List<int> fichas)
+        private void PonerResultadosEnUnArchivo(List<QPAResult> resultados, List<int> fichas, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos)
         {
             var textosResultados = new List<string>();
             for (int i = 0; i < resultados.Count; i++)
