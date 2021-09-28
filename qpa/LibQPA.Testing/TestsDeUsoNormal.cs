@@ -160,14 +160,93 @@ namespace LibQPA.Testing
 
             var fichasSUBE = ptsHistoSUBEPorFicha.Keys.ToList();
 
-            var sumaaa = FusionarPuntos(
-                ptsHistoXBusPorFicha, 
-                ptsHistoSUBEPorFicha
-            );
+            //////////
+            var union = 
+                fichasSUBE
+                .Union      (fichasXBus)
+                .OrderBy    (f => f)
+                .ToList     ()
+            ;
 
-            var fichasSuma = sumaaa.Keys.ToList();
+            //////////
+            var interseccion  = 
+                fichasSUBE
+                .Intersect  (fichasXBus)
+                .OrderBy    (f => f)
+                .ToList     ()
+            ;
+
+            //////////
+            // en caso de interseccion muestro los puntos que tiene cada ficha de cada conjunto
+            var puntosDeCadaUno = interseccion
+                .Select(f => $"La ficha {f} tiene XBus={ptsHistoXBusPorFicha[f].Count} SUBE={ptsHistoSUBEPorFicha[f].Count}")
+                .ToList();
+            ;
+
+            //////////
+            // primero de la interseccion
+            var caso1 = interseccion.First();
+
+            var distXBus = MedirDistancia(ptsHistoXBusPorFicha[caso1]);
+            var distSUBE = MedirDistancia(ptsHistoSUBEPorFicha[caso1]);
+
+            var distAB = MedirDistancia(new PuntoHistorico[] { ptsHistoXBusPorFicha[caso1][0], ptsHistoSUBEPorFicha[caso1][^1] }.ToList());
+            var distBA = MedirDistancia(new PuntoHistorico[] { ptsHistoXBusPorFicha[caso1][^1], ptsHistoSUBEPorFicha[caso1][0] }.ToList());
+
+            var distSumaNormal  = MedirDistancia(FusionarPuntos(ptsHistoXBusPorFicha[caso1], ptsHistoSUBEPorFicha[caso1]));
+
+            var distSumaDesf1   = MedirDistancia(FusionarPuntos(Desfasar( 1, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+            var distSumaDesf5   = MedirDistancia(FusionarPuntos(Desfasar( 5, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+            var distSumaDesf10  = MedirDistancia(FusionarPuntos(Desfasar(10, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+            var distSumaDesf18  = MedirDistancia(FusionarPuntos(Desfasar(18, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+            var distSumaDesf20  = MedirDistancia(FusionarPuntos(Desfasar(20, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+            var distSumaDesf22  = MedirDistancia(FusionarPuntos(Desfasar(22, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+            var distSumaDesf30  = MedirDistancia(FusionarPuntos(Desfasar(30, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+            var distSumaDesf40  = MedirDistancia(FusionarPuntos(Desfasar(40, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+            var distSumaDesf50  = MedirDistancia(FusionarPuntos(Desfasar(50, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+            var distSumaDesf60  = MedirDistancia(FusionarPuntos(Desfasar(60, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+
+            var distSumaDesfm1  = MedirDistancia(FusionarPuntos(Desfasar( -1, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+            var distSumaDesfm5  = MedirDistancia(FusionarPuntos(Desfasar( -5, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+            var distSumaDesfm10 = MedirDistancia(FusionarPuntos(Desfasar(-10, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+            var distSumaDesfm18 = MedirDistancia(FusionarPuntos(Desfasar(-18, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+            var distSumaDesfm20 = MedirDistancia(FusionarPuntos(Desfasar(-20, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+            var distSumaDesfm22 = MedirDistancia(FusionarPuntos(Desfasar(-22, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+            var distSumaDesfm30 = MedirDistancia(FusionarPuntos(Desfasar(-30, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+            var distSumaDesfm40 = MedirDistancia(FusionarPuntos(Desfasar(-40, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+            var distSumaDesfm50 = MedirDistancia(FusionarPuntos(Desfasar(-50, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+            var distSumaDesfm60 = MedirDistancia(FusionarPuntos(Desfasar(-60, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
 
             int foo = 0;
+        }
+
+        List<PuntoHistorico> Desfasar(int segundosDesfase, List<PuntoHistorico> puntoHistoricos)
+        {
+            return puntoHistoricos
+                .Select(ph => new PuntoHistorico { 
+                    Lat   = ph.Lat, 
+                    Lng   = ph.Lng, 
+                    Alt   = ph.Alt, 
+                    Fecha = ph.Fecha.AddSeconds(segundosDesfase) 
+                })
+                .ToList()
+            ;
+        }
+
+        private double MedirDistancia(List<PuntoHistorico> puntoHistoricos)
+        {
+            if (!puntoHistoricos.Any())
+            {
+                return 0.0;
+            }
+            var dist = 0.0;
+            var anterior = puntoHistoricos.First();
+            foreach (var pth in puntoHistoricos.Skip(1))
+            {
+                dist += Haversine.GetDist(anterior, pth);
+                anterior = pth;
+            }
+            return dist;
         }
 
         [TestMethod]
@@ -289,7 +368,7 @@ namespace LibQPA.Testing
             ///////////////////////////////////////////////////////////////////
             // Puntos históricos Suma (XBus + SUBE)
             ///////////////////////////////////////////////////////////////////
-            var ptsHistoSumaPorFicha = FusionarPuntos(
+            var ptsHistoSumaPorFicha = FusionarDiccionarios(
                 ptsHistoXBusPorFicha, 
                 ptsHistoSUBEPorFicha
             );
@@ -328,7 +407,19 @@ namespace LibQPA.Testing
             int foo = 0;
         }
 
-        Dictionary<int, List<PuntoHistorico>> FusionarPuntos(params Dictionary<int, List<PuntoHistorico>> [] ptss)
+        List<PuntoHistorico> FusionarPuntos(params List<PuntoHistorico>[] ptss)
+        {
+            var ret = new List<PuntoHistorico>();
+
+            foreach (var pts in ptss)
+            {
+                ret.AddRange(pts);
+            }
+
+            return ret.OrderBy(ph => ph.Fecha).ToList();
+        }
+
+        Dictionary<int, List<PuntoHistorico>> FusionarDiccionarios(params Dictionary<int, List<PuntoHistorico>> [] ptss)
         {
             var ret = new Dictionary<int, List<PuntoHistorico>>();
 
