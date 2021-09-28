@@ -23,6 +23,13 @@ namespace ComunSUBE
 			Config = config;
 		}
 
+		public DatosEmpIntFicha(Configuration config, Dictionary<string, int> cacheDatos, DateTime fechaCacheDatos)
+		{
+			Config			= config;
+			_cacheDatos		= cacheDatos;
+			_fechaCacheDatos= fechaCacheDatos;
+		}
+
 		private Dictionary<string, int> LeerFichasXEmpreInterSUBE()
 		{
 			var ret = new Dictionary<string, int>();
