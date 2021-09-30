@@ -20,9 +20,17 @@ namespace LibQPA.ProveedoresVentas.DbSUBE
 
         public Configuracion Config { get; set; }
 
-        public ProveedorVentaBoletosDbSUBE(Configuracion configuracion)
+        public ProveedorVentaBoletosDbSUBE(Configuracion configuracion) : 
+            this(configuracion, null)
         {
             Config = configuracion;
+        }
+
+        public ProveedorVentaBoletosDbSUBE(
+            Configuracion configuracion, 
+            Dictionary<int, List<BoletoComun>> boletosXIdentificador)
+        {
+            BoletosXIdentificador = boletosXIdentificador;
         }
 
         public IEnumerable<BoletoComun> GetBoletos(int ficha)
@@ -76,7 +84,7 @@ namespace LibQPA.ProveedoresVentas.DbSUBE
             .Replace("{{FECHA_DESDE}}", Config.FechaDesde.ToString("dd/MM/yyyy HH:mm:ss"))
             .Replace("{{FECHA_HASTA}}", Config.FechaHasta.ToString("dd/MM/yyyy HH:mm:ss"))
             ;
-
+            
             using var conn   = new SqlConnection(Config.ConnectionString);
             conn.Open();
             using var cmd    = new SqlCommand(consulta, conn);

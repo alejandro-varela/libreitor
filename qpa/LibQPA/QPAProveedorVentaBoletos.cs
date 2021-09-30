@@ -5,7 +5,7 @@ namespace LibQPA
     public abstract class QPAProveedorVentaBoletos<TBoleto>
     {
         private readonly object _lockInterno = new object();
-        private Dictionary<int, List<TBoleto>> _ventasXIdentificador;
+        private Dictionary<int, List<TBoleto>> _boletosXIdentificador;
 
         public Dictionary<int, List<TBoleto>> BoletosXIdentificador
         {
@@ -13,13 +13,20 @@ namespace LibQPA
             {
                 lock (_lockInterno)
                 {
-                    if (_ventasXIdentificador == null)
+                    if (_boletosXIdentificador == null)
                     {
-                        _ventasXIdentificador = LeerDB();
+                        _boletosXIdentificador = LeerDB();
                     }
                 }
 
-                return _ventasXIdentificador;
+                return _boletosXIdentificador;
+            }
+            set
+            {
+                lock (_lockInterno)
+                {
+                    _boletosXIdentificador = value;
+                }
             }
         }
 

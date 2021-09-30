@@ -407,25 +407,54 @@ namespace LibQPA.Testing
             ///////////////////////////////////////////////////////////////////
             // Venta de boletos
             ///////////////////////////////////////////////////////////////////
+            Dictionary<int, List<BoletoComun>> boletosXFicha;
+            const string ARCHIVO_BOLETOS = "BoletosSUBE.json";
+            var proveedorVentaBoletosConfig = new ProveedorVentaBoletosDbSUBE.Configuracion
+            {
+                CommandTimeout = 600,
+                ConnectionString = Configu.ConnectionStringVentasSUBE,
+                DatosEmpIntFicha = datosEmpIntFicha,
+                FechaDesde = desde,
+                FechaHasta = hasta,
+            };
 
-            var proveedorVentaBoletos = new ProveedorVentaBoletosDbSUBE(
-                new ProveedorVentaBoletosDbSUBE.Configuracion
-                {
-                    CommandTimeout = 600,
-                    ConnectionString = Configu.ConnectionStringVentasSUBE,
-                    DatosEmpIntFicha = datosEmpIntFicha,
-                    FechaDesde = desde,
-                    FechaHasta = hasta,
-                });
+            ProveedorVentaBoletosDbSUBE proveedorVentaBoletos;
 
-            proveedorVentaBoletos.TieneBoletosEnIntervalo(0, DateTime.Now, DateTime.Now);
+            if (File.Exists(ARCHIVO_BOLETOS))
+            {
+                var json = File.ReadAllText(ARCHIVO_BOLETOS);
+                boletosXFicha = JsonConvert.DeserializeObject<Dictionary<int, List<BoletoComun>>>(json);
+                proveedorVentaBoletos = new ProveedorVentaBoletosDbSUBE(
+                    proveedorVentaBoletosConfig,
+                    boletosXFicha
+                );
+            }
+            else
+            {
+                proveedorVentaBoletos = new ProveedorVentaBoletosDbSUBE(proveedorVentaBoletosConfig);
+                proveedorVentaBoletos.TieneBoletosEnIntervalo(0, DateTime.Now, DateTime.Now);
+                boletosXFicha = proveedorVentaBoletos.BoletosXIdentificador;
+                File.WriteAllText(
+                    ARCHIVO_BOLETOS,
+                    JsonConvert.SerializeObject(boletosXFicha)
+                );
+            }
 
             ///////////////////////////////////////////////////////////////////
             // Procesamiento de los datos (para todas las fichas)
             ///////////////////////////////////////////////////////////////////
 
-            //var (resultadosSUBE, resulFichasSUBE) = ProcesarTodo(recorridosTeoricos, topes2D, puntasNombradas, recoPatterns, ptsHistoSUBEPorFicha, fichasSUBE);
-            //PonerResultadosEnUnArchivo("SUBE.txt", resultadosSUBE, resulFichasSUBE, proveedorVentaBoletos);
+            var (resultadosSUBE, resulFichasSUBE) = ProcesarTodo(
+                recorridosTeoricos, topes2D, puntasNombradas, recoPatterns, 
+                ptsHistoSUBEPorFicha,  fichasSUBE
+            );
+
+            PonerResultadosEnUnArchivo(
+                "SUBE_80X100", 
+                resultadosSUBE, resulFichasSUBE, proveedorVentaBoletos, 
+                (ficha, resultado) => resultado.PorcentajeReconocido >= 80
+                //(ficha, resultado) => true
+            );
 
             //var (resultadosXBus, resulFichasXBus) = ProcesarTodo(recorridosTeoricos, topes2D, puntasNombradas, recoPatterns, ptsHistoXBusPorFicha, fichasXBus);
             //PonerResultadosEnUnArchivo("XBus.txt", resultadosXBus, resulFichasXBus, proveedorVentaBoletos);
@@ -433,10 +462,10 @@ namespace LibQPA.Testing
             //var (resultadosSuma, resulFichasSuma) = ProcesarTodo(recorridosTeoricos, topes2D, puntasNombradas, recoPatterns, ptsHistoSumaPorFicha, fichasSuma);
             //PonerResultadosEnUnArchivo("Suma.txt", resultadosSuma, resulFichasSuma, proveedorVentaBoletos);
 
-            var punfus = FusionarPuntos(Desfasar(24, ptsHistoXBusPorFicha[4359]), ptsHistoSUBEPorFicha[4359]);
-            QPAProcessor proc2 = new QPAProcessor();
-            var result = proc2.Procesar(recorridosTeoricos, punfus, topes2D, puntasNombradas, recoPatterns);
-            PonerResultadosEnUnArchivo("4359.txt", new List<QPAResult> { result }, new List<int> { 4359 }, proveedorVentaBoletos);
+            //var punfus = FusionarPuntos(Desfasar(24, ptsHistoXBusPorFicha[4359]), ptsHistoSUBEPorFicha[4359]);
+            //QPAProcessor proc2 = new QPAProcessor();
+            //var result = proc2.Procesar(recorridosTeoricos, punfus, topes2D, puntasNombradas, recoPatterns);
+            //PonerResultadosEnUnArchivo("4359.txt", new List<QPAResult> { result }, new List<int> { 4359 }, proveedorVentaBoletos);
 
             int foo = 0;
         }
@@ -501,7 +530,7 @@ namespace LibQPA.Testing
             var resultados  = new List<QPAResult>();
             var resulfichas = new List<int>();
 
-            foreach (var ficha in fichas)
+            foreach (var ficha in fichas.OrderBy(f => f))
             {
                 try
                 {
@@ -546,24 +575,63 @@ namespace LibQPA.Testing
             return (resultados, resulfichas);
         }
 
-        private void PonerResultadosEnUnArchivo(string nombreArchivo, List<QPAResult> resultados, List<int> fichas, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos)
+        private void PonerResultadosEnUnArchivo(string nombreSinExtension, List<QPAResult> resultados, List<int> fichas, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos, Func<int, QPAResult, bool> filtroFichaResultado)
         {
-            var textosResultados = new List<string>();
+            var lstTextosPlanos = new List<string>();
+            var lstTextosCSV = new List<string>();
+            //3199;163;2769;2021/09/07 05:49:38;2021/09/07 07:33:10;50;
+            lstTextosCSV.Add("ficha;linea;bandera;inicio;fin;cantbol");
+
             for (int i = 0; i < resultados.Count; i++)
             {
                 var resultado = resultados[i];
-                if (resultado.PorcentajeReconocido < 80) 
+                int ficha = fichas[i];
+
+                //if (resultado.PorcentajeReconocido < 80) 
+                if (!filtroFichaResultado(ficha, resultado))
                 { 
                     continue;
                 }
-                int ficha = fichas[i];
-                var textoResultado = CrearTexto(resultado, proveedorVentaBoletos, ficha);
-                textosResultados.Add(textoResultado);
+                
+                var textoPlano  = CrearTextoPlano   (resultado, proveedorVentaBoletos, ficha);
+                var textoCSV    = CrearTextoCSV     (resultado, proveedorVentaBoletos, ficha).TrimEnd();
+
+                lstTextosPlanos.Add(textoPlano);
+                lstTextosCSV.Add(textoCSV);
             }
-            File.WriteAllLines(nombreArchivo, textosResultados.ToArray());
+
+            File.WriteAllLines(nombreSinExtension + ".txt", lstTextosPlanos .ToArray());
+            File.WriteAllLines(nombreSinExtension + ".csv", lstTextosCSV    .ToArray());
         }
 
-        private string CrearTexto(QPAResult resultado, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos, int ficha)
+        private string CrearTextoCSV(QPAResult resultado, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos, int ficha, char sep = ';')
+        {
+            var sbRenglones = new StringBuilder();
+
+            foreach (var subCamino in resultado.SubCaminos)
+            {
+                var linBanPuns = subCamino
+                    .LineasBanderasPuntuaciones
+                    .OrderBy(lbp => lbp.Puntuacion)
+                    .ToList ()
+                ;
+                var linea   = linBanPuns[0].Linea;
+                var bandera = linBanPuns[0].Bandera;
+                var inicio  = subCamino.HoraComienzo.ToString("dd/MM/yyyy HH:mm:ss");
+                var fin     = subCamino.HoraFin.ToString("dd/MM/yyyy HH:mm:ss");
+                var cantBoletos = proveedorVentaBoletos
+                    .GetBoletosEnIntervalo(ficha, subCamino.HoraComienzo, subCamino.HoraFin)
+                    .Count  ()
+                ;
+                var renglon = $"{ficha}{sep}{linea}{sep}{bandera}{sep}{inicio}{sep}{fin}{sep}{cantBoletos}";
+                sbRenglones.AppendLine(renglon);
+            }
+
+            var ret = sbRenglones.ToString();
+            return ret;
+        }
+
+        private string CrearTextoPlano(QPAResult resultado, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos, int ficha)
         {
             var sbResult = new StringBuilder();
             sbResult.AppendLine(new string('-', 80));
