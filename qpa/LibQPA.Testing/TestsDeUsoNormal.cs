@@ -453,7 +453,12 @@ namespace LibQPA.Testing
                 "SUBE_80X100", 
                 resultadosSUBE, resulFichasSUBE, proveedorVentaBoletos, 
                 (ficha, resultado) => resultado.PorcentajeReconocido >= 80
-                //(ficha, resultado) => true
+            );
+
+            PonerResultadosEnUnArchivo(
+                "SUBE_TODO",
+                resultadosSUBE, resulFichasSUBE, proveedorVentaBoletos,
+                (ficha, resultado) => resultado.PorcentajeReconocido >= 0
             );
 
             //var (resultadosXBus, resulFichasXBus) = ProcesarTodo(recorridosTeoricos, topes2D, puntasNombradas, recoPatterns, ptsHistoXBusPorFicha, fichasXBus);
@@ -467,7 +472,100 @@ namespace LibQPA.Testing
             //var result = proc2.Procesar(recorridosTeoricos, punfus, topes2D, puntasNombradas, recoPatterns);
             //PonerResultadosEnUnArchivo("4359.txt", new List<QPAResult> { result }, new List<int> { 4359 }, proveedorVentaBoletos);
 
+            Dictionary<int, (int, int)> fichasXEmpIntSUBE = datosEmpIntFicha
+                .Get()
+                .ToDictionary(x => x.Value, x => x.Key)
+            ;
+
+            var reporte = new CSVReport()
+            {
+                UsesHeader      = true,
+                Separator       = ';',
+                HeaderBuilder   = (sep) => string.Join(sep, new[] { "empresaSUBE", "internoSUBE", "ficha", "linea", "bandera", "inicio", "fin", "cantbol", "cantbolopt" }),
+                ItemsBuilder    = (sep) => CrearItemsCSV(sep, resultadosSUBE, resulFichasSUBE, fichasXEmpIntSUBE, proveedorVentaBoletos)
+            };
+
+            File.WriteAllText("jaja0.txt", reporte.ToString());
+
             int foo = 0;
+        }
+
+        IEnumerable<string> CrearItemsCSV(char sep, List<QPAResult> resultadosSUBE, List<int> fichasSUBE, Dictionary<int, (int, int)> fichasXEmpIntSUBE, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos)
+        {
+            int count = 0;
+            for (int i = 0; i < resultadosSUBE.Count; i++)
+            {
+                if (resultadosSUBE[i].PorcentajeReconocido >= 80)
+                {
+                    count++;
+                    var itemCSV = CrearItemCSV(sep, resultadosSUBE[i], fichasSUBE[i], fichasXEmpIntSUBE, proveedorVentaBoletos);
+
+                    if (!string.IsNullOrEmpty(itemCSV))
+                    {
+                        yield return itemCSV.Trim();
+                    }
+                }
+            }
+            int foo = 0;
+        }
+
+        string CrearItemCSV(char sep, QPAResult qPAResult, int ficha, Dictionary<int, (int, int)> fichasXEmpIntSUBE, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos)
+        {
+            // OJO! esta func crea varios renglones CSV... uno para cada SubCamino (bandera) reconocido
+
+            var sbRenglones = new StringBuilder();
+            QPASubCamino subCaminoAnterior = null;
+
+            foreach (var subCamino in qPAResult.SubCaminos)
+            {
+                // empresa e ident sube...
+                var empresaSUBE = fichasXEmpIntSUBE[ficha].Item1;
+                var internoSUBE = fichasXEmpIntSUBE[ficha].Item2;
+
+                // linea y bandera
+                var linBanPuns = subCamino
+                    .LineasBanderasPuntuaciones
+                    .OrderByDescending(lbp => lbp.Puntuacion)
+                    .ToList()
+                ;
+                var linea   = linBanPuns[0].Linea;
+                var bandera = linBanPuns[0].Bandera;
+
+                // inicio y fin
+                var inicio  = subCamino.HoraComienzo.ToString("dd/MM/yyyy HH:mm:ss");
+                var fin     = subCamino.HoraFin.ToString("dd/MM/yyyy HH:mm:ss");
+
+                // cant de boletos (naive)
+                var cantBoletosNaive = proveedorVentaBoletos
+                    .GetBoletosEnIntervalo(ficha, subCamino.HoraComienzo, subCamino.HoraFin)
+                    .Count()
+                ;
+
+                // cant de boletos (optimizada)
+                var horaComienzoBoletos = subCaminoAnterior == null ?
+                    subCamino.HoraComienzo :
+                    subCaminoAnterior.HoraFin
+                ;
+                var horaFinBoletos = subCamino.HoraFin;
+                var cantBoletosOpt = proveedorVentaBoletos
+                    .GetBoletosEnIntervalo(ficha, horaComienzoBoletos, horaFinBoletos)
+                    .Count()
+                ;
+
+                // construcción del renglón
+                var valores = new object[] { empresaSUBE, internoSUBE, ficha, linea, bandera, inicio, fin, cantBoletosNaive, cantBoletosOpt };
+                var renglon = string.Join(sep, valores);
+
+                // acum renglón
+                sbRenglones.AppendLine(renglon);
+
+                // guardo el subCamino actual en la variable "anterior"
+                // esto sirve para procesar mas boletos...
+                subCaminoAnterior = subCamino;
+            }
+
+            var ret = sbRenglones.ToString();
+            return ret;
         }
 
         List<PuntoHistorico> FusionarPuntos(params List<PuntoHistorico>[] ptss)

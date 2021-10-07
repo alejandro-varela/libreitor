@@ -88,6 +88,7 @@ namespace LibQPA.ProveedoresVentas.DbSUBE
             using var conn   = new SqlConnection(Config.ConnectionString);
             conn.Open();
             using var cmd    = new SqlCommand(consulta, conn);
+            cmd.CommandTimeout = Config.CommandTimeout;
             using var reader = cmd.ExecuteReader();
 
             while (reader.Read())
