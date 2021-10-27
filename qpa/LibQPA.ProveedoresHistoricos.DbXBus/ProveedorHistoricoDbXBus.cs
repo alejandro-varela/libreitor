@@ -8,7 +8,7 @@ namespace LibQPA.ProveedoresHistoricos.DbXBus
 	public partial class ProveedorHistoricoDbXBus : IQPAProveedorPuntosHistoricos
 	{
 		DateTime _fechaCache = DateTime.MinValue;
-		Dictionary<int, List<PuntoHistorico>> _cache = new Dictionary<int, List<PuntoHistorico>>();
+		Dictionary<string, List<PuntoHistorico>> _cache = new Dictionary<string, List<PuntoHistorico>>();
 
 		[Flags]
 		public enum TipoEquipo
@@ -35,9 +35,9 @@ namespace LibQPA.ProveedoresHistoricos.DbXBus
 			UsarCache = usarCache;
 		}
 
-		public Dictionary<int, List<PuntoHistorico>> LeerDB(string connString, int equipoDesde, int equipoHasta, DateTime fechaDesde, DateTime fechaHasta)
+		public Dictionary<string, List<PuntoHistorico>> LeerDB(string connString, int equipoDesde, int equipoHasta, DateTime fechaDesde, DateTime fechaHasta)
 		{
-			var ret = new Dictionary<int, List<PuntoHistorico>>();
+			var ret = new Dictionary<string, List<PuntoHistorico>>();
 
 			// hacer consulta
 			var consulta = ConsultaSQLBasica(
@@ -65,9 +65,9 @@ namespace LibQPA.ProveedoresHistoricos.DbXBus
 				var latitudCorregida = -Math.Abs(lat);
 				var longitudCorregida = -Math.Abs(lng);
 
-				if (!ret.ContainsKey(ficha))
+				if (!ret.ContainsKey(ficha.ToString()))
 				{
-					ret.Add(ficha, new List<PuntoHistorico>());
+					ret.Add(ficha.ToString(), new List<PuntoHistorico>());
 				}
 
 				var puntoHistorico = new PuntoHistorico
@@ -78,13 +78,13 @@ namespace LibQPA.ProveedoresHistoricos.DbXBus
 					Lng = longitudCorregida,
 				};
 
-				ret[ficha].Add(puntoHistorico);
+				ret[ficha.ToString()].Add(puntoHistorico);
 			}
 
 			return ret;
 		}
 
-		public Dictionary<int, List<PuntoHistorico>> Get()
+		public Dictionary<string, List<PuntoHistorico>> Get()
         {
 			int equipoDesde = 0;
 			int equipoHasta = 0;
@@ -107,7 +107,7 @@ namespace LibQPA.ProveedoresHistoricos.DbXBus
 			}
 			else
 			{
-				return new Dictionary<int, List<PuntoHistorico>>();
+				return new Dictionary<string, List<PuntoHistorico>>();
 			}
 
 			if (DateTime.Now.Subtract(_fechaCache) > TimeSpan.FromMinutes(1))

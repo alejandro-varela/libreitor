@@ -96,7 +96,18 @@ namespace ComunSUBE
 			}
         }
 
-        private static string KeyBuilder(int empresa, int interno)
+		public int GetFicha(string identSUBE, char sep = '-', int @default = -1, bool overrideCache = false)
+		{
+			string sEmpresa = identSUBE.Split(sep)[0];
+			string sInterno = identSUBE.Split(sep)[1];
+
+			int empresa = int.Parse(sEmpresa);
+			int interno = int.Parse(sInterno);
+
+			return GetFicha(empresa, interno, @default, overrideCache);
+		}
+
+		private static string KeyBuilder(int empresa, int interno)
         {
             return $"{empresa}-{interno}";
         }

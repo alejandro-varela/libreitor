@@ -29,6 +29,7 @@ namespace LibQPA
         public int RadioPuntasMts  { get; set; } = 800;
 
         public QPAResult Procesar(
+            string                  identificador,
             List<RecorridoLinBan>   recorridosTeoricos,
             List<PuntoHistorico>    puntosHistoricos,
             Topes2D                 topes2D,
@@ -147,6 +148,7 @@ namespace LibQPA
 
             return new QPAResult
             {
+                Identificador = identificador,
                 Camino = caminoHistorico,
                 SubCaminos = subCaminos,
             };

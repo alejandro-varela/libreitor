@@ -6,6 +6,6 @@ namespace LibQPA
 {
     public interface IQPAProveedorPuntosHistoricos
     {
-        Dictionary<int, List<PuntoHistorico>> Get();
+        Dictionary<string, List<PuntoHistorico>> Get();
     }
 }

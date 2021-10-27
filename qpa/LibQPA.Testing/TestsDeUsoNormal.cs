@@ -1,6 +1,7 @@
 using Comun;
 using ComunSUBE;
 using LibQPA.ProveedoresHistoricos.DbXBus;
+using LibQPA.ProveedoresHistoricos.JsonSUBE;
 using LibQPA.ProveedoresTecnobus;
 using LibQPA.ProveedoresVentas.DbSUBE;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -76,150 +77,157 @@ namespace LibQPA.Testing
             int foo = 0;
         }
 
-        [TestMethod]
-        public void TestFusion()
-        {
-            // fechas desde hasta
-            var desde = new DateTime(2021, 09, 7, 00, 00, 00);
-            var hasta = new DateTime(2021, 09, 8, 00, 00, 00);
+        //[TestMethod]
+        //public void TestFusion()
+        //{
+        //    // fechas desde hasta
+        //    var desde = new DateTime(2021, 09, 7, 00, 00, 00);
+        //    var hasta = new DateTime(2021, 09, 8, 00, 00, 00);
 
-            // tipos de coches
-            var tipoCoches = ProveedorHistoricoDbXBus.TipoEquipo.PICOBUS;
+        //    // tipos de coches
+        //    var tipoCoches = ProveedorHistoricoDbXBus.TipoEquipo.PICOBUS;
 
-            ///////////////////////////////////////////////////////////////////
-            // Datos Empresa-Interno / Ficha
-            //  Sirve para:
-            //      Puntos SUBE
-            //      Ventas de boleto SUBE
-            ///////////////////////////////////////////////////////////////////
-            var datosEmpIntFicha = new ComunSUBE.DatosEmpIntFicha(new ComunSUBE.DatosEmpIntFicha.Configuration()
-            {
-                CommandTimeout = 600,
-                ConnectionString = Configu.ConnectionStringFichasXEmprIntSUBE,
-                MaxCacheSeconds = 15 * 60,
-            });
+        //    ///////////////////////////////////////////////////////////////////
+        //    // Datos Empresa-Interno / Ficha
+        //    //  Sirve para:
+        //    //      Puntos SUBE
+        //    //      Ventas de boleto SUBE
+        //    ///////////////////////////////////////////////////////////////////
+        //    var datosEmpIntFicha = new ComunSUBE.DatosEmpIntFicha(new ComunSUBE.DatosEmpIntFicha.Configuration()
+        //    {
+        //        CommandTimeout = 600,
+        //        ConnectionString = Configu.ConnectionStringFichasXEmprIntSUBE,
+        //        MaxCacheSeconds = 15 * 60,
+        //    });
             
-            ///////////////////////////////////////////////////////////////////
-            // Puntos históricos XBus
-            ///////////////////////////////////////////////////////////////////
-            Dictionary<int, List<PuntoHistorico>> ptsHistoXBusPorFicha;
-            const string ARCHIVO_XBUS = "PtsHistoXBus.json";
+        //    ///////////////////////////////////////////////////////////////////
+        //    // Puntos históricos XBus
+        //    ///////////////////////////////////////////////////////////////////
+        //    Dictionary<string, List<PuntoHistorico>> ptsHistoXBusPorFicha;
+        //    const string ARCHIVO_XBUS = "PtsHistoXBus.json";
 
-            if (File.Exists(ARCHIVO_XBUS))
-            {
-                var json = File.ReadAllText(ARCHIVO_XBUS);
-                ptsHistoXBusPorFicha = JsonConvert.DeserializeObject<Dictionary<int, List<PuntoHistorico>>>(json);
-            }
-            else
-            {
-                var proveedorPtsHistoXBus = new ProveedorHistoricoDbXBus(
-                    new ProveedorHistoricoDbXBus.Configuracion
-                    {
-                        CommandTimeout = 600,
-                        ConnectionString = Configu.ConnectionStringPuntosXBus,
-                        Tipo = tipoCoches,
-                        FechaDesde = desde,
-                        FechaHasta = hasta,
-                    });
-                ptsHistoXBusPorFicha = proveedorPtsHistoXBus.Get();
-                File.WriteAllText(
-                    ARCHIVO_XBUS,
-                    JsonConvert.SerializeObject(ptsHistoXBusPorFicha)
-                );
-            }
-            var fichasXBus = ptsHistoXBusPorFicha.Keys.ToList();
+        //    if (File.Exists(ARCHIVO_XBUS))
+        //    {
+        //        var json = File.ReadAllText(ARCHIVO_XBUS);
+        //        ptsHistoXBusPorFicha = JsonConvert.DeserializeObject<Dictionary<string, List<PuntoHistorico>>>(json);
+        //    }
+        //    else
+        //    {
+        //        var proveedorPtsHistoXBus = new ProveedorHistoricoDbXBus(
+        //            new ProveedorHistoricoDbXBus.Configuracion
+        //            {
+        //                CommandTimeout = 600,
+        //                ConnectionString = Configu.ConnectionStringPuntosXBus,
+        //                Tipo = tipoCoches,
+        //                FechaDesde = desde,
+        //                FechaHasta = hasta,
+        //            });
+        //        ptsHistoXBusPorFicha = proveedorPtsHistoXBus.Get();
+        //        File.WriteAllText(
+        //            ARCHIVO_XBUS,
+        //            JsonConvert.SerializeObject(ptsHistoXBusPorFicha)
+        //        );
+        //    }
+        //    var fichasXBus = ptsHistoXBusPorFicha.Keys
+        //        .Select(key => int.Parse(key))
+        //        .ToList()
+        //    ;
 
-            ///////////////////////////////////////////////////////////////////
-            // Puntos históricos SUBE
-            ///////////////////////////////////////////////////////////////////
-            Dictionary<int, List<PuntoHistorico>> ptsHistoSUBEPorFicha;
-            const string ARCHIVO_SUBE = "PtsHistoSUBE.json";
+        //    ///////////////////////////////////////////////////////////////////
+        //    // Puntos históricos SUBE
+        //    ///////////////////////////////////////////////////////////////////
+        //    Dictionary<string, List<PuntoHistorico>> ptsHistoSUBEPorFicha;
+        //    const string ARCHIVO_SUBE = "PtsHistoSUBE.json";
 
-            if (File.Exists(ARCHIVO_SUBE))
-            {
-                var json = File.ReadAllText(ARCHIVO_SUBE);
-                ptsHistoSUBEPorFicha = JsonConvert.DeserializeObject<Dictionary<int, List<PuntoHistorico>>>(json);
-            }
-            else
-            {
-                var proveedorPtsHistoSUBE = new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE(
-                new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE.Configuracion
-                {
-                    CommandTimeout = 600,
-                    ConnectionStringPuntos = Configu.ConnectionStringPuntosSUBE,
-                    DatosEmpIntFicha = datosEmpIntFicha,
-                    FechaDesde = desde,
-                    FechaHasta = hasta,
-                });
-                ptsHistoSUBEPorFicha = proveedorPtsHistoSUBE.Get();
-                File.WriteAllText(
-                    ARCHIVO_SUBE,
-                    JsonConvert.SerializeObject(ptsHistoSUBEPorFicha)
-                );
-            }
+        //    if (File.Exists(ARCHIVO_SUBE))
+        //    {
+        //        var json = File.ReadAllText(ARCHIVO_SUBE);
+        //        ptsHistoSUBEPorFicha = JsonConvert.DeserializeObject<Dictionary<string, List<PuntoHistorico>>>(json);
+        //    }
+        //    else
+        //    {
+        //        var proveedorPtsHistoSUBE = new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE(
+        //        new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE.Configuracion
+        //        {
+        //            CommandTimeout = 600,
+        //            ConnectionStringPuntos = Configu.ConnectionStringPuntosSUBE,
+        //            //DatosEmpIntFicha = datosEmpIntFicha,
+        //            FechaDesde = desde,
+        //            FechaHasta = hasta,
+        //        });
+        //        ptsHistoSUBEPorFicha = proveedorPtsHistoSUBE.Get();
+        //        File.WriteAllText(
+        //            ARCHIVO_SUBE,
+        //            JsonConvert.SerializeObject(ptsHistoSUBEPorFicha)
+        //        );
+        //    }
 
-            var fichasSUBE = ptsHistoSUBEPorFicha.Keys.ToList();
+        //    //var fichasSUBE = ptsHistoSUBEPorFicha.Keys.ToList();
+        //    var fichasSUBE = ptsHistoSUBEPorFicha
+        //        .Keys
+        //        .Select(identSUBE => datosEmpIntFicha.GetFicha(identSUBE, '-', -1))
+        //    ;
 
-            //////////
-            var union = 
-                fichasSUBE
-                .Union      (fichasXBus)
-                .OrderBy    (f => f)
-                .ToList     ()
-            ;
+        //    //////////
+        //    var union = 
+        //        fichasSUBE
+        //        .Union      (fichasXBus)
+        //        .OrderBy    (f => f)
+        //        .ToList     ()
+        //    ;
 
-            //////////
-            var interseccion  = 
-                fichasSUBE
-                .Intersect  (fichasXBus)
-                .OrderBy    (f => f)
-                .ToList     ()
-            ;
+        //    //////////
+        //    var interseccion  = 
+        //        fichasSUBE
+        //        .Intersect  (fichasXBus)
+        //        .OrderBy    (f => f)
+        //        .ToList     ()
+        //    ;
 
-            //////////
-            // en caso de interseccion muestro los puntos que tiene cada ficha de cada conjunto
-            var puntosDeCadaUno = interseccion
-                .Select(f => $"La ficha {f} tiene XBus={ptsHistoXBusPorFicha[f].Count} SUBE={ptsHistoSUBEPorFicha[f].Count}")
-                .ToList();
-            ;
+        //    //////////
+        //    // en caso de interseccion muestro los puntos que tiene cada ficha de cada conjunto
+        //    var puntosDeCadaUno = interseccion
+        //        .Select(f => $"La ficha {f} tiene XBus={ptsHistoXBusPorFicha[f].Count} SUBE={ptsHistoSUBEPorFicha[f].Count}")
+        //        .ToList();
+        //    ;
 
-            //////////
-            // primero de la interseccion
-            var caso1 = 4359; //interseccion.First();
+        //    //////////
+        //    // primero de la interseccion
+        //    var caso1 = "4359"; //interseccion.First();
 
-            var distXBus = MedirDistancia(ptsHistoXBusPorFicha[caso1]);
-            var distSUBE = MedirDistancia(ptsHistoSUBEPorFicha[caso1]);
+        //    var distXBus = MedirDistancia(ptsHistoXBusPorFicha[caso1]);
+        //    var distSUBE = MedirDistancia(ptsHistoSUBEPorFicha[caso1]);
 
-            var distAB = MedirDistancia(new PuntoHistorico[] { ptsHistoXBusPorFicha[caso1][0], ptsHistoSUBEPorFicha[caso1][^1] }.ToList());
-            var distBA = MedirDistancia(new PuntoHistorico[] { ptsHistoXBusPorFicha[caso1][^1], ptsHistoSUBEPorFicha[caso1][0] }.ToList());
+        //    var distAB = MedirDistancia(new PuntoHistorico[] { ptsHistoXBusPorFicha[caso1][0], ptsHistoSUBEPorFicha[caso1][^1] }.ToList());
+        //    var distBA = MedirDistancia(new PuntoHistorico[] { ptsHistoXBusPorFicha[caso1][^1], ptsHistoSUBEPorFicha[caso1][0] }.ToList());
 
-            var distSumaNormal  = MedirDistancia(FusionarPuntos(ptsHistoXBusPorFicha[caso1], ptsHistoSUBEPorFicha[caso1]));
+        //    var distSumaNormal  = MedirDistancia(FusionarPuntos(ptsHistoXBusPorFicha[caso1], ptsHistoSUBEPorFicha[caso1]));
 
-            var distSumaDesf1   = MedirDistancia(FusionarPuntos(Desfasar( 1, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
-            var distSumaDesf5   = MedirDistancia(FusionarPuntos(Desfasar( 5, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
-            var distSumaDesf10  = MedirDistancia(FusionarPuntos(Desfasar(10, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
-            var distSumaDesf18  = MedirDistancia(FusionarPuntos(Desfasar(18, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
-            var distSumaDesf20  = MedirDistancia(FusionarPuntos(Desfasar(20, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
-            var distSumaDesf22  = MedirDistancia(FusionarPuntos(Desfasar(22, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
-            var distSumaDesf24  = MedirDistancia(FusionarPuntos(Desfasar(24, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
-            var distSumaDesf30  = MedirDistancia(FusionarPuntos(Desfasar(30, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
-            var distSumaDesf40  = MedirDistancia(FusionarPuntos(Desfasar(40, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
-            var distSumaDesf50  = MedirDistancia(FusionarPuntos(Desfasar(50, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
-            var distSumaDesf60  = MedirDistancia(FusionarPuntos(Desfasar(60, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+        //    var distSumaDesf1   = MedirDistancia(FusionarPuntos(Desfasar( 1, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+        //    var distSumaDesf5   = MedirDistancia(FusionarPuntos(Desfasar( 5, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+        //    var distSumaDesf10  = MedirDistancia(FusionarPuntos(Desfasar(10, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+        //    var distSumaDesf18  = MedirDistancia(FusionarPuntos(Desfasar(18, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+        //    var distSumaDesf20  = MedirDistancia(FusionarPuntos(Desfasar(20, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+        //    var distSumaDesf22  = MedirDistancia(FusionarPuntos(Desfasar(22, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+        //    var distSumaDesf24  = MedirDistancia(FusionarPuntos(Desfasar(24, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+        //    var distSumaDesf30  = MedirDistancia(FusionarPuntos(Desfasar(30, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+        //    var distSumaDesf40  = MedirDistancia(FusionarPuntos(Desfasar(40, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+        //    var distSumaDesf50  = MedirDistancia(FusionarPuntos(Desfasar(50, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+        //    var distSumaDesf60  = MedirDistancia(FusionarPuntos(Desfasar(60, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
 
-            var distSumaDesfm1  = MedirDistancia(FusionarPuntos(Desfasar( -1, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
-            var distSumaDesfm5  = MedirDistancia(FusionarPuntos(Desfasar( -5, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
-            var distSumaDesfm10 = MedirDistancia(FusionarPuntos(Desfasar(-10, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
-            var distSumaDesfm18 = MedirDistancia(FusionarPuntos(Desfasar(-18, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
-            var distSumaDesfm20 = MedirDistancia(FusionarPuntos(Desfasar(-20, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
-            var distSumaDesfm22 = MedirDistancia(FusionarPuntos(Desfasar(-22, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
-            var distSumaDesfm30 = MedirDistancia(FusionarPuntos(Desfasar(-30, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
-            var distSumaDesfm40 = MedirDistancia(FusionarPuntos(Desfasar(-40, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
-            var distSumaDesfm50 = MedirDistancia(FusionarPuntos(Desfasar(-50, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
-            var distSumaDesfm60 = MedirDistancia(FusionarPuntos(Desfasar(-60, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+        //    var distSumaDesfm1  = MedirDistancia(FusionarPuntos(Desfasar( -1, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+        //    var distSumaDesfm5  = MedirDistancia(FusionarPuntos(Desfasar( -5, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+        //    var distSumaDesfm10 = MedirDistancia(FusionarPuntos(Desfasar(-10, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+        //    var distSumaDesfm18 = MedirDistancia(FusionarPuntos(Desfasar(-18, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+        //    var distSumaDesfm20 = MedirDistancia(FusionarPuntos(Desfasar(-20, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+        //    var distSumaDesfm22 = MedirDistancia(FusionarPuntos(Desfasar(-22, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+        //    var distSumaDesfm30 = MedirDistancia(FusionarPuntos(Desfasar(-30, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+        //    var distSumaDesfm40 = MedirDistancia(FusionarPuntos(Desfasar(-40, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+        //    var distSumaDesfm50 = MedirDistancia(FusionarPuntos(Desfasar(-50, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
+        //    var distSumaDesfm60 = MedirDistancia(FusionarPuntos(Desfasar(-60, ptsHistoXBusPorFicha[caso1]), ptsHistoSUBEPorFicha[caso1]));
 
-            int foo = 0;
-        }
+        //    int foo = 0;
+        //}
 
         List<PuntoHistorico> Desfasar(int segundosDesfase, List<PuntoHistorico> puntoHistoricos)
         {
@@ -250,6 +258,31 @@ namespace LibQPA.Testing
             return dist;
         }
 
+        public enum ProveedorKey
+        { 
+            DbSUBE,
+            DbXBus,
+            JsonSUBE,
+        }
+
+        [TestMethod]
+        public void TestArch()
+        {
+            // fechas desde hasta
+            var desde = new DateTime(2021, 09, 11, 23, 55, 00);
+            var hasta = new DateTime(2021, 09, 12, 00, 05, 00);
+
+            var proveedorPtsHistoJsonSUBE = new ProveedoresHistoricos.JsonSUBE.ProveedorHistoricoJsonSUBE
+            {
+                InputDir = @"D:\EstadosCoches\Agency49\",
+                FechaDesde = desde,
+                FechaHasta = hasta,
+            };
+
+            var pepe = proveedorPtsHistoJsonSUBE.Get();
+            var foo = 0;
+        }
+
         [TestMethod]
         public void TestQPA1()
         {
@@ -264,14 +297,19 @@ namespace LibQPA.Testing
             int radioPuntasDeLineaMts = 800;
 
             // fechas desde hasta
-            var desde = new DateTime(2021, 09, 7, 00, 00, 00);
-            var hasta = new DateTime(2021, 09, 8, 00, 00, 00);
+            //var desde = new DateTime(2021, 09, 7, 00, 00, 00);
+            //var hasta = new DateTime(2021, 09, 8, 00, 00, 00);
+            var desde = new DateTime(2021, 09, 30, 00, 00, 00);
+            var hasta = new DateTime(2021, 10, 01, 00, 00, 00);
 
             // códigos de las líneas para este cálculo
             var lineasPosibles = new int[] { 159, 163 };
 
             // tipos de coches
             var tipoCoches = ProveedorHistoricoDbXBus.TipoEquipo.PICOBUS;
+
+            // proveedor key
+            var proveedorKey = ProveedorKey.JsonSUBE;
 
             ///////////////////////////////////////////////////////////////////
             // recorridos teóricos / topes / puntas nombradas / recopatterns
@@ -333,82 +371,142 @@ namespace LibQPA.Testing
                 MaxCacheSeconds = 15 * 60,
             });
 
-            ///////////////////////////////////////////////////////////////////
-            // Puntos históricos XBus
-            ///////////////////////////////////////////////////////////////////
-            Dictionary<int, List<PuntoHistorico>> ptsHistoXBusPorFicha;
-            const string ARCHIVO_XBUS = "PtsHistoXBus.json";
+            /////////////////////////////////////////////////////////////////////
+            //// Puntos históricos XBus
+            /////////////////////////////////////////////////////////////////////
+            //Dictionary<string, List<PuntoHistorico>> ptsHistoXBusPorFicha;
+            //const string ARCHIVO_XBUS = "PtsHistoXBus.json";
 
-            if (File.Exists(ARCHIVO_XBUS))
-            {
-                var json = File.ReadAllText(ARCHIVO_XBUS);
-                ptsHistoXBusPorFicha = JsonConvert.DeserializeObject<Dictionary<int, List<PuntoHistorico>>>(json);
-            }
-            else
-            {
-                var proveedorPtsHistoXBus = new ProveedorHistoricoDbXBus(
-                    new ProveedorHistoricoDbXBus.Configuracion
-                    {
-                        CommandTimeout = 600,
-                        ConnectionString = Configu.ConnectionStringPuntosXBus,
-                        Tipo = tipoCoches,
-                        FechaDesde = desde,
-                        FechaHasta = hasta,
-                    });
-                ptsHistoXBusPorFicha = proveedorPtsHistoXBus.Get();
-                File.WriteAllText(
-                    ARCHIVO_XBUS,
-                    JsonConvert.SerializeObject(ptsHistoXBusPorFicha)
-                );
-            }
-            var fichasXBus = ptsHistoXBusPorFicha.Keys.ToList();
+            //if (File.Exists(ARCHIVO_XBUS))
+            //{
+            //    var json = File.ReadAllText(ARCHIVO_XBUS);
+            //    ptsHistoXBusPorFicha = JsonConvert.DeserializeObject<Dictionary<string, List<PuntoHistorico>>>(json);
+            //}
+            //else
+            //{
+            //    var proveedorPtsHistoXBus = new ProveedorHistoricoDbXBus(
+            //        new ProveedorHistoricoDbXBus.Configuracion
+            //        {
+            //            CommandTimeout = 600,
+            //            ConnectionString = Configu.ConnectionStringPuntosXBus,
+            //            Tipo = tipoCoches,
+            //            FechaDesde = desde,
+            //            FechaHasta = hasta,
+            //        });
+            //    ptsHistoXBusPorFicha = proveedorPtsHistoXBus.Get();
+            //    File.WriteAllText(
+            //        ARCHIVO_XBUS,
+            //        JsonConvert.SerializeObject(ptsHistoXBusPorFicha)
+            //    );
+            //}
+            //var fichasXBus = ptsHistoXBusPorFicha.Keys.ToList();
 
             ///////////////////////////////////////////////////////////////////
             // Puntos históricos SUBE
             ///////////////////////////////////////////////////////////////////
-            Dictionary<int, List<PuntoHistorico>> ptsHistoSUBEPorFicha;
-            const string ARCHIVO_SUBE = "PtsHistoSUBE.json";
+            
+            Dictionary<string, List<PuntoHistorico>> ptsHistoSUBEPorIdent = null;
+            string ARCHIVO_PUNTOS_SUBE = $"__pts{proveedorKey}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json";
 
-            if (File.Exists(ARCHIVO_SUBE))
+            if (File.Exists(ARCHIVO_PUNTOS_SUBE))
             {
-                var json = File.ReadAllText(ARCHIVO_SUBE);
-                ptsHistoSUBEPorFicha = JsonConvert.DeserializeObject<Dictionary<int, List<PuntoHistorico>>>(json);
+                var json = File.ReadAllText(ARCHIVO_PUNTOS_SUBE);
+                ptsHistoSUBEPorIdent = JsonConvert.DeserializeObject<Dictionary<string, List<PuntoHistorico>>>(json);
             }
-            else
+            else if (proveedorKey == ProveedorKey.DbSUBE)
             {
-                var proveedorPtsHistoSUBE = new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE(
-                new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE.Configuracion
-                {
-                    CommandTimeout = 600,
-                    ConnectionStringPuntos = Configu.ConnectionStringPuntosSUBE,
-                    DatosEmpIntFicha = datosEmpIntFicha,
-                    FechaDesde = desde,
-                    FechaHasta = hasta,
-                });
-                ptsHistoSUBEPorFicha = proveedorPtsHistoSUBE.Get();
+                var proveedorPtsHistoDbSUBE = new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE(
+                    new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE.Configuracion
+                    {
+                        CommandTimeout = 600,
+                        ConnectionStringPuntos = Configu.ConnectionStringPuntosSUBE,
+                        //DatosEmpIntFicha = datosEmpIntFicha,
+                        FechaDesde = desde,
+                        FechaHasta = hasta,
+                    });
+                
+                ptsHistoSUBEPorIdent = proveedorPtsHistoDbSUBE.Get();
+
                 File.WriteAllText(
-                    ARCHIVO_SUBE,
-                    JsonConvert.SerializeObject(ptsHistoSUBEPorFicha)
+                    ARCHIVO_PUNTOS_SUBE,
+                    JsonConvert.SerializeObject(ptsHistoSUBEPorIdent)
+                );
+            }
+            else if (proveedorKey == ProveedorKey.JsonSUBE)
+            { 
+                var proveedorPtsHistoJsonSUBE = new ProveedoresHistoricos.JsonSUBE.ProveedorHistoricoJsonSUBE
+                { 
+                    InputDir    = @"D:\EstadosCoches\Agency49\",
+                    FechaDesde  = desde,
+                    FechaHasta  = hasta,
+                };
+
+                ptsHistoSUBEPorIdent = proveedorPtsHistoJsonSUBE.Get();
+
+                File.WriteAllText(
+                    ARCHIVO_PUNTOS_SUBE,
+                    JsonConvert.SerializeObject(ptsHistoSUBEPorIdent)
                 );
             }
 
-            var fichasSUBE = ptsHistoSUBEPorFicha.Keys.ToList();
+            //if (proveedorKey == ProveedorKey.DbSUBE)
+            //{
+            //    if (File.Exists(ARCHIVO_PUNTOS_SUBE))
+            //    {
+            //        var json = File.ReadAllText(ARCHIVO_PUNTOS_SUBE);
+            //        ptsHistoSUBEPorIdent = JsonConvert.DeserializeObject<Dictionary<string, List<PuntoHistorico>>>(json);
+            //    }
+            //    else
+            //    {
+            //        var proveedorPtsHistoDbSUBE = new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE(
+            //        new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE.Configuracion
+            //        {
+            //            CommandTimeout = 600,
+            //            ConnectionStringPuntos = Configu.ConnectionStringPuntosSUBE,
+            //            //DatosEmpIntFicha = datosEmpIntFicha,
+            //            FechaDesde = desde,
+            //            FechaHasta = hasta,
+            //        });
+            //        ptsHistoSUBEPorIdent = proveedorPtsHistoDbSUBE.Get();
+            //        File.WriteAllText(
+            //            ARCHIVO_PUNTOS_SUBE,
+            //            JsonConvert.SerializeObject(ptsHistoSUBEPorIdent)
+            //        );
+            //    }
+            //}
+            //else if (proveedorKey == ProveedorKey.JsonSUBE)
+            //{
+            //    if (File.Exists(ARCHIVO_PUNTOS_SUBE))
+            //    {
+            //        var json = File.ReadAllText(ARCHIVO_PUNTOS_SUBE);
+            //        ptsHistoSUBEPorIdent = JsonConvert.DeserializeObject<Dictionary<string, List<PuntoHistorico>>>(json);
+            //    }
+            //    else
+            //    { 
+                    
+            //    }
+            //}
 
-            ///////////////////////////////////////////////////////////////////
-            // Puntos históricos Suma (XBus + SUBE)
-            ///////////////////////////////////////////////////////////////////
-            var ptsHistoSumaPorFicha = FusionarDiccionarios(
-                ptsHistoXBusPorFicha, 
-                ptsHistoSUBEPorFicha
-            );
+            var fichasSUBE = ptsHistoSUBEPorIdent
+                .Keys
+                .Select(ident => datosEmpIntFicha.GetFicha(ident))
+                .ToList()
+            ;
 
-            var fichasSuma = ptsHistoSumaPorFicha.Keys.ToList();
+            /////////////////////////////////////////////////////////////////////
+            //// Puntos históricos Suma (XBus + SUBE)
+            /////////////////////////////////////////////////////////////////////
+            //var ptsHistoSumaPorFicha = FusionarDiccionarios(
+            //    ptsHistoXBusPorFicha, 
+            //    ptsHistoSUBEPorFicha
+            //);
+            //var fichasSuma = ptsHistoSumaPorFicha.Keys.ToList();
 
             ///////////////////////////////////////////////////////////////////
             // Venta de boletos
             ///////////////////////////////////////////////////////////////////
             Dictionary<int, List<BoletoComun>> boletosXFicha;
-            const string ARCHIVO_BOLETOS = "BoletosSUBE.json";
+            string ARCHIVO_BOLETOS = $"__boletosSUBE__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json";
             var proveedorVentaBoletosConfig = new ProveedorVentaBoletosDbSUBE.Configuracion
             {
                 CommandTimeout = 600,
@@ -444,33 +542,32 @@ namespace LibQPA.Testing
             // Procesamiento de los datos (para todas las fichas)
             ///////////////////////////////////////////////////////////////////
 
-            var (resultadosSUBE, resulFichasSUBE) = ProcesarTodo(
+            //var (resultadosSUBE, resulFichasSUBE) = ProcesarTodo(
+            var resultadosSUBE = ProcesarTodo(
                 recorridosTeoricos, topes2D, puntasNombradas, recoPatterns, 
-                ptsHistoSUBEPorFicha,  fichasSUBE
+                ptsHistoSUBEPorIdent /*,fichasSUBE*/
             );
 
-            PonerResultadosEnUnArchivo(
-                "SUBE_80X100", 
-                resultadosSUBE, resulFichasSUBE, proveedorVentaBoletos, 
-                (ficha, resultado) => resultado.PorcentajeReconocido >= 80
-            );
+            var resulIdents = resultadosSUBE
+                .Select(result => result.Identificador)
+            ;
+            
+            var resulFichasSUBE = resulIdents
+                .Select(ident => datosEmpIntFicha.GetFicha(ident, '-', -1))
+                .ToList()
+            ;
 
-            PonerResultadosEnUnArchivo(
-                "SUBE_TODO",
-                resultadosSUBE, resulFichasSUBE, proveedorVentaBoletos,
-                (ficha, resultado) => resultado.PorcentajeReconocido >= 0
-            );
+            //PonerResultadosEnUnArchivo(
+            //    "SUBE_NUEVO_80", 
+            //    resultadosSUBE, resulFichasSUBE, proveedorVentaBoletos, 
+            //    (ficha, resultado) => resultado.PorcentajeReconocido >= 80
+            //);
 
-            //var (resultadosXBus, resulFichasXBus) = ProcesarTodo(recorridosTeoricos, topes2D, puntasNombradas, recoPatterns, ptsHistoXBusPorFicha, fichasXBus);
-            //PonerResultadosEnUnArchivo("XBus.txt", resultadosXBus, resulFichasXBus, proveedorVentaBoletos);
-
-            //var (resultadosSuma, resulFichasSuma) = ProcesarTodo(recorridosTeoricos, topes2D, puntasNombradas, recoPatterns, ptsHistoSumaPorFicha, fichasSuma);
-            //PonerResultadosEnUnArchivo("Suma.txt", resultadosSuma, resulFichasSuma, proveedorVentaBoletos);
-
-            //var punfus = FusionarPuntos(Desfasar(24, ptsHistoXBusPorFicha[4359]), ptsHistoSUBEPorFicha[4359]);
-            //QPAProcessor proc2 = new QPAProcessor();
-            //var result = proc2.Procesar(recorridosTeoricos, punfus, topes2D, puntasNombradas, recoPatterns);
-            //PonerResultadosEnUnArchivo("4359.txt", new List<QPAResult> { result }, new List<int> { 4359 }, proveedorVentaBoletos);
+            //PonerResultadosEnUnArchivo(
+            //    "SUBE_TODO_00",
+            //    resultadosSUBE, resulFichasSUBE, proveedorVentaBoletos,
+            //    (ficha, resultado) => resultado.PorcentajeReconocido >= 0
+            //);
 
             Dictionary<int, (int, int)> fichasXEmpIntSUBE = datosEmpIntFicha
                 .Get()
@@ -485,7 +582,7 @@ namespace LibQPA.Testing
                 ItemsBuilder    = (sep) => CrearItemsCSV(sep, resultadosSUBE, resulFichasSUBE, fichasXEmpIntSUBE, proveedorVentaBoletos)
             };
 
-            File.WriteAllText("jaja0.txt", reporte.ToString());
+            File.WriteAllText($"__CSV_{proveedorKey}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.txt", reporte.ToString());
 
             int foo = 0;
         }
@@ -615,33 +712,34 @@ namespace LibQPA.Testing
             return ret;
         }
 
-        private (List<QPAResult>, List<int>) ProcesarTodo(
+        private List<QPAResult> ProcesarTodo(
             List<RecorridoLinBan>                               recorridosTeoricos,
             Topes2D                                             topes2D,
             IEnumerable<PuntaLinea>                             puntasNombradas,
             Dictionary<string, List<KeyValuePair<int, int>>>    recoPatterns,
-            Dictionary<int, List<PuntoHistorico>>               puntosHistoricosPorFicha,
-            List<int>                                           fichas
+            Dictionary<string, List<PuntoHistorico>>            puntosHistoricosPorIdent //,
+            //List<int>                                           fichas
         )
         {
             var qpaProcessor= new QPAProcessor();
             var resultados  = new List<QPAResult>();
-            var resulfichas = new List<int>();
 
-            foreach (var ficha in fichas.OrderBy(f => f))
+            //foreach (var ficha in fichas.OrderBy(f => f))
+            foreach (var ident in puntosHistoricosPorIdent.Keys)
             {
                 try
                 {
                     var res = qpaProcessor.Procesar(
+                        identificador       : ident,
                         recorridosTeoricos  : recorridosTeoricos,
-                        puntosHistoricos    : puntosHistoricosPorFicha[ficha],
+                        puntosHistoricos    : puntosHistoricosPorIdent[ident],
                         topes2D             : topes2D,
                         puntasNombradas     : puntasNombradas,
                         recoPatterns        : recoPatterns
                     );
 
                     resultados.Add(res);
-                    resulfichas.Add(ficha);
+
                 }
                 catch (Exception exx)
                 {
@@ -649,28 +747,8 @@ namespace LibQPA.Testing
                 }
             }
 
-            //var resultadosPosibles = resultados
-            //    .Where(r => !string.IsNullOrEmpty(r.Camino.Description))
-            //    .Where(r => NCaracteresDiferentes(r.Camino.Description) > 1)
-            //    .ToList()
-            //;
-
-            //var resultadosPasables = resultados
-            //    .Where(r => (r.PorcentajeReconocido >= 60))
-            //    .ToList()
-            //;
-
-            //var resultadosMuyBuenos = resultados
-            //    .Where(r => (r.PorcentajeReconocido >= 80))
-            //    .ToList()
-            //;
-
-            //var resultadosPerfectos = resultados
-            //    .Where(r => (r.PorcentajeReconocido >= 100))
-            //    .ToList()
-            //;
-
-            return (resultados, resulfichas);
+            //return (resultados, resulfichas);
+            return resultados;
         }
 
         private void PonerResultadosEnUnArchivo(string nombreSinExtension, List<QPAResult> resultados, List<int> fichas, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos, Func<int, QPAResult, bool> filtroFichaResultado)

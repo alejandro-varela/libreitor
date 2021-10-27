@@ -6,6 +6,7 @@ namespace LibQPA
 {
     public class QPAResult
     {
+        public string Identificador { get; set; }
         public Camino<PuntoHistorico> Camino { get; set; }
         public List<QPASubCamino> SubCaminos { get; set; }
 

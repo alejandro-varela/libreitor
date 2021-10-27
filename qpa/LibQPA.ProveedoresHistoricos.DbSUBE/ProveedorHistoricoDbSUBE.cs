@@ -11,7 +11,7 @@ namespace LibQPA.ProveedoresHistoricos.DbSUBE
     public class ProveedorHistoricoDbSUBE : IQPAProveedorPuntosHistoricos
     {
 		DateTime                                _fechaCachePuntosHistoricos = DateTime.MinValue;
-        Dictionary<int, List<PuntoHistorico>>   _cachePuntosHistoricos      = new Dictionary<int, List<PuntoHistorico>>();
+        Dictionary<string, List<PuntoHistorico>>_cachePuntosHistoricos      = new Dictionary<string, List<PuntoHistorico>>();
         public Configuracion                    Config      { get; set; }
         public bool                             UsarCache   { get; set; }
 
@@ -31,7 +31,7 @@ namespace LibQPA.ProveedoresHistoricos.DbSUBE
             UsarCache = usarCache;
         }
 
-        public Dictionary<int, List<PuntoHistorico>> Get()
+        public Dictionary<string, List<PuntoHistorico>> Get()
         {
             if (DateTime.Now.Subtract(_fechaCachePuntosHistoricos) > TimeSpan.FromMinutes(5))
             {
@@ -42,13 +42,13 @@ namespace LibQPA.ProveedoresHistoricos.DbSUBE
             return _cachePuntosHistoricos;
         }
 
-        private Dictionary<int, List<PuntoHistorico>> LeerDBPuntosHistoricos(
+        private Dictionary<string, List<PuntoHistorico>> LeerDBPuntosHistoricos(
 			string connString, 
 			DateTime fechaDesde, 
 			DateTime fechaHasta
 		)
         {
-			var ret = new Dictionary<int, List<PuntoHistorico>>();
+			var ret = new Dictionary<string, List<PuntoHistorico>>();
 
 			// hacer consulta
 			var consulta = ConsultaPuntosBuilder(
@@ -69,17 +69,18 @@ namespace LibQPA.ProveedoresHistoricos.DbSUBE
 				int empresaSUBE = Convert.ToInt32(reader["empresaSube"] ?? 0);
 				int interno = Convert.ToInt32(reader["interno"] ?? 0);
 
-				int identificador = Config.DatosEmpIntFicha.GetFicha(
-					empresa: empresaSUBE, 
-					interno: interno, 
-					@default: -1
-				);
+				string identificador = $"{empresaSUBE}-{interno}";
+				//int identificador = Config.DatosEmpIntFicha.GetFicha(
+				//	empresa: empresaSUBE, 
+				//	interno: interno, 
+				//	@default: -1
+				//);
 
-				if (identificador == -1)
-				{
-					malfichos.Add($"Empresa: {empresaSUBE} Interno: {interno} No entcontrados en ficha...");
-					continue;
-				}
+				//if (identificador == -1)
+				//{
+				//	malfichos.Add($"Empresa: {empresaSUBE} Interno: {interno} No entcontrados en ficha...");
+				//	continue;
+				//}
 
 				DateTime fecha = Convert.ToDateTime(reader["fechaHoraUTC"] ?? DateTime.MinValue);
 				double lat = Convert.ToDouble(reader["latitud" ] ?? 0.0);
