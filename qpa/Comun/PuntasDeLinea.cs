@@ -68,12 +68,37 @@ namespace Comun
 
     public class PuntaLinea
     {
-        public Punto Punto { get; set; }
-        public Punto Centroide { get { return Punto; } }
-        public string Nombre { get; set; }
-        public int Radio { get; set; }
+        public Punto    Punto       { get; set; }
+        public Punto    Centroide   { get { return Punto; } }
+        public string   Nombre      { get; set; }
+        public int      Radio       { get; set; }
         public List<Tuple<int, int>> Varios { get; set; }
-        
+
+        public (bool, double, double) PuntoAdentroYDists(Punto px, int? unRadio = null)
+        {
+            var adentro     = PuntoAdentro      (px, unRadio);
+            var distCentro  = DistanciaAlCentro (px);
+            var distBorde   = DistanciaAlBorde  (px, unRadio);
+            return (adentro, distCentro, distBorde);
+        }
+
+        public bool PuntoAdentro(Punto px, int? unRadio = null)
+        {
+            var radio = unRadio ?? Radio;
+            var dist  = Haversine.GetDist(px, Centroide);
+            return dist <= radio;
+        }
+
+        public double DistanciaAlCentro(Punto px)
+        {
+            return Haversine.GetDist(px, Centroide);
+        }
+
+        public double DistanciaAlBorde(Punto px, int? unRadio = null)
+        {
+            var radio = unRadio ?? Radio;
+            return Haversine.GetDist(px, Centroide) - radio;
+        }
 
         public override string ToString()
         {
