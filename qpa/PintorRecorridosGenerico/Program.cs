@@ -69,12 +69,15 @@ namespace PintorRecorridosGenerico
                 ;
 
                 var random = new Random(Environment.TickCount);
+                var colori = 40;
                 foreach (PuntaLinea2 pun2 in puntas2)
                 {
-                    var colorRandom = Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
-                    pintor.PintarPuntos(pun2.Puntos, Color.FromArgb(255, colorRandom), radioPuntas*2 / granu);
+                    //var colorRandom = Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
+                    var colorRandom = Color.FromKnownColor((KnownColor)colori);
+                    pintor.PintarPuntos(pun2.Puntos, Color.FromArgb(255, colorRandom), radioPuntas * 2 / granu);
                     pintor.PintarPuntos(pun2.Puntos, Color.Black, 3);
                     pintor.PintarPuntos(pun2.Puntos, Color.White, 1);
+                    colori += 1;
                 }
 
                 pintor.PintarPuntos(rec.Puntos, Color.FromArgb(50, Color.Lime), 3);
@@ -85,8 +88,6 @@ namespace PintorRecorridosGenerico
 
                 int fin = 0;
             }
-
-
         }
     }
 }
