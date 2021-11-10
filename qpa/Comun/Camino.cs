@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Comun;
 
 namespace Comun
 {
     public partial class Camino<TPunto> where TPunto : Punto
-    {   
+    {
+        public enum EstadoPunto
+        {
+            Indet,
+            Punta,
+            Normal,
+        }
+
         public List<PuntoCamino<TPunto>> Nodos { get; set; }  = new List<PuntoCamino<TPunto>>();
 
         public List<Grupoide<TPunto>> Grupoides
@@ -186,11 +190,16 @@ namespace Comun
             return -1;
         }
 
-        // debe retornar tres cosas:
-        //    enpunta...
-        //    no punta...
-        //    indet (por estar muy cerca del borde de lo que es una punta o no)
-        static CaminoParteTristate EnPuntaTristate(Punto punto, IEnumerable<PuntaLinea> puntas)
+        // Devuelve el estado de cualquier punto y su punta asociada si la tiene.
+        // Posibles valores de retorno:
+        //  EstadoPunto.Punta , PuntaAsociada   : el punto se encuentra adentro de una punta de línea, se devuelve la punta de linea asociada también.
+        //  EstadoPunto.Indet , null            : el punto se encuentra en un borde entre la punta de línea y los puntos normales. El ancho del borde esta dado por la variable "anchoBordeIndeterminacion" 
+        //  EstadoPunto.Normal, null            : el punto se encuentra afuera de todas las puntas de línea dadas
+        static (EstadoPunto, PuntaLinea) GetEstadoPuntoYPuntaAsoc(
+            Punto punto,                        // un punto cualquiera
+            IEnumerable<PuntaLinea> puntas,     // una colección de puntas de línea
+            double anchoBordeIndeterminacion    // el ancho de la parte "indeterminada" una especie de anillo que no es afuera ni es adentro
+        )
         {
             foreach (var puntaX in puntas)
             {
@@ -198,53 +207,43 @@ namespace Comun
 
                 if (dist < puntaX.Radio)
                 {
-                    return new CaminoParteTristate
-                    {
-                        Type = CaminoParteTristate.PuntoTristateType.Punta,
-                        Punta = puntaX
-                    };
+                    return (EstadoPunto.Punta, puntaX);
                 }
 
-                if (dist < (puntaX.Radio + 150))
+                if (dist < (puntaX.Radio + anchoBordeIndeterminacion))
                 {
-                    return new CaminoParteTristate
-                    {
-                        Type = CaminoParteTristate.PuntoTristateType.Indet
-                    };
+                    return (EstadoPunto.Indet, null);
                 }
             }
 
-            return new CaminoParteTristate
-            {
-                Type = CaminoParteTristate.PuntoTristateType.Normal
-            };
+            return (EstadoPunto.Normal, null);
         }
 
-        public static Camino<TPunto> CreateFromPuntos(IEnumerable<PuntaLinea> puntas, IEnumerable<TPunto> puntos) 
+        public static Camino<TPunto> CreateFromPuntos(IEnumerable<PuntaLinea> puntas, IEnumerable<TPunto> puntos, double anchoIdeterminacion = 150)
         {
             Camino<TPunto> camino = new Camino<TPunto>();
 
             foreach (var puntoX in puntos)
             {
-                var puntaTristate = EnPuntaTristate(puntoX, puntas);
+                var (estadoPunto, puntaAsociada) = GetEstadoPuntoYPuntaAsoc(puntoX, puntas, anchoIdeterminacion);
 
-                switch (puntaTristate.Type)
+                switch (estadoPunto)
                 {
-                    case CaminoParteTristate.PuntoTristateType.Punta:
+                    case EstadoPunto.Punta:
                         camino.Nodos.Add(new PuntoCamino<TPunto>
                         {
-                            PuntaDeLinea  = puntaTristate.Punta,
+                            PuntaDeLinea  = puntaAsociada,
                             PuntoAsociado = puntoX
                         });
                         break;
-                    case CaminoParteTristate.PuntoTristateType.Normal:
+                    case EstadoPunto.Normal:
                         camino.Nodos.Add(new PuntoCamino<TPunto>
                         {
                             PuntaDeLinea  = new PuntaLinea { Nombre = "." },
                             PuntoAsociado = puntoX
                         });
                         break;
-                    case CaminoParteTristate.PuntoTristateType.Indet:
+                    case EstadoPunto.Indet:
                         camino.Nodos.Add(new PuntoCamino<TPunto>
                         {
                             PuntaDeLinea  = new PuntaLinea { Nombre = "?" },

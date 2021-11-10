@@ -9,8 +9,10 @@ namespace Comun
 {
     public class PuntasDeLinea
     {
-        // las puntas se podrían agrupar usando el algoritmo "#" y mirando la superficie del cuadrado enmarcado
-        public static IEnumerable<PuntaLinea> GetPuntasNombradas(IEnumerable<RecorridoLinBan> recorridos, int radio)
+        public static IEnumerable<PuntaLinea> GetPuntasNombradas(
+            IEnumerable<RecorridoLinBan> recorridos, 
+            int radio
+        )
         {
             List<PuntaLinea> puntas = new List<PuntaLinea>();
             int n = 0;
@@ -51,29 +53,45 @@ namespace Comun
             }
         }
 
-        public static bool EsPunta(PuntoHistorico ph, IEnumerable<Punto> puntas, int radioEnMetros)
+        public static bool EsPunta(Punto px, IEnumerable<PuntaLinea> puntas, int? unRadio)
         {
-            foreach (var punta in puntas)
-            {
-                var dist = Haversine.GetDist(punta, ph);
-                if (dist <= radioEnMetros)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return puntas.Any(punta => punta.PuntoAdentro(px, unRadio));
         }
     }
 
     public class PuntaLinea
     {
-        public Punto Punto { get; set; }
-        public Punto Centroide { get { return Punto; } }
-        public string Nombre { get; set; }
-        public int Radio { get; set; }
+        public Punto    Punto       { get; set; }
+        public Punto    Centroide   { get { return Punto; } }
+        public string   Nombre      { get; set; }
+        public int      Radio       { get; set; }
         public List<Tuple<int, int>> Varios { get; set; }
-        
+
+        public (bool, double, double) PuntoAdentroYDists(Punto px, int? unRadio = null)
+        {
+            var adentro     = PuntoAdentro      (px, unRadio);
+            var distCentro  = DistanciaAlCentro (px);
+            var distBorde   = DistanciaAlBorde  (px, unRadio);
+            return (adentro, distCentro, distBorde);
+        }
+
+        public bool PuntoAdentro(Punto px, int? unRadio = null)
+        {
+            var radio = unRadio ?? Radio;
+            var dist  = Haversine.GetDist(px, Centroide);
+            return dist <= radio;
+        }
+
+        public double DistanciaAlCentro(Punto px)
+        {
+            return Haversine.GetDist(px, Centroide);
+        }
+
+        public double DistanciaAlBorde(Punto px, int? unRadio = null)
+        {
+            var radio = unRadio ?? Radio;
+            return Haversine.GetDist(px, Centroide) - radio;
+        }
 
         public override string ToString()
         {
