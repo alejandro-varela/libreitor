@@ -5,7 +5,7 @@ namespace Comun
     public class Grupoide<TPunto> where TPunto : Punto
     { 
         public string Nombre { get; set; }
-        public PuntaLinea PuntaLinea { get; set; }
+        public IPuntaLinea PuntaLinea { get; set; }
         public List<PuntoCamino<TPunto>> Nodos { get; set; } = new List<PuntoCamino<TPunto>>();
 
         public override string ToString()

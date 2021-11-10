@@ -74,7 +74,7 @@ namespace Comun
             PuntoCamino<PuntoHistorico> puntoCamino = null;
             foreach (PuntoCamino<PuntoHistorico> pc in grupoide.Nodos)
             {
-                var dist = Haversine.GetDist(pc.PuntoAsociado, grupoide.PuntaLinea.Centroide);
+                var dist = grupoide.PuntaLinea.GetInformacionPunto(pc.PuntoAsociado).DistanciaAlCentroide;
 
                 if (dist < minDist)
                 {

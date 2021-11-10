@@ -6,13 +6,6 @@ namespace Comun
 {
     public partial class Camino<TPunto> where TPunto : Punto
     {
-        public enum EstadoPunto
-        {
-            Indet,
-            Punta,
-            Normal,
-        }
-
         public List<PuntoCamino<TPunto>> Nodos { get; set; }  = new List<PuntoCamino<TPunto>>();
 
         public List<Grupoide<TPunto>> Grupoides
@@ -195,31 +188,54 @@ namespace Comun
         //  EstadoPunto.Punta , PuntaAsociada   : el punto se encuentra adentro de una punta de línea, se devuelve la punta de linea asociada también.
         //  EstadoPunto.Indet , null            : el punto se encuentra en un borde entre la punta de línea y los puntos normales. El ancho del borde esta dado por la variable "anchoBordeIndeterminacion" 
         //  EstadoPunto.Normal, null            : el punto se encuentra afuera de todas las puntas de línea dadas
-        static (EstadoPunto, PuntaLinea) GetEstadoPuntoYPuntaAsoc(
+        static (EstadoPuntoEnPunta, IPuntaLinea) GetEstadoPuntoYPuntaAsoc(
             Punto punto,                        // un punto cualquiera
-            IEnumerable<PuntaLinea> puntas,     // una colección de puntas de línea
+            IEnumerable<IPuntaLinea> puntas,    // una colección de puntas de línea
             double anchoBordeIndeterminacion    // el ancho de la parte "indeterminada" una especie de anillo que no es afuera ni es adentro
         )
         {
-            foreach (var puntaX in puntas)
+            // SUBTLE:
+            // *** ¿por qué hago esto en vez de hacer un foreach y encontrar la primera punta o indet? ***
+            // *** si lo primero que encuentro es un "indet" terminaria devolviendo indet y probablemente el prox valor sea una punta válida...
+            // *** por eso primero mapeo todas las puntas al punto
+            // *** me fijo si hay alguna entrada en el mapping que sea "punta" (si la hay retorno punta)
+            // *** si no la hay, me fijo si hay alguna entrada que sea "indet" (si la hay retorno indet)
+            // *** por ultimo, si no encontré nada, develvo "normal"
+
+
+            // creo pares "estado, punta" en donde el primer item me dice el estado del punto respecto a la punta y el segundo sería la punta de línea
+            List<(EstadoPuntoEnPunta, IPuntaLinea)> estadosYPuntas = puntas
+                .Select(puntaX => (puntaX.GetInformacionPunto(punto).Estado, puntaX))
+                .ToList()
+            ;
+
+            // ¿hay algun par que sea Punta?
+            if (estadosYPuntas.Any(parEstadoPunta => parEstadoPunta.Item1 == EstadoPuntoEnPunta.Punta))
             {
-                var dist = Haversine.GetDist(punto, puntaX.Punto);
-
-                if (dist < puntaX.Radio)
-                {
-                    return (EstadoPunto.Punta, puntaX);
-                }
-
-                if (dist < (puntaX.Radio + anchoBordeIndeterminacion))
-                {
-                    return (EstadoPunto.Indet, null);
-                }
+                // devuelvo ese par
+                return estadosYPuntas
+                    .Where(parEstadoPunta => parEstadoPunta.Item1 == EstadoPuntoEnPunta.Punta)
+                    .First()
+                ;
             }
 
-            return (EstadoPunto.Normal, null);
+            // ¿hay algun par que sea Indet?
+            else if (estadosYPuntas.Any(parEstadoPunta => parEstadoPunta.Item1 == EstadoPuntoEnPunta.Indet))
+            {
+                // devuelvo indet
+                return (EstadoPuntoEnPunta.Indet, null);
+            }
+            
+            // ok, entonces es normal...
+            else
+            {
+                // devuelvo normal
+                return (EstadoPuntoEnPunta.Normal, null);
+            }
+
         }
 
-        public static Camino<TPunto> CreateFromPuntos(IEnumerable<PuntaLinea> puntas, IEnumerable<TPunto> puntos, double anchoIdeterminacion = 150)
+        public static Camino<TPunto> CreateFromPuntos(IEnumerable<IPuntaLinea> puntas, IEnumerable<TPunto> puntos, double anchoIdeterminacion = 150)
         {
             Camino<TPunto> camino = new Camino<TPunto>();
 
@@ -229,21 +245,21 @@ namespace Comun
 
                 switch (estadoPunto)
                 {
-                    case EstadoPunto.Punta:
+                    case EstadoPuntoEnPunta.Punta:
                         camino.Nodos.Add(new PuntoCamino<TPunto>
                         {
                             PuntaDeLinea  = puntaAsociada,
                             PuntoAsociado = puntoX
                         });
                         break;
-                    case EstadoPunto.Normal:
+                    case EstadoPuntoEnPunta.Normal:
                         camino.Nodos.Add(new PuntoCamino<TPunto>
                         {
                             PuntaDeLinea  = new PuntaLinea { Nombre = "." },
                             PuntoAsociado = puntoX
                         });
                         break;
-                    case EstadoPunto.Indet:
+                    case EstadoPuntoEnPunta.Indet:
                         camino.Nodos.Add(new PuntoCamino<TPunto>
                         {
                             PuntaDeLinea  = new PuntaLinea { Nombre = "?" },
