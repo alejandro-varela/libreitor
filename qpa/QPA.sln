@@ -33,7 +33,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibQPA.ProveedoresVentas.Db
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComunSUBE", "ComunSUBE\ComunSUBE.csproj", "{47ED8067-23CD-442D-A831-16A0782C62E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibQPA.ProveedoresHistoricos.JsonSUBE", "LibQPA.ProveedoresHistoricos.JsonSUBE\LibQPA.ProveedoresHistoricos.JsonSUBE.csproj", "{58EC92CA-E369-442D-AA22-916FDAAEEAF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibQPA.ProveedoresHistoricos.JsonSUBE", "LibQPA.ProveedoresHistoricos.JsonSUBE\LibQPA.ProveedoresHistoricos.JsonSUBE.csproj", "{58EC92CA-E369-442D-AA22-916FDAAEEAF1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PintorRecorridosGenerico", "PintorRecorridosGenerico\PintorRecorridosGenerico.csproj", "{293993CC-4925-41A1-9C4F-C9BB02DA5E1E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,6 +107,10 @@ Global
 		{58EC92CA-E369-442D-AA22-916FDAAEEAF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58EC92CA-E369-442D-AA22-916FDAAEEAF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{58EC92CA-E369-442D-AA22-916FDAAEEAF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{293993CC-4925-41A1-9C4F-C9BB02DA5E1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{293993CC-4925-41A1-9C4F-C9BB02DA5E1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{293993CC-4925-41A1-9C4F-C9BB02DA5E1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{293993CC-4925-41A1-9C4F-C9BB02DA5E1E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
