@@ -9,8 +9,10 @@ namespace Comun
 {
     public class PuntasDeLinea
     {
-        // las puntas se podrían agrupar usando el algoritmo "#" y mirando la superficie del cuadrado enmarcado
-        public static IEnumerable<PuntaLinea> GetPuntasNombradas(IEnumerable<RecorridoLinBan> recorridos, int radio)
+        public static IEnumerable<PuntaLinea> GetPuntasNombradas(
+            IEnumerable<RecorridoLinBan> recorridos, 
+            int radio
+        )
         {
             List<PuntaLinea> puntas = new List<PuntaLinea>();
             int n = 0;
@@ -51,18 +53,9 @@ namespace Comun
             }
         }
 
-        public static bool EsPunta(PuntoHistorico ph, IEnumerable<Punto> puntas, int radioEnMetros)
+        public static bool EsPunta(Punto px, IEnumerable<PuntaLinea> puntas, int? unRadio)
         {
-            foreach (var punta in puntas)
-            {
-                var dist = Haversine.GetDist(punta, ph);
-                if (dist <= radioEnMetros)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return puntas.Any(punta => punta.PuntoAdentro(px, unRadio));
         }
     }
 
