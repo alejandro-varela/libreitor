@@ -18,10 +18,10 @@ namespace Pinturas
             if (Size == 1)
             {
                 g.FillRectangle(
-                    new SolidBrush(Color), 
-                    casillero.IndexHorizontal, 
-                    casillero.IndexVertical, 
-                    1, 
+                    new SolidBrush(Color),
+                    casillero.IndexHorizontal,
+                    casillero.IndexVertical,
+                    1,
                     1
                 );
             }
@@ -33,17 +33,21 @@ namespace Pinturas
                 Rectangle rect = new()
                 {
                     X = casillero.IndexHorizontal - despX,
-                    Y = casillero.IndexVertical   - despY,
+                    Y = casillero.IndexVertical - despY,
                     Width = Size,
                     Height = Size,
                 };
 
-                //g.FillEllipse(new SolidBrush(Color), rect);
+                var brush = new SolidBrush(Color);
 
-                g.FillRectangle(
-                    new SolidBrush(Color),
-                    rect
-                );
+                if (Size > 4)
+                {
+                    g.FillEllipse(brush, rect);
+                }
+                else
+                {
+                    g.FillRectangle(brush, rect);
+                }
             }
         }
     }   
