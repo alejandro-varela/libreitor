@@ -123,7 +123,7 @@ namespace PruebaLecturaDeRecorridos
             var desde1 = new DateTime(2021, 06, 02, 0, 0, 0); // new DateTime(2021, 06, 02, 13, 0, 0);
             var hasta1 = desde1.AddDays(1);
             //var histor = Historia.GetFromCSV(3850, desde1, hasta1, puntasDeLinea, 800, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true });
-            var histor = Historia.GetFromCSV(3850, desde1, hasta1, puntasNombradas.Select(pn => pn.Punto), RADIO_PUNTAS, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true });
+            //var histor = Historia.GetFromCSV(3850, desde1, hasta1, puntasNombradas.Select(pn => pn.Punto), RADIO_PUNTAS, new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true });
 
             var starti = Environment.TickCount;
             foreach (var recoX in recorridosRBus /*.Where(reco => reco.Linea == 163)*/)

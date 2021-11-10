@@ -144,109 +144,109 @@ namespace PruebaLecturaDeRecorridos
         // TODO:
         //       DETECTAR LOS CASILLEROS QUE TIENEN UN "ÚNICO RECORRIDO" Y COMPARARLOS SIN FLEX O VERIFICAR CUAN FLEX PUEDEN SER...
 
-        public static void EnQueRecoEstaEstePunto(List<RecorridoLinBan> recorridosRBus, Topes2D topes2D)
-        {
-            Console.WriteLine("EMPIEZA");
+        //public static void EnQueRecoEstaEstePunto(List<RecorridoLinBan> recorridosRBus, Topes2D topes2D)
+        //{
+        //    Console.WriteLine("EMPIEZA");
 
-            /////////////////////////////////////////////
-            // Creo los casilleros para cada recorrido
+        //    /////////////////////////////////////////////
+        //    // Creo los casilleros para cada recorrido
 
-            Dictionary<string, HashSet<Casillero>> casillerosXLinBan = new();
+        //    Dictionary<string, HashSet<Casillero>> casillerosXLinBan = new();
 
-            foreach (RecorridoLinBan reco in recorridosRBus)
-            {
-                var key = $"{reco.Linea:0000}{reco.Bandera:0000}";
-                casillerosXLinBan.Add(key, new HashSet<Casillero>());
+        //    foreach (RecorridoLinBan reco in recorridosRBus)
+        //    {
+        //        var key = $"{reco.Linea:0000}{reco.Bandera:0000}";
+        //        casillerosXLinBan.Add(key, new HashSet<Casillero>());
 
-                foreach (var puntoX in reco.Puntos.HacerGranular(15))
-                {
-                    var casillero = Casillero.Create(topes2D, puntoX, GRANU);
-                    casillerosXLinBan[key].Add(casillero);
-                }
+        //        foreach (var puntoX in reco.Puntos.HacerGranular(15))
+        //        {
+        //            var casillero = Casillero.Create(topes2D, puntoX, GRANU);
+        //            casillerosXLinBan[key].Add(casillero);
+        //        }
 
-                if (reco.Linea == 163 && reco.Bandera == 2777)
-                {
-                    int parameAca = 0;
-                }
-            }
+        //        if (reco.Linea == 163 && reco.Bandera == 2777)
+        //        {
+        //            int parameAca = 0;
+        //        }
+        //    }
 
-            /////////////////////////////////////////////
-            // Obtengo las puntas de línea
-            var puntasDeLinea = PuntasDeLinea
-               .Get(recorridosRBus)
-               .ToList()
-            ;
+        //    /////////////////////////////////////////////
+        //    // Obtengo las puntas de línea
+        //    var puntasDeLinea = PuntasDeLinea
+        //       .Get(recorridosRBus)
+        //       .ToList()
+        //    ;
 
-            /////////////////////////////////////////////
-            // Tomo los puntos de ejemplo...
-            // filtramos ahora un reco real...
-            var puntosHistoricos = GetFromCSV(
-                "2021-06-02.csv",
-                3850,
-                new DateTime(2021, 6, 2),
-                new DateTime(2021, 6, 3),
-                new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }
-            ).ToList();
+        //    /////////////////////////////////////////////
+        //    // Tomo los puntos de ejemplo...
+        //    // filtramos ahora un reco real...
+        //    var puntosHistoricos = GetFromCSV(
+        //        "2021-06-02.csv",
+        //        3850,
+        //        new DateTime(2021, 6, 2),
+        //        new DateTime(2021, 6, 3),
+        //        new PuntosHistoricosGetFromCSVConfig { InvertLat = true, InvertLng = true }
+        //    ).ToList();
 
-            /////////////////////////////////////////////
-            // Ahora, para cada punto, muestro que recorrido lo contiene...
+        //    /////////////////////////////////////////////
+        //    // Ahora, para cada punto, muestro que recorrido lo contiene...
 
-            //Dictionary<string, int> acumBanderaas = new();
-            Dictionary<string, List<PuntoHistorico>> acumBanderaas = new();
+        //    //Dictionary<string, int> acumBanderaas = new();
+        //    Dictionary<string, List<PuntoHistorico>> acumBanderaas = new();
 
-            foreach (var phx in puntosHistoricos)
-            {
-                bool esPunta = PuntasDeLinea.EsPunta(phx, puntasDeLinea, 400);
+        //    foreach (var phx in puntosHistoricos)
+        //    {
+        //        bool esPunta = PuntasDeLinea.EsPunta(phx, puntasDeLinea, 400);
 
-                if (esPunta)
-                {
-                    Console.ForegroundColor = ConsoleColor.DarkYellow;
-                    if (acumBanderaas.Keys.Count > 0)
-                    {
-                        var listOrdenada = acumBanderaas.ToList().OrderByDescending(kvp => kvp.Value.Count);
-                        foreach (var kvp in listOrdenada)
-                        {
-                            var sConcuerda = ConcuerdaPorCuenta(kvp, recorridosRBus) ? "SI" : "_";
-                            Console.WriteLine($"{kvp.Key} {kvp.Value.Count} {sConcuerda}");
-                        }
-                        acumBanderaas = new Dictionary<string, List<PuntoHistorico>>();
-                    }
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
-                }
-                else
-                {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                }
+        //        if (esPunta)
+        //        {
+        //            Console.ForegroundColor = ConsoleColor.DarkYellow;
+        //            if (acumBanderaas.Keys.Count > 0)
+        //            {
+        //                var listOrdenada = acumBanderaas.ToList().OrderByDescending(kvp => kvp.Value.Count);
+        //                foreach (var kvp in listOrdenada)
+        //                {
+        //                    var sConcuerda = ConcuerdaPorCuenta(kvp, recorridosRBus) ? "SI" : "_";
+        //                    Console.WriteLine($"{kvp.Key} {kvp.Value.Count} {sConcuerda}");
+        //                }
+        //                acumBanderaas = new Dictionary<string, List<PuntoHistorico>>();
+        //            }
+        //            Console.ForegroundColor = ConsoleColor.DarkGray;
+        //        }
+        //        else
+        //        {
+        //            Console.ForegroundColor = ConsoleColor.Green;
+        //        }
 
-                var casilleroActual = Casillero.Create(topes2D, phx, GRANU);
-                Console.Write(phx);
-                foreach (var key in casillerosXLinBan.Keys)
-                {
-                    // if (casillerosXBandera[key].Contains(casilleroActual))
-                    if (Casillero.HashSetContieneCasilleroFlex(casillerosXLinBan[key], casilleroActual, GRANU))
-                    {
-                        if (!esPunta)
-                        {
-                            if (!acumBanderaas.ContainsKey(key))
-                            {
-                                //acumBanderaas.Add(key, 0);
-                                acumBanderaas.Add(key, new List<PuntoHistorico>());
-                            }
-                            //acumBanderaas[key] += 1;
-                            acumBanderaas[key].Add(phx);
-                        }
+        //        var casilleroActual = Casillero.Create(topes2D, phx, GRANU);
+        //        Console.Write(phx);
+        //        foreach (var key in casillerosXLinBan.Keys)
+        //        {
+        //            // if (casillerosXBandera[key].Contains(casilleroActual))
+        //            if (Casillero.HashSetContieneCasilleroFlex(casillerosXLinBan[key], casilleroActual, GRANU))
+        //            {
+        //                if (!esPunta)
+        //                {
+        //                    if (!acumBanderaas.ContainsKey(key))
+        //                    {
+        //                        //acumBanderaas.Add(key, 0);
+        //                        acumBanderaas.Add(key, new List<PuntoHistorico>());
+        //                    }
+        //                    //acumBanderaas[key] += 1;
+        //                    acumBanderaas[key].Add(phx);
+        //                }
 
-                        Console.Write(key);
-                        Console.Write(' ');
-                    }
-                }
-                Console.WriteLine();
-            }
+        //                Console.Write(key);
+        //                Console.Write(' ');
+        //            }
+        //        }
+        //        Console.WriteLine();
+        //    }
 
-            // 2777 WTF?????????????????
+        //    // 2777 WTF?????????????????
 
-            int foo = 0;
-        }
+        //    int foo = 0;
+        //}
 
 
         public static void PintarRecorridos(List<RecorridoLinBan> recorridosRBus, Topes2D topes2D, int granularidad, string nombreArchivo)
