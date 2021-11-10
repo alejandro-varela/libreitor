@@ -9,5 +9,7 @@ namespace PintorRecorridosGenerico
         public string Nombre { get; set; }
         public List<PuntoRecorrido> Puntos { get; set; }
         public List<Tuple<int, int>> Varios { get; set; }
+        public PuntoRecorrido Punto { get; internal set; }
+        public int Radio { get; internal set; }
     }
 }
