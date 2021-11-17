@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31313.79
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PruebaLecturaDeRecorridos", "PruebaLecturaDeRecorridos\PruebaLecturaDeRecorridos.csproj", "{99465F4A-25B8-433C-808E-71B86BDD9A83}"
 EndProject
@@ -35,7 +35,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComunSUBE", "ComunSUBE\Comu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibQPA.ProveedoresHistoricos.JsonSUBE", "LibQPA.ProveedoresHistoricos.JsonSUBE\LibQPA.ProveedoresHistoricos.JsonSUBE.csproj", "{58EC92CA-E369-442D-AA22-916FDAAEEAF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PintorRecorridosGenerico", "PintorRecorridosGenerico\PintorRecorridosGenerico.csproj", "{293993CC-4925-41A1-9C4F-C9BB02DA5E1E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PintorRecorridosGenerico", "PintorRecorridosGenerico\PintorRecorridosGenerico.csproj", "{293993CC-4925-41A1-9C4F-C9BB02DA5E1E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisorTandas", "VisorTandas\VisorTandas.csproj", "{73952149-2DB9-459D-956C-5ADB36AF64C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,6 +113,10 @@ Global
 		{293993CC-4925-41A1-9C4F-C9BB02DA5E1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{293993CC-4925-41A1-9C4F-C9BB02DA5E1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{293993CC-4925-41A1-9C4F-C9BB02DA5E1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73952149-2DB9-459D-956C-5ADB36AF64C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73952149-2DB9-459D-956C-5ADB36AF64C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73952149-2DB9-459D-956C-5ADB36AF64C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73952149-2DB9-459D-956C-5ADB36AF64C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

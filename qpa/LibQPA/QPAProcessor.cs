@@ -33,7 +33,7 @@ namespace LibQPA
             List<RecorridoLinBan>   recorridosTeoricos,
             List<PuntoHistorico>    puntosHistoricos,
             Topes2D                 topes2D,
-            IEnumerable<PuntaLinea> puntasNombradas,
+            IEnumerable<IPuntaLinea> puntasNombradas,
             Dictionary<string, List<KeyValuePair<int, int>>> recoPatterns
         )
         {

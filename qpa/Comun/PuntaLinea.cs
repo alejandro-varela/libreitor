@@ -11,7 +11,7 @@ namespace Comun
         public double   Radio       { get; set; }
         public List<Tuple<int, int>> Varios { get; set; }
 
-        public double AnchoIdenterminacion { get; set; } = 150.0;
+        public double AnchoIndeterminacion { get; set; } = 150.0;
 
         public IPuntaLinea.InfoPunto GetInformacionPunto(Punto px)
         {
@@ -21,7 +21,7 @@ namespace Comun
             {
                 return new IPuntaLinea.InfoPunto { DistanciaAlCentroide = dist, Estado = EstadoPuntoEnPunta.Punta };
             }
-            else if (dist <= Radio + AnchoIdenterminacion)
+            else if (dist <= Radio + AnchoIndeterminacion)
             {
                 return new IPuntaLinea.InfoPunto { DistanciaAlCentroide = dist, Estado = EstadoPuntoEnPunta.Indet };
             }

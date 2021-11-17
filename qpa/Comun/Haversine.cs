@@ -4,10 +4,14 @@ namespace Comun
 {
     public class Haversine
     {
+        static int _llamadas = 0;
+
         // TODO: hacer algo con las alturas...
 
         public static double GetDist(double lat1, double long1, double lat2, double long2)
         {
+            _llamadas += 1;
+
             //  Planeta tierra:
             //      -> Radio ecuatorial (a): 6378 km
             //      -> Radio polar      (b): 6357 km
@@ -36,6 +40,16 @@ namespace Comun
                 p1.Lat, p1.Lng, 
                 p2.Lat, p2.Lng
             );
+        }
+
+        public static int GetLlamadas()
+        {
+            return _llamadas;
+        }
+
+        public static void ResetLlamadas()
+        {
+            _llamadas = 0;
         }
     }
 }

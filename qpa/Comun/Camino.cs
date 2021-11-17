@@ -190,10 +190,35 @@ namespace Comun
         //  EstadoPunto.Normal, null            : el punto se encuentra afuera de todas las puntas de línea dadas
         static (EstadoPuntoEnPunta, IPuntaLinea) GetEstadoPuntoYPuntaAsoc(
             Punto punto,                        // un punto cualquiera
-            IEnumerable<IPuntaLinea> puntas,    // una colección de puntas de línea
-            double anchoBordeIndeterminacion    // el ancho de la parte "indeterminada" una especie de anillo que no es afuera ni es adentro
+            IEnumerable<IPuntaLinea> puntas     // una colección de puntas de línea
         )
         {
+            //bool huboIndet = false;
+
+            //foreach (IPuntaLinea ptx in puntas)
+            //{
+            //    var llamadas1 = Haversine.GetLlamadas();
+            //    var info = ptx.GetInformacionPunto(punto);
+            //    var llamadas2 = Haversine.GetLlamadas();
+
+            //    if (info.Estado == EstadoPuntoEnPunta.Punta)
+            //    { 
+            //        return (EstadoPuntoEnPunta.Punta, ptx);
+            //    }
+
+            //    if (info.Estado == EstadoPuntoEnPunta.Indet)
+            //    {
+            //        huboIndet = true;
+            //    }
+            //}
+
+            //if (huboIndet)
+            //{
+            //    return (EstadoPuntoEnPunta.Indet, null);
+            //}
+
+            //return (EstadoPuntoEnPunta.Normal, null);
+
             // SUBTLE:
             // *** ¿por qué hago esto en vez de hacer un foreach y encontrar la primera punta o indet? ***
             // *** si lo primero que encuentro es un "indet" terminaria devolviendo indet y probablemente el prox valor sea una punta válida...
@@ -235,13 +260,15 @@ namespace Comun
 
         }
 
-        public static Camino<TPunto> CreateFromPuntos(IEnumerable<IPuntaLinea> puntas, IEnumerable<TPunto> puntos, double anchoIdeterminacion = 150)
+        public static Camino<TPunto> CreateFromPuntos(IEnumerable<IPuntaLinea> puntas, IEnumerable<TPunto> puntos)
         {
             Camino<TPunto> camino = new Camino<TPunto>();
 
             foreach (var puntoX in puntos)
             {
-                var (estadoPunto, puntaAsociada) = GetEstadoPuntoYPuntaAsoc(puntoX, puntas, anchoIdeterminacion);
+                //var llamadas1 = Haversine.GetLlamadas();
+                var (estadoPunto, puntaAsociada) = GetEstadoPuntoYPuntaAsoc(puntoX, puntas);
+                //var llamadas2 = Haversine.GetLlamadas();
 
                 switch (estadoPunto)
                 {

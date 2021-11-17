@@ -148,7 +148,7 @@ namespace LibQPA.ProveedoresHistoricos.JsonSUBE
                 );
         }
 
-        private static IEnumerable<VehicleContainer> ParseJsonSUBE(string json)
+        public static IEnumerable<VehicleContainer> ParseJsonSUBE(string json)
         {
             JObject data = null;
             try { data = JsonConvert.DeserializeObject(json) as JObject; } catch { }

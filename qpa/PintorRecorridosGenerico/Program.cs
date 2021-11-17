@@ -13,7 +13,7 @@ namespace PintorRecorridosGenerico
         static void Main(string[] args)
         {
             // params:
-            var lineas      = new int[] { 166 , 167 };
+            var lineas      = new int[] { 159, 163 };
             var date        = DateTime.Now;
             var dir         = "../../../../Datos/ZipRepo/";
             var granu       = 20;
@@ -41,7 +41,25 @@ namespace PintorRecorridosGenerico
                 radioPuntas,                        // el radio de detección de cada item de la punta de línea (puede ser mas que uno)
                 radioAgrupacion: radioPuntas * 2    // la máxima distancia que pueden tener las puntas de línea para ser incluidas en un mismo grupo entre si
             )
-            .ToList();
+                .ToList()
+            ;
+
+            var puntas2Nombradas = PuntasDeLinea2.GetPuntasNombradas(
+                recorridosRBus,
+                radioPuntas,
+                radioAgrupacion: radioPuntas * 2
+            );
+
+
+            var indexxx = 0;
+            foreach (var ppp in puntas2)
+            {
+                ppp.Nombre = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[indexxx].ToString();
+                indexxx += 1;
+            }
+
+            var queseya = Camino<Punto>.CreateFromPuntos(puntas , recorridosRBus[17].Puntos);
+            var queseyo = Camino<Punto>.CreateFromPuntos(puntas2, recorridosRBus[17].Puntos);
 
             // inicializar objetos
             var topes2D = Topes2D.CreateFromPuntos(todosLosPuntosRec);
@@ -58,6 +76,9 @@ namespace PintorRecorridosGenerico
                     //.PintarPuntos(recorridosRBus.Select(rec => rec.PuntoLlegada), Color.Fuchsia, 15)
 
                     //.PintarPuntos(rec.Puntos, Color.Lime, 3)
+                    .PintarPuntos(todosLosPuntosRec.Where(pr => pr.Linea == 159), Color.DarkGray)
+                    .PintarPuntos(todosLosPuntosRec.Where(pr => pr.Linea == 163), Color.DarkGray)
+                    .PintarPuntos(todosLosPuntosRec.Where(pr => pr.Linea == 165), Color.DarkGray)
                     .PintarPuntos(todosLosPuntosRec.Where(pr => pr.Linea == 166), Color.DarkGray)
                     .PintarPuntos(todosLosPuntosRec.Where(pr => pr.Linea == 167), Color.DarkGray)
 
@@ -82,9 +103,13 @@ namespace PintorRecorridosGenerico
 
                 pintor.PintarPuntos(rec.Puntos, Color.FromArgb(50, Color.Lime), 3);
 
-                var bitmap = pintor.Render();
+                pintor.PintarPunto(rec.Puntos.First(), Color.Fuchsia, 5);
+                pintor.PintarPunto(rec.Puntos.Last(), Color.Blue, 5);
 
-                bitmap.Save($"rec_{rec.Linea:0000}_{rec.Bandera:0000}.png", ImageFormat.Png);
+                using (var bitmap = pintor.Render())
+                {
+                    bitmap.Save($"rec_{rec.Linea:0000}_{rec.Bandera:0000}.png", ImageFormat.Png);
+                }
 
                 int fin = 0;
             }

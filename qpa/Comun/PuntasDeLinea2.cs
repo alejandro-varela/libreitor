@@ -3,43 +3,58 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PintorRecorridosGenerico
+namespace Comun
 {
     public class PuntasDeLinea2
     {
         // las puntas se podrían agrupar usando el algoritmo "#" y mirando la superficie del cuadrado enmarcado
-        public static IEnumerable<PuntaLinea2> GetPuntasNombradas(IEnumerable<RecorridoLinBan> recorridos, int radio)
+        public static IEnumerable<PuntaLinea2> GetPuntasNombradas(IEnumerable<RecorridoLinBan> recorridos, int radio = 200, int radioAgrupacion = 400)
         {
-            var puntas = new List<PuntaLinea2>();
-            int n = 0;
-            foreach (var recorrido in recorridos)
-            {
-                n = AgregarSiNoEstaPresente(recorrido.Linea, recorrido.Bandera, puntas, recorrido.PuntoSalida, n, radio);
-                n = AgregarSiNoEstaPresente(recorrido.Linea, recorrido.Bandera, puntas, recorrido.PuntoLlegada, n, radio);
-            }
-            return puntas;
-        }
+            var indexNombre = 0;
+            var nombres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
 
-        static int AgregarSiNoEstaPresente(int linea, int bandera, List<PuntaLinea2> puntas, PuntoRecorrido punto, int n, int radio)
-        {
-            foreach (var puntaX in puntas)
+            foreach (var ptx in GetPuntasDeLinea(recorridos, radio, radioAgrupacion))
             {
-                if (EnPunta(puntaX, punto, radio))
-                //var dist = Haversine.GetDist(puntaX.Punto, punto);
-                //if (dist < radio)
+                yield return new PuntaLinea2
                 {
-                    puntaX.Varios.Add(new Tuple<int, int>(linea, bandera));
-                    return n;
-                }
+                    Nombre          = nombres[indexNombre].ToString(),
+                    Puntos          = ptx.Puntos,
+                    Radio           = ptx.Radio,
+                    RadioAgrupacion = ptx.RadioAgrupacion,
+                };
+
+                indexNombre++;
             }
 
-            var varios = new List<Tuple<int, int>>();
-            varios.Add(new Tuple<int, int>(linea, bandera));
-            var nombre = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz"[n].ToString();
-            puntas.Add(new PuntaLinea2 { Punto = punto, Nombre = nombre, Varios = varios, Radio = radio });
 
-            return n + 1;
+            //var puntas = new List<PuntaLinea2>();
+            //int n = 0;
+            //foreach (var recorrido in recorridos)
+            //{
+            //    n = AgregarSiNoEstaPresente(recorrido.Linea, recorrido.Bandera, puntas, recorrido.PuntoSalida, n, radio);
+            //    n = AgregarSiNoEstaPresente(recorrido.Linea, recorrido.Bandera, puntas, recorrido.PuntoLlegada, n, radio);
+            //}
+            //return puntas;
         }
+
+        //static int AgregarSiNoEstaPresente(int linea, int bandera, List<PuntaLinea2> puntas, PuntoRecorrido punto, int n, int radio)
+        //{
+        //    foreach (var puntaX in puntas)
+        //    {
+        //        if (EnPunta(puntaX, punto, radio))
+        //        {
+        //            puntaX.Varios.Add(new Tuple<int, int>(linea, bandera));
+        //            return n;
+        //        }
+        //    }
+
+        //    var varios = new List<Tuple<int, int>>();
+        //    varios.Add(new Tuple<int, int>(linea, bandera));
+        //    var nombre = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz"[n].ToString();
+        //    puntas.Add(new PuntaLinea2 { Punto = punto, Nombre = nombre, Varios = varios, Radio = radio });
+
+        //    return n + 1;
+        //}
 
         private static bool EnPunta(PuntaLinea2 puntaX, PuntoRecorrido punto, int radio)
         {
@@ -49,7 +64,7 @@ namespace PintorRecorridosGenerico
             ;
         }
 
-        public static IEnumerable<PuntaLinea2> GetPuntasDeLinea(List<RecorridoLinBan> recorridosRBus, int radioPuntas, int radioAgrupacion)
+        public static IEnumerable<PuntaLinea2> GetPuntasDeLinea(IEnumerable<RecorridoLinBan> recorridosRBus, int radioPuntas, int radioAgrupacion)
         {
             var puntos = new List<PuntoRecorrido>();
             foreach (var rec in recorridosRBus)
@@ -116,7 +131,9 @@ namespace PintorRecorridosGenerico
             {
                 yield return new PuntaLinea2
                 {
-                    Puntos = conj.ToList()
+                    Puntos = conj.ToList(),
+                    Radio  = radioPuntas,
+                    RadioAgrupacion = radioAgrupacion,
                 };
             }
         }
