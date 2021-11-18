@@ -87,7 +87,16 @@ namespace Comun
                 }
                 else
                 {
-                    ptr += (indexFinal - ptr);
+                    // ARREGLO: antes no se tenían en cuenta los patrones de 1 solo caracter...
+                    if (patronElegido.Length == 1)
+                    {
+                        ptr++;
+                    }
+                    else
+                    {
+                        ptr += (indexFinal - ptr);
+                    }
+
                     ptrNombres += patronElegido.Length - 1;
 
                     if (ptr >= patronHistorico.Length - 1)

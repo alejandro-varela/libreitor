@@ -14,7 +14,7 @@ namespace Comun
             {
                 List<Grupoide<TPunto>> ret = new List<Grupoide<TPunto>>();
                 string actual = null;
-
+                
                 foreach (PuntoCamino<TPunto> nodox in Nodos)
                 {
                     if (actual != nodox.PuntaDeLinea.Nombre)
@@ -26,7 +26,7 @@ namespace Comun
                         });
                     }
                     
-                    ret[ret.Count - 1].Nodos.Add(nodox);
+                    ret[^1].Nodos.Add(nodox);
                 }
 
                 return QuitarRuido( ret );
@@ -149,7 +149,10 @@ namespace Comun
                 {
                     Grupoide<T> grupoideNuevo = new Grupoide<T>()
                     {
-                        Nombre = grupoides[i].Nombre
+                        // ARREGLO: antes se olvidaba setear el campo PuntaLinea
+                        // el mismo quedaba en null
+                        Nombre      = grupoides[i].Nombre,
+                        PuntaLinea  = grupoides[i].PuntaLinea,
                     };
 
                     grupoideNuevo.Nodos.AddRange(grupoides[i + 0].Nodos);

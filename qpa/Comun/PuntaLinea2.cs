@@ -60,5 +60,10 @@ namespace Comun
                 return new IPuntaLinea.InfoPunto { DistanciaAlCentroide = minDist, Estado = EstadoPuntoEnPunta.Normal };
             }
         }
+
+        public override string ToString()
+        {
+            return $"{ Nombre } { Punto.Lat.ToString().Replace(',', '.') }, { Punto.Lng.ToString().Replace(',', '.') }";
+        }
     }
 }
