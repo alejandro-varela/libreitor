@@ -147,8 +147,8 @@ namespace LibQPA.Testing
             // fechas desde hasta
             //var desde = new DateTime(2021, 09, 7, 00, 00, 00);
             //var hasta = new DateTime(2021, 09, 8, 00, 00, 00);
-            var desde = new DateTime(2021, 10, 31, 00, 00, 00);
-            var hasta = new DateTime(2021, 11, 01, 00, 00, 00);
+            var desde = new DateTime(2021, 10, 14, 00, 00, 00);
+            var hasta = new DateTime(2021, 10, 15, 00, 00, 00);
 
             // códigos de las líneas para este cálculo
             var lineasPosibles = new int[] { 159, 163 };
@@ -184,16 +184,24 @@ namespace LibQPA.Testing
 
             // puntas de línea
             var puntasNombradas = PuntasDeLinea.GetPuntasNombradas(recorridosTeoricos, radioPuntasDeLineaMts);
+            var llala = puntasNombradas.ToList();
 
             // caminos de los recos, es un diccionario:
             // ----------------------------------------
             //  -de clave tiene el patrón de recorrido
             //  -de valor tiene una lista de pares (linea, bandera) que son las banderas que encajan con ese patrón
             var recoPatterns = new Dictionary<string, List<KeyValuePair<int, int>>>();
+            var llamadas = 0;
             foreach (var recox in recorridosTeoricos)
             {
+                llamadas = Haversine.GetLlamadas();
+                var fr1 = 0;
+
                 // creo un camino (su descripción es la clave)
                 var camino = Camino<PuntoRecorrido>.CreateFromPuntos(puntasNombradas, recox.Puntos);
+
+                llamadas = Haversine.GetLlamadas();
+                var fr2 = 0;
 
                 // si la clave no está en el diccionario la agrego...
                 if (!recoPatterns.ContainsKey(camino.Description))
@@ -392,7 +400,7 @@ namespace LibQPA.Testing
 
             //var (resultadosSUBE, resulFichasSUBE) = ProcesarTodo(
             var resultadosSUBE = ProcesarTodo(
-                recorridosTeoricos, topes2D, puntasNombradas, recoPatterns, 
+                recorridosTeoricos, topes2D, puntasNombradas.Select(pu => (IPuntaLinea)pu).ToList(), recoPatterns, 
                 ptsHistoSUBEPorIdent /*,fichasSUBE*/
             );
 
@@ -430,7 +438,270 @@ namespace LibQPA.Testing
                 ItemsBuilder    = (sep) => CrearItemsCSV(sep, resultadosSUBE, resulFichasSUBE, fichasXEmpIntSUBE, proveedorVentaBoletos)
             };
 
-            File.WriteAllText($"__CSV_{proveedorKey}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.txt", reporte.ToString());
+            File.WriteAllText($"ABCZ__CSV_{proveedorKey}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.txt", reporte.ToString());
+            llamadas = Haversine.GetLlamadas();
+            int foo = 0;
+        }
+
+        [TestMethod]
+        public void TestQPA2()
+        {
+            ///////////////////////////////////////////////////////////////////
+            // variables de entrada
+            ///////////////////////////////////////////////////////////////////
+
+            // granularidad del cálculo
+            int granularidadMts = 20;
+
+            // radio de puntas de línea
+            int radioPuntasDeLineaMts = 200;
+
+            // fechas desde hasta
+            //var desde = new DateTime(2021, 09, 7, 00, 00, 00);
+            //var hasta = new DateTime(2021, 09, 8, 00, 00, 00);
+            var desde = new DateTime(2021, 10, 31, 00, 00, 00);
+            var hasta = new DateTime(2021, 11, 01, 00, 00, 00);
+            // 3087 everywhere
+
+            // códigos de las líneas para este cálculo
+            var lineasPosibles = new int[] { 165, 166, 167 };
+
+            // tipos de coches
+            // var tipoCoches = ProveedorHistoricoDbXBus.TipoEquipo.PICOBUS;
+
+            // proveedor key
+            var proveedorKey = ProveedorKey.JsonSUBE;
+
+            ///////////////////////////////////////////////////////////////////
+            // recorridos teóricos / topes / puntas nombradas / recopatterns
+            ///////////////////////////////////////////////////////////////////
+
+            var proveedorRecorridosTeoricos = new ProveedorVersionesTecnobus(dirRepos: DameMockRepos());
+            var recorridosTeoricos = proveedorRecorridosTeoricos.Get(new QPAProvRecoParams()
+            {
+                LineasPosibles = lineasPosibles,
+                FechaVigencia = desde
+            })
+                .Select(reco => SanitizarRecorrido(reco, granularidadMts))
+                .ToList()
+            ;
+
+            // puntos aplanados (todos)
+            var todosLosPuntosDeLosRecorridos = recorridosTeoricos.SelectMany(
+                (reco) => reco.Puntos,
+                (reco, puntoReco) => puntoReco
+            );
+
+            // topes
+            var topes2D = Topes2D.CreateFromPuntos(todosLosPuntosDeLosRecorridos);
+
+            // puntas de línea
+            var puntasNombradas = PuntasDeLinea2
+                .GetPuntasNombradas(recorridosTeoricos, radioPuntasDeLineaMts)
+                .ToList()
+            ;
+
+            // caminos de los recos, es un diccionario:
+            // ----------------------------------------
+            //  -de clave tiene el patrón de recorrido
+            //  -de valor tiene una lista de pares (linea, bandera) que son las banderas que encajan con ese patrón
+            var recoPatterns = new Dictionary<string, List<KeyValuePair<int, int>>>();
+            foreach (var recox in recorridosTeoricos)
+            {
+                // creo un camino (su descripción es la clave)
+                var camino = Camino<PuntoRecorrido>.CreateFromPuntos(puntasNombradas, recox.Puntos);
+
+                //if (camino.Description.Length == 1)
+                //    continue;
+
+                // si la clave no está en el diccionario la agrego...
+                if (!recoPatterns.ContainsKey(camino.Description))
+                {
+                    recoPatterns.Add(camino.Description, new List<KeyValuePair<int, int>>());
+                }
+
+                // agrego un par (linea, bandera) a la entrada actual...
+                recoPatterns[camino.Description].Add(new KeyValuePair<int, int>(recox.Linea, recox.Bandera));
+            }
+
+            ///////////////////////////////////////////////////////////////////
+            // Datos Empresa-Interno / Ficha
+            //  Sirve para:
+            //      Puntos SUBE
+            //      Ventas de boleto SUBE
+            ///////////////////////////////////////////////////////////////////
+            var datosEmpIntFicha = new ComunSUBE.DatosEmpIntFicha(new ComunSUBE.DatosEmpIntFicha.Configuration()
+            {
+                CommandTimeout = 600,
+                ConnectionString = Configu.ConnectionStringFichasXEmprIntSUBE,
+                MaxCacheSeconds = 15 * 60,
+            });
+
+            /////////////////////////////////////////////////////////////////////
+            //// Puntos históricos XBus
+            /////////////////////////////////////////////////////////////////////
+            //Dictionary<string, List<PuntoHistorico>> ptsHistoXBusPorFicha;
+            //const string ARCHIVO_XBUS = "PtsHistoXBus.json";
+
+            //if (File.Exists(ARCHIVO_XBUS))
+            //{
+            //    var json = File.ReadAllText(ARCHIVO_XBUS);
+            //    ptsHistoXBusPorFicha = JsonConvert.DeserializeObject<Dictionary<string, List<PuntoHistorico>>>(json);
+            //}
+            //else
+            //{
+            //    var proveedorPtsHistoXBus = new ProveedorHistoricoDbXBus(
+            //        new ProveedorHistoricoDbXBus.Configuracion
+            //        {
+            //            CommandTimeout = 600,
+            //            ConnectionString = Configu.ConnectionStringPuntosXBus,
+            //            Tipo = tipoCoches,
+            //            FechaDesde = desde,
+            //            FechaHasta = hasta,
+            //        });
+            //    ptsHistoXBusPorFicha = proveedorPtsHistoXBus.Get();
+            //    File.WriteAllText(
+            //        ARCHIVO_XBUS,
+            //        JsonConvert.SerializeObject(ptsHistoXBusPorFicha)
+            //    );
+            //}
+            //var fichasXBus = ptsHistoXBusPorFicha.Keys.ToList();
+
+            ///////////////////////////////////////////////////////////////////
+            // Puntos históricos SUBE
+            ///////////////////////////////////////////////////////////////////
+
+            Dictionary<string, List<PuntoHistorico>> ptsHistoSUBEPorIdent = null;
+            string ARCHIVO_PUNTOS_SUBE = $"__pts{proveedorKey}__agn132__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json";
+
+            if (File.Exists(ARCHIVO_PUNTOS_SUBE))
+            {
+                var json = File.ReadAllText(ARCHIVO_PUNTOS_SUBE);
+                ptsHistoSUBEPorIdent = JsonConvert.DeserializeObject<Dictionary<string, List<PuntoHistorico>>>(json);
+            }
+            else if (proveedorKey == ProveedorKey.DbSUBE)
+            {
+                var proveedorPtsHistoDbSUBE = new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE(
+                    new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE.Configuracion
+                    {
+                        CommandTimeout = 600,
+                        ConnectionStringPuntos = Configu.ConnectionStringPuntosSUBE,
+                        //DatosEmpIntFicha = datosEmpIntFicha,
+                        FechaDesde = desde,
+                        FechaHasta = hasta,
+                    });
+
+                ptsHistoSUBEPorIdent = proveedorPtsHistoDbSUBE.Get();
+
+                File.WriteAllText(
+                    ARCHIVO_PUNTOS_SUBE,
+                    JsonConvert.SerializeObject(ptsHistoSUBEPorIdent)
+                );
+            }
+            else if (proveedorKey == ProveedorKey.JsonSUBE)
+            {
+                var proveedorPtsHistoJsonSUBE = new ProveedoresHistoricos.JsonSUBE.ProveedorHistoricoJsonSUBE
+                {
+                    InputDir = @"D:\EstadosCoches\Agency132\",
+                    FechaDesde = desde,
+                    FechaHasta = hasta,
+                };
+
+                ptsHistoSUBEPorIdent = proveedorPtsHistoJsonSUBE.Get();
+
+                File.WriteAllText(
+                    ARCHIVO_PUNTOS_SUBE,
+                    JsonConvert.SerializeObject(ptsHistoSUBEPorIdent)
+                );
+            }
+
+            var fichasSUBE = ptsHistoSUBEPorIdent
+                .Keys
+                .Select(ident => datosEmpIntFicha.GetFicha(ident))
+                .ToList()
+            ;
+
+            ///////////////////////////////////////////////////////////////////
+            // Venta de boletos
+            ///////////////////////////////////////////////////////////////////
+            Dictionary<int, List<BoletoComun>> boletosXFicha;
+            string ARCHIVO_BOLETOS = $"__boletosSUBE__agn132__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json";
+            var proveedorVentaBoletosConfig = new ProveedorVentaBoletosDbSUBE.Configuracion
+            {
+                CommandTimeout = 600,
+                ConnectionString = Configu.ConnectionStringVentasSUBE,
+                DatosEmpIntFicha = datosEmpIntFicha,
+                FechaDesde = desde,
+                FechaHasta = hasta,
+            };
+
+            ProveedorVentaBoletosDbSUBE proveedorVentaBoletos;
+
+            if (File.Exists(ARCHIVO_BOLETOS))
+            {
+                var json = File.ReadAllText(ARCHIVO_BOLETOS);
+                boletosXFicha = JsonConvert.DeserializeObject<Dictionary<int, List<BoletoComun>>>(json);
+                proveedorVentaBoletos = new ProveedorVentaBoletosDbSUBE(
+                    proveedorVentaBoletosConfig,
+                    boletosXFicha
+                );
+            }
+            else
+            {
+                proveedorVentaBoletos = new ProveedorVentaBoletosDbSUBE(proveedorVentaBoletosConfig);
+                proveedorVentaBoletos.TieneBoletosEnIntervalo(0, DateTime.Now, DateTime.Now); // esto solo es para inicializar
+                boletosXFicha = proveedorVentaBoletos.BoletosXIdentificador;
+                File.WriteAllText(
+                    ARCHIVO_BOLETOS,
+                    JsonConvert.SerializeObject(boletosXFicha)
+                );
+            }
+
+            ///////////////////////////////////////////////////////////////////
+            // Procesamiento de los datos (para todas las fichas)
+            ///////////////////////////////////////////////////////////////////
+
+            //var (resultadosSUBE, resulFichasSUBE) = ProcesarTodo(
+            var resultadosSUBE = ProcesarTodo(
+                recorridosTeoricos, topes2D, puntasNombradas.Select(pu => (IPuntaLinea)pu).ToList(), recoPatterns,
+                ptsHistoSUBEPorIdent /*,fichasSUBE*/
+            );
+
+            var resulIdents = resultadosSUBE
+                .Select(result => result.Identificador)
+            ;
+
+            var resulFichasSUBE = resulIdents
+                .Select(ident => datosEmpIntFicha.GetFicha(ident, '-', -1))
+                .ToList()
+            ;
+
+            //PonerResultadosEnUnArchivo(
+            //    "SUBE_NUEVO_80", 
+            //    resultadosSUBE, resulFichasSUBE, proveedorVentaBoletos, 
+            //    (ficha, resultado) => resultado.PorcentajeReconocido >= 80
+            //);
+
+            //PonerResultadosEnUnArchivo(
+            //    "SUBE_TODO_00",
+            //    resultadosSUBE, resulFichasSUBE, proveedorVentaBoletos,
+            //    (ficha, resultado) => resultado.PorcentajeReconocido >= 0
+            //);
+
+            Dictionary<int, (int, int)> fichasXEmpIntSUBE = datosEmpIntFicha
+                .Get()
+                .ToDictionary(x => x.Value, x => x.Key)
+            ;
+
+            var reporte = new CSVReport()
+            {
+                UsesHeader = true,
+                Separator = ';',
+                HeaderBuilder = (sep) => string.Join(sep, new[] { "empresaSUBE", "internoSUBE", "ficha", "linea", "bandera", "inicio", "fin", "cantbol", "cantbolopt" }),
+                ItemsBuilder = (sep) => CrearItemsCSV(sep, resultadosSUBE, resulFichasSUBE, fichasXEmpIntSUBE, proveedorVentaBoletos)
+            };
+
+            File.WriteAllText($"GBOURG__CSV_{proveedorKey}__agn132__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.txt", reporte.ToString());
 
             int foo = 0;
         }
@@ -456,6 +727,11 @@ namespace LibQPA.Testing
 
         string CrearItemCSV(char sep, QPAResult qPAResult, int ficha, Dictionary<int, (int, int)> fichasXEmpIntSUBE, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos)
         {
+            if (ficha == -1)
+            {
+                return "";
+            }
+
             // OJO! esta func crea varios renglones CSV... uno para cada SubCamino (bandera) reconocido
 
             var sbRenglones = new StringBuilder();
@@ -563,7 +839,7 @@ namespace LibQPA.Testing
         private List<QPAResult> ProcesarTodo(
             List<RecorridoLinBan>                               recorridosTeoricos,
             Topes2D                                             topes2D,
-            IEnumerable<PuntaLinea>                             puntasNombradas,
+            List<IPuntaLinea>                                   puntasNombradas,
             Dictionary<string, List<KeyValuePair<int, int>>>    recoPatterns,
             Dictionary<string, List<PuntoHistorico>>            puntosHistoricosPorIdent //,
             //List<int>                                           fichas
