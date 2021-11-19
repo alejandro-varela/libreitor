@@ -37,7 +37,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibQPA.ProveedoresHistorico
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PintorRecorridosGenerico", "PintorRecorridosGenerico\PintorRecorridosGenerico.csproj", "{293993CC-4925-41A1-9C4F-C9BB02DA5E1E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisorTandas", "VisorTandas\VisorTandas.csproj", "{73952149-2DB9-459D-956C-5ADB36AF64C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VisorTandas", "VisorTandas\VisorTandas.csproj", "{73952149-2DB9-459D-956C-5ADB36AF64C7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Anotaciones", "Anotaciones", "{C5128D20-68C7-427C-9BE1-33EAA8610CF0}"
+	ProjectSection(SolutionItems) = preProject
+		TODO.txt = TODO.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
