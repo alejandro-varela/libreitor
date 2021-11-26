@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Comun;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LibQPA
 {
@@ -17,18 +19,65 @@ namespace LibQPA
         
         public string Patron { get; set; }
 
-        public DateTime HoraComienzo { get; set; }
-        public DateTime HoraFin { get; set; }
-        public TimeSpan Duracion { get; set; }
+        public DateTime HoraSalida { get; set; }
+
+        public DateTime HoraLlegada { get; set; }
+
+        public List<PuntoHistorico> PuntosEntreSalidaYLlegada { get; set; }
+
+        public TimeSpan Duracion
+        {
+            get
+            {
+                var duracion = HoraLlegada - HoraSalida;
+                return duracion;
+            }
+        }
 
         public List<LineaBanderaPuntuacion> LineasBanderasPuntuaciones { get; set; }
+
         public int PatronIndexInicial { get; set; }
+
         public int PatronIndexFinal { get; set; }
+
+        public double DuracionHoras
+        {
+            get 
+            {
+                return Duracion.TotalHours;
+            }
+        }
+
+        public double KmsRecorridos
+        {
+            get
+            {
+                var metrosRecorridos = 0.0;
+                if (PuntosEntreSalidaYLlegada.Any())
+                {
+                    var puntoAnterior = PuntosEntreSalidaYLlegada.First();
+                    foreach (var puntoX in PuntosEntreSalidaYLlegada.Skip(1))
+                    {
+                        metrosRecorridos += Haversine.GetDist(puntoAnterior, puntoX);
+                        puntoAnterior = puntoX;
+                    }
+                }
+                return metrosRecorridos / 1000.0;
+            }
+        }
+
+        public double VelocidadKmhPromedio
+        {
+            get
+            {
+                var kilometrosXHora = KmsRecorridos / DuracionHoras;
+                return kilometrosXHora;
+            }
+        }
 
         public override string ToString()
         {
             return Patron ?? "";
         }
-
     }
 }

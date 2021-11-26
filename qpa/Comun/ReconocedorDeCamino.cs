@@ -6,6 +6,12 @@ using System.Threading.Tasks;
 
 namespace Comun
 {
+    // 1) agregar al resultado los puntos del camino
+    //    en el procesado posterior se podran vincular intervalos de tiempos con los puntos
+    // 2) reconocer los pozos
+    //    en el procesado posterior se podran analizar estos pozos geométricamente
+    // 
+
     public class ReconocedorDeCamino
     {
         public static Reconocimento Reconocer(Camino<PuntoHistorico> camino, List<string> patrones)
@@ -87,17 +93,19 @@ namespace Comun
                 }
                 else
                 {
-                    // ARREGLO: antes no se tenían en cuenta los patrones de 1 solo caracter...
+                    // ARREGLO1: antes no se tenían en cuenta los patrones de 1 solo caracter...
+                    // ARREGLO2: el arreglo 1 estaba mal porque si el patron tenia un solo caracter no adelantaba el contador de nombres
+
                     if (patronElegido.Length == 1)
                     {
                         ptr++;
+                        ptrNombres++;
                     }
                     else
                     {
                         ptr += (indexFinal - ptr);
+                        ptrNombres += patronElegido.Length - 1;
                     }
-
-                    ptrNombres += patronElegido.Length - 1;
 
                     if (ptr >= patronHistorico.Length - 1)
                     {

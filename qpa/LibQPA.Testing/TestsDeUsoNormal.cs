@@ -511,8 +511,13 @@ namespace LibQPA.Testing
                 // creo un camino (su descripción es la clave)
                 var camino = Camino<PuntoRecorrido>.CreateFromPuntos(puntasNombradas, recox.Puntos);
 
-                //if (camino.Description.Length == 1)
-                //    continue;
+                // TODO: hay que ver el "porqué"
+                // elimino los patrones de recorrido que tengan un solo char, ej. "A"
+                // ya que estos patrones producen duraciones negativas
+                if (camino.Description.Length == 1)
+                {
+                    continue;
+                }
 
                 // si la clave no está en el diccionario la agrego...
                 if (!recoPatterns.ContainsKey(camino.Description))
@@ -753,21 +758,21 @@ namespace LibQPA.Testing
                 var bandera = linBanPuns[0].Bandera;
 
                 // inicio y fin
-                var inicio  = subCamino.HoraComienzo.ToString("dd/MM/yyyy HH:mm:ss");
-                var fin     = subCamino.HoraFin.ToString("dd/MM/yyyy HH:mm:ss");
+                var inicio  = subCamino.HoraSalida.ToString("dd/MM/yyyy HH:mm:ss");
+                var fin     = subCamino.HoraLlegada.ToString("dd/MM/yyyy HH:mm:ss");
 
                 // cant de boletos (naive)
                 var cantBoletosNaive = proveedorVentaBoletos
-                    .GetBoletosEnIntervalo(ficha, subCamino.HoraComienzo, subCamino.HoraFin)
+                    .GetBoletosEnIntervalo(ficha, subCamino.HoraSalida, subCamino.HoraLlegada)
                     .Count()
                 ;
 
                 // cant de boletos (optimizada)
                 var horaComienzoBoletos = subCaminoAnterior == null ?
-                    subCamino.HoraComienzo :
-                    subCaminoAnterior.HoraFin
+                    subCamino.HoraSalida :
+                    subCaminoAnterior.HoraLlegada
                 ;
-                var horaFinBoletos = subCamino.HoraFin;
+                var horaFinBoletos = subCamino.HoraLlegada;
                 var cantBoletosOpt = proveedorVentaBoletos
                     .GetBoletosEnIntervalo(ficha, horaComienzoBoletos, horaFinBoletos)
                     .Count()
@@ -841,14 +846,12 @@ namespace LibQPA.Testing
             Topes2D                                             topes2D,
             List<IPuntaLinea>                                   puntasNombradas,
             Dictionary<string, List<KeyValuePair<int, int>>>    recoPatterns,
-            Dictionary<string, List<PuntoHistorico>>            puntosHistoricosPorIdent //,
-            //List<int>                                           fichas
+            Dictionary<string, List<PuntoHistorico>>            puntosHistoricosPorIdent
         )
         {
             var qpaProcessor= new QPAProcessor();
             var resultados  = new List<QPAResult>();
 
-            //foreach (var ficha in fichas.OrderBy(f => f))
             foreach (var ident in puntosHistoricosPorIdent.Keys)
             {
                 try
@@ -862,8 +865,20 @@ namespace LibQPA.Testing
                         recoPatterns        : recoPatterns
                     );
 
-                    resultados.Add(res);
+                    // PASARLE AL PROCESAR LOS CRITERIOS...
+                    // ¿POR QUÉ ACA Y NO ANTES?
+                    // PORQUE ACA TENEMOS CRITERIOS DE USUARIO.
 
+                    // 1) la duración de cada subcamino debe ser positiva
+                    // 2) los subcaminos no deben estar superpuestos en el tiempo
+                    // 3) la velocidad del subcamino que representa debe ser una velocidad real
+                    //      (no demasiado rápida) ej: no puede ser mas de 120-kmh
+                    // 4) los puntos deben completar (por lo menos en un 65%) realmente el camino que dicen ser
+
+                    res = VelocidadNormal   (res);
+                    res = DuracionPositiva  (res);
+
+                    resultados.Add(res);
                 }
                 catch (Exception exx)
                 {
@@ -871,101 +886,171 @@ namespace LibQPA.Testing
                 }
             }
 
-            //return (resultados, resulfichas);
             return resultados;
         }
 
-        private void PonerResultadosEnUnArchivo(string nombreSinExtension, List<QPAResult> resultados, List<int> fichas, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos, Func<int, QPAResult, bool> filtroFichaResultado)
+        int _veloMal = 0; // generalmente por no sanitizar las lng que vienen mal
+        List<double> _velosMal = new List<double>();
+        List<double> _velosBien = new List<double>();
+
+        int _duraMal = 0; // evitado por eliminar los patrones con una sola pta de línea
+        List<double> _durasMal = new List<double>();
+        List<double> _durasBien = new List<double>();
+
+        private QPAResult VelocidadNormal(QPAResult res)
         {
-            var lstTextosPlanos = new List<string>();
-            var lstTextosCSV = new List<string>();
-            //3199;163;2769;2021/09/07 05:49:38;2021/09/07 07:33:10;50;
-            lstTextosCSV.Add("ficha;linea;bandera;inicio;fin;cantbol");
+            var newSubCaminos = res.SubCaminos
+                .Where(subCamino => 
+                    subCamino.VelocidadKmhPromedio <= 120 && 
+                    subCamino.VelocidadKmhPromedio >= 5
+                )
+                .ToList()
+            ;
 
-            for (int i = 0; i < resultados.Count; i++)
+            //if (res.SubCaminos.Count != newSubCaminos.Count)
+            //{
+            //    var anormales = res.SubCaminos
+            //        .Where(subCamino => subCamino.VelocidadKmhPromedio > 120 || subCamino.VelocidadKmhPromedio < 5)
+            //        .ToList()
+            //    ;
+            //    _veloMal += 1;
+            //    _velosMal.AddRange(anormales.Select(sc => sc.VelocidadKmhPromedio));
+            //    int foo = 0;
+            //}
+            //else
+            //{
+            //    _velosBien.AddRange(newSubCaminos.Select(sc => sc.VelocidadKmhPromedio));
+            //}
+
+            return new QPAResult
             {
-                var resultado = resultados[i];
-                int ficha = fichas[i];
+                Camino          = res.Camino,
+                Identificador   = res.Identificador,
+                SubCaminos      = newSubCaminos,
+            };
+        }
 
-                //if (resultado.PorcentajeReconocido < 80) 
-                if (!filtroFichaResultado(ficha, resultado))
-                { 
-                    continue;
-                }
+        private QPAResult DuracionPositiva(QPAResult res)
+        {
+            var newSubCaminos = res.SubCaminos
+                .Where  (subCamino => subCamino.HoraLlegada > subCamino.HoraSalida)
+                .ToList ()
+            ;
+
+            //if (res.SubCaminos.Count > newSubCaminos.Count)
+            //{
+            //    var anormales = res.SubCaminos
+            //        .Where(subCamino => subCamino.DuracionHoras < 0)
+            //        .ToList()
+            //    ;
+            //    _duraMal += 1;
+            //    _durasMal.AddRange(anormales.Select(sc => sc.DuracionHoras));
+            //    int foo = 0;
+            //}
+            //else
+            //{
+            //    _durasBien.AddRange(newSubCaminos.Select(sc => sc.DuracionHoras));
+            //}
+
+            return new QPAResult
+            {
+                Camino          = res.Camino,
+                Identificador   = res.Identificador,
+                SubCaminos      = newSubCaminos,
+            };
+        }
+
+        //private void PonerResultadosEnUnArchivo(string nombreSinExtension, List<QPAResult> resultados, List<int> fichas, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos, Func<int, QPAResult, bool> filtroFichaResultado)
+        //{
+        //    var lstTextosPlanos = new List<string>();
+        //    var lstTextosCSV = new List<string>();
+        //    //3199;163;2769;2021/09/07 05:49:38;2021/09/07 07:33:10;50;
+        //    lstTextosCSV.Add("ficha;linea;bandera;inicio;fin;cantbol");
+
+        //    for (int i = 0; i < resultados.Count; i++)
+        //    {
+        //        var resultado = resultados[i];
+        //        int ficha = fichas[i];
+
+        //        //if (resultado.PorcentajeReconocido < 80) 
+        //        if (!filtroFichaResultado(ficha, resultado))
+        //        { 
+        //            continue;
+        //        }
                 
-                var textoPlano  = CrearTextoPlano   (resultado, proveedorVentaBoletos, ficha);
-                var textoCSV    = CrearTextoCSV     (resultado, proveedorVentaBoletos, ficha).TrimEnd();
+        //        var textoPlano  = CrearTextoPlano   (resultado, proveedorVentaBoletos, ficha);
+        //        var textoCSV    = CrearTextoCSV     (resultado, proveedorVentaBoletos, ficha).TrimEnd();
 
-                lstTextosPlanos.Add(textoPlano);
-                lstTextosCSV.Add(textoCSV);
-            }
+        //        lstTextosPlanos.Add(textoPlano);
+        //        lstTextosCSV.Add(textoCSV);
+        //    }
 
-            File.WriteAllLines(nombreSinExtension + ".txt", lstTextosPlanos .ToArray());
-            File.WriteAllLines(nombreSinExtension + ".csv", lstTextosCSV    .ToArray());
-        }
+        //    File.WriteAllLines(nombreSinExtension + ".txt", lstTextosPlanos .ToArray());
+        //    File.WriteAllLines(nombreSinExtension + ".csv", lstTextosCSV    .ToArray());
+        //}
 
-        private string CrearTextoCSV(QPAResult resultado, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos, int ficha, char sep = ';')
-        {
-            var sbRenglones = new StringBuilder();
+        //private string CrearTextoCSV(QPAResult resultado, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos, int ficha, char sep = ';')
+        //{
+        //    var sbRenglones = new StringBuilder();
 
-            foreach (var subCamino in resultado.SubCaminos)
-            {
-                var linBanPuns = subCamino
-                    .LineasBanderasPuntuaciones
-                    .OrderBy(lbp => lbp.Puntuacion)
-                    .ToList ()
-                ;
-                var linea   = linBanPuns[0].Linea;
-                var bandera = linBanPuns[0].Bandera;
-                var inicio  = subCamino.HoraComienzo.ToString("dd/MM/yyyy HH:mm:ss");
-                var fin     = subCamino.HoraFin.ToString("dd/MM/yyyy HH:mm:ss");
-                var cantBoletos = proveedorVentaBoletos
-                    .GetBoletosEnIntervalo(ficha, subCamino.HoraComienzo, subCamino.HoraFin)
-                    .Count  ()
-                ;
-                var renglon = $"{ficha}{sep}{linea}{sep}{bandera}{sep}{inicio}{sep}{fin}{sep}{cantBoletos}";
-                sbRenglones.AppendLine(renglon);
-            }
+        //    foreach (var subCamino in resultado.SubCaminos)
+        //    {
+        //        var linBanPuns = subCamino
+        //            .LineasBanderasPuntuaciones
+        //            .OrderBy(lbp => lbp.Puntuacion)
+        //            .ToList ()
+        //        ;
+        //        var linea   = linBanPuns[0].Linea;
+        //        var bandera = linBanPuns[0].Bandera;
+        //        var inicio  = subCamino.HoraSalida.ToString("dd/MM/yyyy HH:mm:ss");
+        //        var fin     = subCamino.HoraLlegada.ToString("dd/MM/yyyy HH:mm:ss");
+        //        var cantBoletos = proveedorVentaBoletos
+        //            .GetBoletosEnIntervalo(ficha, subCamino.HoraSalida, subCamino.HoraLlegada)
+        //            .Count  ()
+        //        ;
+        //        var renglon = $"{ficha}{sep}{linea}{sep}{bandera}{sep}{inicio}{sep}{fin}{sep}{cantBoletos}";
+        //        sbRenglones.AppendLine(renglon);
+        //    }
 
-            var ret = sbRenglones.ToString();
-            return ret;
-        }
+        //    var ret = sbRenglones.ToString();
+        //    return ret;
+        //}
 
-        private string CrearTextoPlano(QPAResult resultado, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos, int ficha)
-        {
-            var sbResult = new StringBuilder();
-            sbResult.AppendLine(new string('-', 80));
-            sbResult.AppendLine($"Ficha: {ficha}");
-            sbResult.AppendLine($"");
-            foreach (var subCamino in resultado.SubCaminos)
-            {
-                foreach (var linBanPun in subCamino.LineasBanderasPuntuaciones)
-                {
-                    sbResult.AppendLine($"Lin Ban: {linBanPun.Linea} {linBanPun.Bandera}");
-                }
-                sbResult.AppendLine($"\tInicio  : {subCamino.HoraComienzo}");
-                sbResult.AppendLine($"\tFin     : {subCamino.HoraFin}");
+        //private string CrearTextoPlano(QPAResult resultado, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos, int ficha)
+        //{
+        //    var sbResult = new StringBuilder();
+        //    sbResult.AppendLine(new string('-', 80));
+        //    sbResult.AppendLine($"Ficha: {ficha}");
+        //    sbResult.AppendLine($"");
+        //    foreach (var subCamino in resultado.SubCaminos)
+        //    {
+        //        foreach (var linBanPun in subCamino.LineasBanderasPuntuaciones)
+        //        {
+        //            sbResult.AppendLine($"Lin Ban: {linBanPun.Linea} {linBanPun.Bandera}");
+        //        }
+        //        sbResult.AppendLine($"\tInicio  : {subCamino.HoraSalida}");
+        //        sbResult.AppendLine($"\tFin     : {subCamino.HoraLlegada}");
 
-                if (proveedorVentaBoletos.TieneBoletosEnIntervalo(ficha, subCamino.HoraComienzo, subCamino.HoraFin))
-                {
-                    var sbVentas= new StringBuilder();
-                    var boletos = proveedorVentaBoletos
-                        .GetBoletosEnIntervalo(ficha, subCamino.HoraComienzo, subCamino.HoraFin)
-                        .ToList();
-                    var fechas  = boletos.Select(bol => bol.FechaCancelacion);
-                    var sFechas = string.Join(',', fechas);
-                    sbVentas.Append($"Tiene {boletos.Count} boletos vendidos en: {sFechas}");
-                    sbResult.AppendLine($"\tVenta   : {sbVentas}");
-                }
-                else
-                {
-                    sbResult.AppendLine($"\tVenta   : Sin datos por parte de archivos SUBE");
-                }
-                sbResult.AppendLine($"\tTotMins~: {Convert.ToInt32(subCamino.Duracion.TotalMinutes) }");
-                sbResult.AppendLine($"");
-            }
-            return sbResult.ToString();
-        }
+        //        if (proveedorVentaBoletos.TieneBoletosEnIntervalo(ficha, subCamino.HoraSalida, subCamino.HoraLlegada))
+        //        {
+        //            var sbVentas= new StringBuilder();
+        //            var boletos = proveedorVentaBoletos
+        //                .GetBoletosEnIntervalo(ficha, subCamino.HoraSalida, subCamino.HoraLlegada)
+        //                .ToList();
+        //            var fechas  = boletos.Select(bol => bol.FechaCancelacion);
+        //            var sFechas = string.Join(',', fechas);
+        //            sbVentas.Append($"Tiene {boletos.Count} boletos vendidos en: {sFechas}");
+        //            sbResult.AppendLine($"\tVenta   : {sbVentas}");
+        //        }
+        //        else
+        //        {
+        //            sbResult.AppendLine($"\tVenta   : Sin datos por parte de archivos SUBE");
+        //        }
+        //        sbResult.AppendLine($"\tTotMins~: {Convert.ToInt32(subCamino.Duracion.TotalMinutes) }");
+        //        sbResult.AppendLine($"");
+        //    }
+        //    return sbResult.ToString();
+        //}
 
         // TODO: pasar esta función a RecorridoLinBan
         // MMMMMMMMMMMMM no se si hay que hacer eso...

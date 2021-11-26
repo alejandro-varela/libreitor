@@ -43,6 +43,13 @@ namespace LibQPA.ProveedoresHistoricos.JsonSUBE
 
                 foreach (VehicleContainer container in info)
                 {
+                    // ignoro las latitudes y longitudes POSITIVAS
+                    if (container.Vehicle.Pos.Lat > 0 ||
+                        container.Vehicle.Pos.Lng > 0)
+                    {
+                        continue;
+                    }
+
                     var empresa = DameEmpresaArchivo(fileX);
                     var interno = container.Vehicle.Info.GetIdentCocheSUBEFromLabel();
                     var identificador = $"{empresa}-{interno}";
@@ -61,13 +68,22 @@ namespace LibQPA.ProveedoresHistoricos.JsonSUBE
                         Fecha = container.Vehicle.FechaLocalFromTimeStamp
                     };
 
-                    // ignoro los puntos que son iguales...
-                    var totalPuntos = ret[identificador].Count;
-                    if (totalPuntos > 0 && ret[identificador][totalPuntos-1] == punto)
+                    // si tengo puntos guardados para este identificador
+                    if (ret[identificador].Count > 0)
                     {
-                        continue;
-                    }
+                        // ignoro el punto si el último es igual
+                        if (ret[identificador][^1] == punto)
+                        {
+                            continue;
+                        }
 
+                        // ignoro el punto si su fecha es menor a la última fecha
+                        if (ret[identificador][^1].Fecha > punto.Fecha)
+                        {
+                            continue;
+                        }
+                    }
+                    
                     // agrego el punto
                     ret[identificador].Add(punto);
                 }

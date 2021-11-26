@@ -76,21 +76,28 @@ namespace LibQPA
                         grupoideLlega.GetPuntoMasCentral().PuntoAsociado.Fecha
                     ;
 
-                    // Duración
-                    var duracion = horaLlegada - horaSalida;
-                    var duracionHoras = Convert.ToInt32(Math.Floor(duracion.TotalSeconds / 3600));
-                    var duracionMinutos = Convert.ToInt32(Math.Floor(duracion.TotalMinutes - (duracionHoras * 60)));
-                    var duracionSegundos = Convert.ToInt32(Math.Floor(duracion.TotalSeconds - (duracionHoras * 3600) - (duracionMinutos * 60)));
+                    // Duración (paso la duracion a QPASubCamino)
+                    //var duracion = horaLlegada - horaSalida;
+                    //var duracionHoras = Convert.ToInt32(Math.Floor(duracion.TotalSeconds / 3600));
+                    //var duracionMinutos = Convert.ToInt32(Math.Floor(duracion.TotalMinutes - (duracionHoras * 60)));
+                    //var duracionSegundos = Convert.ToInt32(Math.Floor(duracion.TotalSeconds - (duracionHoras * 3600) - (duracionMinutos * 60)));
 
                     var subCamino = new QPASubCamino
                     {
-                        HoraComienzo        = horaSalida,
-                        HoraFin             = horaLlegada,
-                        Duracion            = duracion,
+                        HoraSalida          = horaSalida,
+                        HoraLlegada         = horaLlegada,
                         LineasBanderasPuntuaciones = new List<LineaBanderaPuntuacion>(),
                         Patron              = uni.Pattern,
                         PatronIndexInicial  = uni.IndexInicialGrupoide,
                         PatronIndexFinal    = uni.IndexFinalGrupoide,
+                        PuntosEntreSalidaYLlegada = caminoHistorico.Grupoides
+                            .Skip       (uni.IndexInicialGrupoide)
+                            .Take       (uni.IndexFinalGrupoide - uni.IndexInicialGrupoide + 1)
+                            .SelectMany (grupoide => grupoide.Nodos)
+                            .Select     (node => node.PuntoAsociado)
+                            .Where      (pasoc => pasoc.Fecha >= horaSalida)
+                            .Where      (pasoc => pasoc.Fecha <= horaLlegada)
+                            .ToList     ()
                     };
 
                     if (recoPatterns[uni.Pattern].Count > 1) // si hay varias banderas en un patrón debo desempatar...
