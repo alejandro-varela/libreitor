@@ -711,6 +711,319 @@ namespace LibQPA.Testing
             int foo = 0;
         }
 
+        [DataTestMethod]
+        [DataRow("AGN132", "2021-10-01", "2021-10-02", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-02", "2021-10-03", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-03", "2021-10-04", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-04", "2021-10-05", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-05", "2021-10-06", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-06", "2021-10-07", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-07", "2021-10-08", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-08", "2021-10-09", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-09", "2021-10-10", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-10", "2021-10-11", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-11", "2021-10-12", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-12", "2021-10-13", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-13", "2021-10-14", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-14", "2021-10-15", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-15", "2021-10-16", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-16", "2021-10-17", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-17", "2021-10-18", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-18", "2021-10-19", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-19", "2021-10-20", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-20", "2021-10-21", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-21", "2021-10-22", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-22", "2021-10-23", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-23", "2021-10-24", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-24", "2021-10-25", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-25", "2021-10-26", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-26", "2021-10-27", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-27", "2021-10-28", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-28", "2021-10-29", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-29", "2021-10-30", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-30", "2021-10-31", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-31", "2021-11-01", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        public void TestQPA3(
+            string identificador, // cualquier cadena que identifique este trabajo
+            string desdeISO8601, // ej: "2021-10-01"  o  "2021-10-01T00:00:00"
+            string hastaISO8601, // idem fecha desde
+            string lineasPosiblesSeparadasPorComa, // ej: "165,166,167"
+            string jsonInputDir, // ej: @"D:\EstadosCoches\Agency132\"
+            int granularidadMts = 20,
+            int radioPuntasDeLineaMts = 200
+        )
+        {
+            var desde = DateTime.Parse(desdeISO8601);
+            var hasta = DateTime.Parse(hastaISO8601);
+            var lineasPosibles = lineasPosiblesSeparadasPorComa
+                .Split(',')
+                .Select(s => int.Parse(s))
+                .ToArray()
+            ;
+
+            Assert.IsTrue(hasta.Subtract(desde).TotalDays == 1);
+            Assert.IsTrue(hasta > desde);
+
+            CalcularQPA_GenerarReporteQPA_SUBE(
+                identificador,
+                desde,
+                hasta,
+                lineasPosibles,
+                jsonInputDir,
+                granularidadMts,
+                radioPuntasDeLineaMts
+            );
+        }
+
+        public void CalcularQPA_GenerarReporteQPA_SUBE(
+            string      identificador,
+            DateTime    desde,
+            DateTime    hasta,
+            int[]       lineasPosibles,
+            string      jsonInputDir, // @"D:\EstadosCoches\Agency132\"
+            int         granularidadMts = 20,
+            int         radioPuntasDeLineaMts = 200
+        )
+        {
+            var resultadosSUBE = CalcularQPA_SUBE(
+                identificador,
+                desde,
+                hasta,
+                lineasPosibles,
+                jsonInputDir,
+                granularidadMts,
+                radioPuntasDeLineaMts
+            );
+
+            GenerarReporteQPA(identificador, desde, hasta, resultadosSUBE);
+        }
+
+        public void GenerarReporteQPA(
+            string identificador,
+            DateTime desde,
+            DateTime hasta,
+            List<QPAResult> resultadosSUBE
+        )
+        {
+            ///////////////////////////////////////////////////////////////////
+            // Datos Empresa-Interno / Ficha
+            //  Sirve para:
+            //      Puntos SUBE
+            //      Ventas de boleto SUBE
+            ///////////////////////////////////////////////////////////////////
+            var datosEmpIntFicha = new ComunSUBE.DatosEmpIntFicha(new ComunSUBE.DatosEmpIntFicha.Configuration()
+            {
+                CommandTimeout = 600,
+                ConnectionString = Configu.ConnectionStringFichasXEmprIntSUBE,
+                MaxCacheSeconds = 15 * 60,
+            });
+
+            ///////////////////////////////////////////////////////////////////
+            // Venta de boletos
+            ///////////////////////////////////////////////////////////////////
+            Dictionary<int, List<BoletoComun>> boletosXFicha;
+            
+            string ARCHIVO_BOLETOS = $"Boletos__{identificador}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json";
+
+            var proveedorVentaBoletosConfig = new ProveedorVentaBoletosDbSUBE.Configuracion
+            {
+                CommandTimeout = 600,
+                ConnectionString = Configu.ConnectionStringVentasSUBE,
+                DatosEmpIntFicha = datosEmpIntFicha,
+                FechaDesde = desde,
+                FechaHasta = hasta,
+            };
+
+            ProveedorVentaBoletosDbSUBE proveedorVentaBoletos;
+
+            if (File.Exists(ARCHIVO_BOLETOS))
+            {
+                var json = File.ReadAllText(ARCHIVO_BOLETOS);
+                boletosXFicha = JsonConvert.DeserializeObject<Dictionary<int, List<BoletoComun>>>(json);
+                proveedorVentaBoletos = new ProveedorVentaBoletosDbSUBE(
+                    proveedorVentaBoletosConfig,
+                    boletosXFicha
+                );
+            }
+            else
+            {
+                proveedorVentaBoletos = new ProveedorVentaBoletosDbSUBE(proveedorVentaBoletosConfig);
+                proveedorVentaBoletos.TieneBoletosEnIntervalo(0, DateTime.Now, DateTime.Now); // esto solo es para inicializar
+                boletosXFicha = proveedorVentaBoletos.BoletosXIdentificador;
+                File.WriteAllText(
+                    ARCHIVO_BOLETOS,
+                    JsonConvert.SerializeObject(boletosXFicha)
+                );
+            }
+
+            var resulFichasSUBE = resultadosSUBE
+                .Select(resul => resul.Identificador)
+                .Select(ident => datosEmpIntFicha.GetFicha(ident, '-', -1))
+                .ToList()
+            ;
+
+            Dictionary<int, (int, int)> fichasXEmpIntSUBE = datosEmpIntFicha
+                .Get()
+                .ToDictionary(x => x.Value, x => x.Key)
+            ;
+
+            var reporte = new CSVReport()
+            {
+                UsesHeader = true,
+                Separator = ';',
+                HeaderBuilder = (sep) => string.Join(sep, new[] { "empresaSUBE", "internoSUBE", "ficha", "linea", "bandera", "inicio", "fin", "cantbol", "cantbolopt" }),
+                ItemsBuilder = (sep) => CrearItemsCSV(sep, resultadosSUBE, resulFichasSUBE, fichasXEmpIntSUBE, proveedorVentaBoletos)
+            };
+
+            string nombreReporte = $"Reporte__{identificador}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.txt";
+            File.WriteAllText(nombreReporte, reporte.ToString());
+        }
+
+        public List<QPAResult> CalcularQPA_SUBE(
+            string      identificador,
+            DateTime    desde,
+            DateTime    hasta,
+            int[]       lineasPosibles,
+            string      jsonInputDir, // @"D:\EstadosCoches\Agency132\"
+            int         granularidadMts         = 20,
+            int         radioPuntasDeLineaMts   = 200
+        )
+        {
+            var proveedorRecorridosTeoricos = new ProveedorVersionesTecnobus(dirRepos: DameMockRepos());
+
+            var proveedorPuntosHistoricos = new ProveedoresHistoricos.JsonSUBE.ProveedorHistoricoJsonSUBE
+            {
+                InputDir = jsonInputDir,
+                FechaDesde = desde,
+                FechaHasta = hasta,
+            };
+
+            var resultadosSUBE = CalcularQPA(
+                identificador,
+                lineasPosibles,
+                desde,
+                hasta,
+                proveedorRecorridosTeoricos,
+                proveedorPuntosHistoricos,
+                granularidadMts,
+                radioPuntasDeLineaMts
+            );
+
+            return resultadosSUBE;
+        }
+
+        public List<QPAResult> CalcularQPA(
+            string                          identificador,
+            int[]                           lineasPosibles,
+            DateTime                        desde,
+            DateTime                        hasta,
+            IQPAProveedorRecorridosTeoricos proveedorRecorridosTeoricos,
+            IQPAProveedorPuntosHistoricos   proveedorPuntosHistoricos,
+            int granularidadMts             = 20,
+            int radioPuntasDeLineaMts       = 200
+        )
+        {
+            identificador ??= string.Empty;
+
+            #region Recos
+
+            ///////////////////////////////////////////////////////////////////
+            // recorridos teóricos / topes / puntas nombradas / recopatterns
+            ///////////////////////////////////////////////////////////////////
+            var recorridosTeoricos = proveedorRecorridosTeoricos.Get(new QPAProvRecoParams()
+            {
+                LineasPosibles = lineasPosibles,
+                FechaVigencia = desde
+            })
+                .Select(reco => SanitizarRecorrido(reco, granularidadMts))
+                .ToList()
+            ;
+
+            // puntos aplanados (todos)
+            var todosLosPuntosDeLosRecorridos = recorridosTeoricos.SelectMany(
+                (reco) => reco.Puntos,
+                (reco, puntoReco) => puntoReco
+            );
+
+            // topes
+            var topes2D = Topes2D.CreateFromPuntos(todosLosPuntosDeLosRecorridos);
+
+            // puntas de línea
+            var puntasNombradas = PuntasDeLinea2
+                .GetPuntasNombradas(recorridosTeoricos, radioPuntasDeLineaMts)
+                .ToList()
+            ;
+
+            // caminos de los recos, es un diccionario:
+            // ----------------------------------------
+            //  -de clave tiene el patrón de recorrido
+            //  -de valor tiene una lista de pares (linea, bandera) que son las banderas que encajan con ese patrón
+            var recoPatterns = new Dictionary<string, List<KeyValuePair<int, int>>>();
+            foreach (var recox in recorridosTeoricos)
+            {
+                // creo un camino (su descripción es la clave)
+                var camino = Camino<PuntoRecorrido>.CreateFromPuntos(puntasNombradas, recox.Puntos);
+
+                // TODO: hay que ver el "porqué"
+                // elimino los patrones de recorrido que tengan un solo char, ej. "A"
+                // ya que estos patrones producen duraciones negativas
+                if (camino.Description.Length == 1)
+                {
+                    continue;
+                }
+
+                // si la clave no está en el diccionario la agrego...
+                if (!recoPatterns.ContainsKey(camino.Description))
+                {
+                    recoPatterns.Add(camino.Description, new List<KeyValuePair<int, int>>());
+                }
+
+                // agrego un par (linea, bandera) a la entrada actual...
+                recoPatterns[camino.Description].Add(new KeyValuePair<int, int>(recox.Linea, recox.Bandera));
+            }
+
+            #endregion
+
+            #region Puntos Históricos
+
+            ///////////////////////////////////////////////////////////////////
+            // Puntos históricos
+            ///////////////////////////////////////////////////////////////////
+
+            Dictionary<string, List<PuntoHistorico>> ptsHistoSUBEPorIdent = null;
+            string ARCHIVO_PUNTOS_HISTORICOS = $"PtsHist__{identificador}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json";
+
+            if (File.Exists(ARCHIVO_PUNTOS_HISTORICOS))
+            {
+                var json = File.ReadAllText(ARCHIVO_PUNTOS_HISTORICOS);
+                ptsHistoSUBEPorIdent = JsonConvert.DeserializeObject<Dictionary<string, List<PuntoHistorico>>>(json);
+            }
+            else
+            {
+                ptsHistoSUBEPorIdent = proveedorPuntosHistoricos.Get();
+
+                File.WriteAllText(
+                    ARCHIVO_PUNTOS_HISTORICOS,
+                    JsonConvert.SerializeObject(ptsHistoSUBEPorIdent)
+                );
+            }
+
+            #endregion
+
+            ///////////////////////////////////////////////////////////////////
+            // Procesamiento de los datos (para todas las fichas)
+            ///////////////////////////////////////////////////////////////////
+            var resultadosSUBE = ProcesarTodo(
+                recorridosTeoricos, 
+                topes2D, 
+                puntasNombradas.Select(pu => (IPuntaLinea)pu).ToList(), 
+                recoPatterns,
+                ptsHistoSUBEPorIdent
+            );
+
+            return resultadosSUBE;
+        }
+
         IEnumerable<string> CrearItemsCSV(char sep, List<QPAResult> resultadosSUBE, List<int> fichasSUBE, Dictionary<int, (int, int)> fichasXEmpIntSUBE, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos)
         {
             int count = 0;
