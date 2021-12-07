@@ -9,12 +9,14 @@ namespace LibQPA
     {
         MATCH = 0,
         ERR = 1,
-        DESCANSO = 2,
-        CUSTOM = 3,
+        //DESCANSO = 2,
+        //CUSTOM = 3,
     }
 
     public class QPASubCamino
     {
+        public QPASubCamino SubCaminoAnterior { get; set; }
+
         public QPATipoSubCamino Tipo { get; set; } = QPATipoSubCamino.MATCH;
         
         public string Patron { get; set; }

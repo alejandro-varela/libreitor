@@ -91,6 +91,7 @@ namespace LibQPA.ProveedoresVentas.DbSUBE
             cmd.CommandTimeout = Config.CommandTimeout;
             using var reader = cmd.ExecuteReader();
 
+            int boletoId = 0;
             while (reader.Read())
             {
                 var interno         = Convert.ToInt32   (reader["C_INTERNO"] ?? 0);
@@ -99,8 +100,16 @@ namespace LibQPA.ProveedoresVentas.DbSUBE
                 var valorInicial    = Convert.ToDouble  (reader["D_IMPORTE_ORIGINAL"]);
                 var valorDescuento  = Convert.ToDouble  (reader["D_IMPORTE_DESCUENTO"]);
                 var valorFinal      = Convert.ToDouble  (reader["D_IMPORTE_TARIFA"]);
-                var latitud         = Convert.ToDouble  (reader["C_LATITUD"]) / 100.0;
-                var longitud        = Convert.ToDouble  (reader["C_LATITUD"]) / 100.0;
+
+                // ************************* ATENCIÓN *********************************
+                // Ripley’s Believe It or Not! Jack Palance nos cuenta que:
+                //  1) En la base de datos la latitud y la longitud estan invertidas
+                //     Asi que la latitud es C_LONGITUD y la longitud es C_LATITUD
+                //  2) Los dos valores estan guardados en un valor entero (por lo que
+                //     debemos dividirlos por 100)
+                var latitud         = Convert.ToDouble  (reader["C_LONGITUD"]) / 100000.0;
+                var longitud        = Convert.ToDouble  (reader["C_LATITUD" ]) / 100000.0;
+                // ********************************************************************
 
                 var ficha = Config.DatosEmpIntFicha.GetFicha(empresa, interno);
 
@@ -110,9 +119,12 @@ namespace LibQPA.ProveedoresVentas.DbSUBE
                     {
                         ret.Add(ficha, new List<BoletoComun>());
                     }
-
+                    
+                    boletoId++;
+                    
                     var boleto = new BoletoComun
                     {
+                        Id                  = $"id-{boletoId}",
                         FechaCancelacion    = fecha,
                         Latitud             = latitud,
                         Longitud            = longitud,

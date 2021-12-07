@@ -147,8 +147,8 @@ namespace LibQPA.Testing
             // fechas desde hasta
             //var desde = new DateTime(2021, 09, 7, 00, 00, 00);
             //var hasta = new DateTime(2021, 09, 8, 00, 00, 00);
-            var desde = new DateTime(2021, 10, 14, 00, 00, 00);
-            var hasta = new DateTime(2021, 10, 15, 00, 00, 00);
+            var desde = new DateTime(2021, 10, 01, 00, 00, 00);
+            var hasta = new DateTime(2021, 10, 02, 00, 00, 00);
 
             // códigos de las líneas para este cálculo
             var lineasPosibles = new int[] { 159, 163 };
@@ -712,43 +712,47 @@ namespace LibQPA.Testing
         }
 
         [DataTestMethod]
-        [DataRow("AGN132", "2021-10-01", "2021-10-02", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-02", "2021-10-03", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-03", "2021-10-04", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-04", "2021-10-05", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-05", "2021-10-06", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-06", "2021-10-07", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-07", "2021-10-08", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-08", "2021-10-09", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-09", "2021-10-10", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-10", "2021-10-11", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-11", "2021-10-12", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-12", "2021-10-13", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-13", "2021-10-14", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-14", "2021-10-15", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-15", "2021-10-16", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-16", "2021-10-17", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-17", "2021-10-18", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-18", "2021-10-19", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-19", "2021-10-20", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-20", "2021-10-21", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-21", "2021-10-22", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-22", "2021-10-23", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-23", "2021-10-24", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-24", "2021-10-25", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-25", "2021-10-26", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-26", "2021-10-27", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-27", "2021-10-28", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-28", "2021-10-29", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-29", "2021-10-30", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-30", "2021-10-31", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
-        [DataRow("AGN132", "2021-10-31", "2021-11-01", "165,166,167", @"D:\EstadosCoches\Agency132\", 20, 200)]
+        [DataRow("AGN132", "2021-10-01", "2021-10-02", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-02", "2021-10-03", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-03", "2021-10-04", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-04", "2021-10-05", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-05", "2021-10-06", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-06", "2021-10-07", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-07", "2021-10-08", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-08", "2021-10-09", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-09", "2021-10-10", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-10", "2021-10-11", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-11", "2021-10-12", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-12", "2021-10-13", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-13", "2021-10-14", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-14", "2021-10-15", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-15", "2021-10-16", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-16", "2021-10-17", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-17", "2021-10-18", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-18", "2021-10-19", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-19", "2021-10-20", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-20", "2021-10-21", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-21", "2021-10-22", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-22", "2021-10-23", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-23", "2021-10-24", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-24", "2021-10-25", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-25", "2021-10-26", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-26", "2021-10-27", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-27", "2021-10-28", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-28", "2021-10-29", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-29", "2021-10-30", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-30", "2021-10-31", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        [DataRow("AGN132", "2021-10-31", "2021-11-01", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        /*
+        [DataRow("AGN49" , "2021-10-01", "2021-10-02", "159,163"    , @"D:\EstadosCoches\Agency49\" , typeof(PuntaLinea) , 20, 800)]
+        */
         public void TestQPA3(
-            string identificador, // cualquier cadena que identifique este trabajo
-            string desdeISO8601, // ej: "2021-10-01"  o  "2021-10-01T00:00:00"
-            string hastaISO8601, // idem fecha desde
-            string lineasPosiblesSeparadasPorComa, // ej: "165,166,167"
-            string jsonInputDir, // ej: @"D:\EstadosCoches\Agency132\"
+            string identificador,
+            string desdeISO8601,
+            string hastaISO8601,
+            string lineasPosiblesSeparadasPorComa,
+            string jsonInputDir,
+            Type tipoPuntaLinea,
             int granularidadMts = 20,
             int radioPuntasDeLineaMts = 200
         )
@@ -764,14 +768,35 @@ namespace LibQPA.Testing
             Assert.IsTrue(hasta.Subtract(desde).TotalDays == 1);
             Assert.IsTrue(hasta > desde);
 
+            Func<List<RecorridoLinBan>, List<IPuntaLinea>> creadorPuntasNombradas = null;
+
+            if (tipoPuntaLinea == typeof(PuntaLinea))
+            {
+                creadorPuntasNombradas = recorridosTeoricos => 
+                    PuntasDeLinea
+                        .GetPuntasNombradas(recorridosTeoricos, radioPuntasDeLineaMts)
+                        .Select(pulin => (IPuntaLinea)pulin)
+                        .ToList()
+                    ;
+            }
+            else if (tipoPuntaLinea == typeof(PuntaLinea2))
+            {
+                creadorPuntasNombradas = recorridosTeoricos => 
+                    PuntasDeLinea2
+                        .GetPuntasNombradas(recorridosTeoricos, radioPuntasDeLineaMts, radioPuntasDeLineaMts * 2)
+                        .Select(pulin => (IPuntaLinea)pulin)
+                        .ToList()
+                    ;
+            }
+            
             CalcularQPA_GenerarReporteQPA_SUBE(
                 identificador,
                 desde,
                 hasta,
                 lineasPosibles,
                 jsonInputDir,
-                granularidadMts,
-                radioPuntasDeLineaMts
+                creadorPuntasNombradas,
+                granularidadMts
             );
         }
 
@@ -781,8 +806,8 @@ namespace LibQPA.Testing
             DateTime    hasta,
             int[]       lineasPosibles,
             string      jsonInputDir, // @"D:\EstadosCoches\Agency132\"
-            int         granularidadMts = 20,
-            int         radioPuntasDeLineaMts = 200
+            Func<List<RecorridoLinBan>, List<IPuntaLinea>> creadorPuntasNombradas,
+            int         granularidadMts = 20
         )
         {
             var resultadosSUBE = CalcularQPA_SUBE(
@@ -791,17 +816,22 @@ namespace LibQPA.Testing
                 hasta,
                 lineasPosibles,
                 jsonInputDir,
-                granularidadMts,
-                radioPuntasDeLineaMts
+                creadorPuntasNombradas,
+                granularidadMts
             );
 
-            GenerarReporteQPA(identificador, desde, hasta, resultadosSUBE);
+            GenerarReporteQPA(
+                identificador, 
+                desde, 
+                hasta, 
+                resultadosSUBE
+            );
         }
 
         public void GenerarReporteQPA(
-            string identificador,
-            DateTime desde,
-            DateTime hasta,
+            string          identificador,
+            DateTime        desde,
+            DateTime        hasta,
             List<QPAResult> resultadosSUBE
         )
         {
@@ -852,7 +882,7 @@ namespace LibQPA.Testing
                 boletosXFicha = proveedorVentaBoletos.BoletosXIdentificador;
                 File.WriteAllText(
                     ARCHIVO_BOLETOS,
-                    JsonConvert.SerializeObject(boletosXFicha)
+                    JsonConvert.SerializeObject(boletosXFicha, Formatting.Indented)
                 );
             }
 
@@ -872,7 +902,13 @@ namespace LibQPA.Testing
                 UsesHeader = true,
                 Separator = ';',
                 HeaderBuilder = (sep) => string.Join(sep, new[] { "empresaSUBE", "internoSUBE", "ficha", "linea", "bandera", "inicio", "fin", "cantbol", "cantbolopt" }),
-                ItemsBuilder = (sep) => CrearItemsCSV(sep, resultadosSUBE, resulFichasSUBE, fichasXEmpIntSUBE, proveedorVentaBoletos)
+                ItemsBuilder = (sep) => CrearItemsCSV(
+                    sep, 
+                    resultadosSUBE, 
+                    resulFichasSUBE, 
+                    fichasXEmpIntSUBE, 
+                    proveedorVentaBoletos
+                )
             };
 
             string nombreReporte = $"Reporte__{identificador}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.txt";
@@ -885,8 +921,8 @@ namespace LibQPA.Testing
             DateTime    hasta,
             int[]       lineasPosibles,
             string      jsonInputDir, // @"D:\EstadosCoches\Agency132\"
-            int         granularidadMts         = 20,
-            int         radioPuntasDeLineaMts   = 200
+            Func<List<RecorridoLinBan>, List<IPuntaLinea>> creadorPuntasNombradas,
+            int         granularidadMts = 20
         )
         {
             var proveedorRecorridosTeoricos = new ProveedorVersionesTecnobus(dirRepos: DameMockRepos());
@@ -905,8 +941,8 @@ namespace LibQPA.Testing
                 hasta,
                 proveedorRecorridosTeoricos,
                 proveedorPuntosHistoricos,
-                granularidadMts,
-                radioPuntasDeLineaMts
+                creadorPuntasNombradas,
+                granularidadMts
             );
 
             return resultadosSUBE;
@@ -919,8 +955,8 @@ namespace LibQPA.Testing
             DateTime                        hasta,
             IQPAProveedorRecorridosTeoricos proveedorRecorridosTeoricos,
             IQPAProveedorPuntosHistoricos   proveedorPuntosHistoricos,
-            int granularidadMts             = 20,
-            int radioPuntasDeLineaMts       = 200
+            Func<List<RecorridoLinBan>, List<IPuntaLinea>> creadorPuntasNombradas,
+            int granularidadMts             = 20
         )
         {
             identificador ??= string.Empty;
@@ -949,10 +985,7 @@ namespace LibQPA.Testing
             var topes2D = Topes2D.CreateFromPuntos(todosLosPuntosDeLosRecorridos);
 
             // puntas de línea
-            var puntasNombradas = PuntasDeLinea2
-                .GetPuntasNombradas(recorridosTeoricos, radioPuntasDeLineaMts)
-                .ToList()
-            ;
+            List<IPuntaLinea> puntasNombradas = creadorPuntasNombradas(recorridosTeoricos);
 
             // caminos de los recos, es un diccionario:
             // ----------------------------------------
@@ -1024,15 +1057,49 @@ namespace LibQPA.Testing
             return resultadosSUBE;
         }
 
-        IEnumerable<string> CrearItemsCSV(char sep, List<QPAResult> resultadosSUBE, List<int> fichasSUBE, Dictionary<int, (int, int)> fichasXEmpIntSUBE, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos)
+        IEnumerable<string> CrearItemsCSV(
+            char                        sep, 
+            List<QPAResult>             resultadosSUBE, 
+            List<int>                   fichasSUBE, 
+            Dictionary<int, (int, int)> fichasXEmpIntSUBE, 
+            ProveedorVentaBoletosDbSUBE proveedorVentaBoletos
+        )
         {
-            int count = 0;
+            var count = 0;
+            var dicCasillerosXLinBan = new Dictionary<(int, int), HashSet<Casillero>>();
+
             for (int i = 0; i < resultadosSUBE.Count; i++)
             {
+                var dameCasillerosXLinBan = new FuncCasillerosXLinBan((int linea, int bandera, int granuCustom) =>
+                {
+                    var key = (linea, bandera);
+                    if (!dicCasillerosXLinBan.ContainsKey(key))
+                    {
+                        var recorrido = resultadosSUBE[i].RecorridosTeoricos
+                            .Where(r => r.Linea == linea && r.Bandera == bandera)
+                            .First()
+                        ;
+                        var casilleros = Geom.PuntosAHashSetCasilleros(
+                            recorrido.Puntos,
+                            granuCustom,
+                            resultadosSUBE[i].Topes2D
+                        );
+                        dicCasillerosXLinBan[key] = casilleros;
+                    }
+                    return dicCasillerosXLinBan[key];
+                });
+
                 if (resultadosSUBE[i].PorcentajeReconocido >= 80)
                 {
                     count++;
-                    var itemCSV = CrearItemCSV(sep, resultadosSUBE[i], fichasSUBE[i], fichasXEmpIntSUBE, proveedorVentaBoletos);
+                    var itemCSV = CrearItemCSV(
+                        sep, 
+                        resultadosSUBE[i], 
+                        fichasSUBE[i], 
+                        fichasXEmpIntSUBE, 
+                        proveedorVentaBoletos,
+                        dameCasillerosXLinBan
+                    );
 
                     if (!string.IsNullOrEmpty(itemCSV))
                     {
@@ -1040,22 +1107,32 @@ namespace LibQPA.Testing
                     }
                 }
             }
-            int foo = 0;
         }
 
-        string CrearItemCSV(char sep, QPAResult qPAResult, int ficha, Dictionary<int, (int, int)> fichasXEmpIntSUBE, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos)
+        delegate HashSet<Casillero> FuncCasillerosXLinBan(int linea, int bandera, int granularidad);
+
+        HashSet<string> _boletosReconocidos = new HashSet<string>();
+
+        string CrearItemCSV(
+            char                        sep, 
+            QPAResult                   qpaResult, 
+            int                         ficha, 
+            Dictionary<int, (int, int)> fichasXEmpIntSUBE, 
+            ProveedorVentaBoletosDbSUBE proveedorVentaBoletos,
+            FuncCasillerosXLinBan       dameCasillerosXLinBan
+        )
         {
+            // ATENCION esta func crea varios renglones CSV
+            // uno para cada SubCamino (bandera) reconocido
+
             if (ficha == -1)
             {
-                return "";
+                return string.Empty;
             }
 
-            // OJO! esta func crea varios renglones CSV... uno para cada SubCamino (bandera) reconocido
-
             var sbRenglones = new StringBuilder();
-            QPASubCamino subCaminoAnterior = null;
 
-            foreach (var subCamino in qPAResult.SubCaminos)
+            foreach (var subCamino in qpaResult.SubCaminos.ToArray().Reverse())
             {
                 // empresa e ident sube...
                 var empresaSUBE = fichasXEmpIntSUBE[ficha].Item1;
@@ -1071,7 +1148,7 @@ namespace LibQPA.Testing
                 var bandera = linBanPuns[0].Bandera;
 
                 // inicio y fin
-                var inicio  = subCamino.HoraSalida.ToString("dd/MM/yyyy HH:mm:ss");
+                var inicio  = subCamino.HoraSalida .ToString("dd/MM/yyyy HH:mm:ss");
                 var fin     = subCamino.HoraLlegada.ToString("dd/MM/yyyy HH:mm:ss");
 
                 // cant de boletos (naive)
@@ -1081,76 +1158,124 @@ namespace LibQPA.Testing
                 ;
 
                 // cant de boletos (optimizada)
-                var horaComienzoBoletos = subCaminoAnterior == null ?
+                var horaComienzoBoletos = subCamino.SubCaminoAnterior == null ?
                     subCamino.HoraSalida :
-                    subCaminoAnterior.HoraLlegada
+                    subCamino.SubCaminoAnterior.HoraLlegada
                 ;
                 var horaFinBoletos = subCamino.HoraLlegada;
-                var cantBoletosOpt = proveedorVentaBoletos
+                
+                // BASE DE DATOS DE BOLETOS = DESASTRE
+                //  - LA LAT Y LNG INVERTIDA Y ENTERAAAAA    - OK
+                //  - BOLETOS QUE TIENEN LAT LNG EN 0        - OK
+                //  - ELIMINAR BOLETOS IGUALES               - TODO
+                var boletos = proveedorVentaBoletos
                     .GetBoletosEnIntervalo(ficha, horaComienzoBoletos, horaFinBoletos)
-                    .Count()
+                    .ToList()
                 ;
+                var deltaGran = 2;
+                var boletosOpt = new List<BoletoComun>();
+
+                // 1) los boletos que entran en el recorrido
+                foreach (var bolx in boletos)
+                {
+                    bool enReco = Geom.PuntoEnRecorrido(
+                        new Punto { Lat = bolx.Latitud, Lng = bolx.Longitud },
+                        dameCasillerosXLinBan(linea, bandera, qpaResult.Granularidad * deltaGran),
+                        qpaResult.Granularidad * deltaGran,
+                        qpaResult.Topes2D
+                    );
+
+                    if (enReco && !_boletosReconocidos.Contains(bolx.Id))
+                    {
+                        boletosOpt.Add(bolx);
+                        _boletosReconocidos.Add(bolx.Id);
+                    }
+                }
+
+                // 2) los boletos que están a un radio "grande" de la salida
+                //    esto es, unos 250 mts por lo menos
+                var puntoSalida = qpaResult.RecorridosTeoricos
+                    .Where(recot => recot.Linea == linea && recot.Bandera == bandera)
+                    .First()
+                    .Puntos
+                    .First()
+                ;
+                foreach (var bolx in boletos)
+                {
+                    var puntoBoleto = new Punto { Lat=bolx.Latitud, Lng=bolx.Longitud };
+
+                    if ((Haversine.GetDist(puntoSalida, puntoBoleto) <= 250) &&
+                        (!_boletosReconocidos.Contains(bolx.Id)))
+                    {
+                        boletosOpt.Add(bolx);
+                        _boletosReconocidos.Add(bolx.Id);
+                    }
+                }
+
+                // 3) los boletos lat=0 lng=0 que estén en el intervalo de tiempo
+                //    mayor o igual al boleto mas viejo que acabo de calcular
+                if (boletosOpt.Any())
+                {
+                    var fechaMasVieja = boletosOpt
+                        .OrderBy(b => b.FechaCancelacion)
+                        .First()
+                        .FechaCancelacion
+                    ;
+
+                    foreach (var bolx in boletos)
+                    {
+                        if ((bolx.Latitud == 0 || bolx.Longitud == 0) &&
+                            bolx.FechaCancelacion >= fechaMasVieja  &&
+                            !_boletosReconocidos.Contains(bolx.Id))
+                        {
+                            boletosOpt.Add(bolx);
+                            _boletosReconocidos.Add(bolx.Id);
+                        }
+                    }
+                }
+
+                // 4) ahora, con la fecha original de inicio (subCamino.HoraSalida)
+                //    veremos si entran los boletos con lat=0 lng=0 que quedaron afuera
+                foreach (var bolx in boletos)
+                {
+                    if (/*(bolx.Latitud == 0 || bolx.Longitud == 0) &&*/
+                        bolx.FechaCancelacion >= subCamino.HoraSalida  &&
+                        !_boletosReconocidos.Contains(bolx.Id))
+                    {
+                        var pepe = linea;
+                        var pipo = bandera;
+                        boletosOpt.Add(bolx);
+                        _boletosReconocidos.Add(bolx.Id);
+                    }
+                }
+
+                var cantBoletosOpt = boletosOpt.Count;
+
+                //////////////// CALCULO ANTERIOR DE BOLETOS OPTIMIZADOS //////////////
+                //var cantBoletosOpt = boletos
+                //    .Where(boleto => 
+                //        boleto.Latitud  == 0 || 
+                //        boleto.Longitud == 0 || 
+                //        Geom.PuntoEnRecorrido(
+                //            new Punto { Lat = boleto.Latitud, Lng = boleto.Longitud }, 
+                //            dameCasillerosXLinBan(linea, bandera, qpaResult.Granularidad * deltaGran), 
+                //            qpaResult.Granularidad * deltaGran,
+                //            qpaResult.Topes2D
+                //        ))
+                //    .Count()
+                //;
+                ///////////////////////////////////////////////////////////////////////
 
                 // construcción del renglón
                 var valores = new object[] { empresaSUBE, internoSUBE, ficha, linea, bandera, inicio, fin, cantBoletosNaive, cantBoletosOpt };
                 var renglon = string.Join(sep, valores);
 
                 // acum renglón
-                sbRenglones.AppendLine(renglon);
-
-                // guardo el subCamino actual en la variable "anterior"
-                // esto sirve para procesar mas boletos...
-                subCaminoAnterior = subCamino;
+                // sbRenglones.AppendLine(renglon);
+                sbRenglones.Insert(0, renglon + "\r\n");
             }
 
             var ret = sbRenglones.ToString();
-            return ret;
-        }
-
-        List<PuntoHistorico> FusionarPuntos(params List<PuntoHistorico>[] ptss)
-        {
-            var ret = new List<PuntoHistorico>();
-
-            foreach (var pts in ptss)
-            {
-                ret.AddRange(pts);
-            }
-
-            return ret.OrderBy(ph => ph.Fecha).ToList();
-        }
-
-        Dictionary<int, List<PuntoHistorico>> FusionarDiccionarios(params Dictionary<int, List<PuntoHistorico>> [] ptss)
-        {
-            var ret = new Dictionary<int, List<PuntoHistorico>>();
-
-            // para cada diccionario que me pasaron
-            foreach (Dictionary<int, List<PuntoHistorico>> pts in ptss)
-            {
-                // para cada clave del diccionario
-                foreach (var key in pts.Keys)
-                {
-                    // creo la entrada si no existe
-                    if (!ret.ContainsKey(key))
-                    {
-                        ret.Add(key, new List<PuntoHistorico>());
-                    }
-
-                    // agrego los puntos del diccionario a esa entrada
-                    ret[key].AddRange(pts[key]);
-                }
-            }
-
-            // ordeno los puntos por fecha
-            foreach (var key in ret.Keys)
-            {
-                ret[key].Sort(new Comparison<PuntoHistorico>((p1, p2) =>
-                {
-                    if (p1.Fecha > p2.Fecha) return 1;
-                    if (p1.Fecha < p2.Fecha) return -1;
-                    return 0;
-                }));
-            }
-
             return ret;
         }
 
@@ -1237,9 +1362,12 @@ namespace LibQPA.Testing
 
             return new QPAResult
             {
-                Camino          = res.Camino,
-                Identificador   = res.Identificador,
-                SubCaminos      = newSubCaminos,
+                Granularidad        = res.Granularidad,
+                RecorridosTeoricos  = res.RecorridosTeoricos,
+                Topes2D             = res.Topes2D,
+                Camino              = res.Camino,
+                Identificador       = res.Identificador,
+                SubCaminos          = newSubCaminos,
             };
         }
 
@@ -1267,9 +1395,12 @@ namespace LibQPA.Testing
 
             return new QPAResult
             {
-                Camino          = res.Camino,
-                Identificador   = res.Identificador,
-                SubCaminos      = newSubCaminos,
+                Granularidad        = res.Granularidad,
+                RecorridosTeoricos  = res.RecorridosTeoricos,
+                Topes2D             = res.Topes2D,
+                Camino              = res.Camino,
+                Identificador       = res.Identificador,
+                SubCaminos          = newSubCaminos,
             };
         }
 

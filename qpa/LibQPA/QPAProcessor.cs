@@ -52,11 +52,14 @@ namespace LibQPA
             var ganadoresResult = new List<LineaBanderaPuntuacion>();
             var subCaminos = new List<QPASubCamino>();
 
+            QPASubCamino anterior = null; // se usa para la vinculación con boletos
+
             foreach (var unidadDeReconX in reconocimiento.Unidades)
             {
                 if (unidadDeReconX is ReconocimientoUnidadError)
-                { 
-                    //
+                {
+                    var uni = unidadDeReconX as ReconocimientoUnidadError;
+
                 }
                 else if (unidadDeReconX is ReconocimientoUnidadMatch)
                 {
@@ -84,6 +87,7 @@ namespace LibQPA
 
                     var subCamino = new QPASubCamino
                     {
+                        SubCaminoAnterior   = anterior,
                         HoraSalida          = horaSalida,
                         HoraLlegada         = horaLlegada,
                         LineasBanderasPuntuaciones = new List<LineaBanderaPuntuacion>(),
@@ -99,6 +103,8 @@ namespace LibQPA
                             .Where      (pasoc => pasoc.Fecha <= horaLlegada)
                             .ToList     ()
                     };
+
+                    anterior = subCamino;
 
                     if (recoPatterns[uni.Pattern].Count > 1) // si hay varias banderas en un patrón debo desempatar...
                     {
@@ -155,9 +161,12 @@ namespace LibQPA
 
             return new QPAResult
             {
-                Identificador = identificador,
-                Camino = caminoHistorico,
-                SubCaminos = subCaminos,
+                Identificador       = identificador,
+                Camino              = caminoHistorico,
+                SubCaminos          = subCaminos,
+                RecorridosTeoricos  = recorridosTeoricos,   // contexto recorridosTeoricos  con el que fue calculado
+                Topes2D             = topes2D,              // contexto topes2D             con el que fue calculado
+                Granularidad        = GranularidadMts,      // contexto granularidad        con el que fue calculado
             };
         }
 
@@ -259,12 +268,17 @@ namespace LibQPA
             int positivos = 0;
 
             HashSet<Casillero> casillerosTeoricos = new HashSet<Casillero>();
-
             foreach (var preco in recorridoTeorico.Puntos)
             {
                 var casTeorico = Casillero.Create(topes2D, preco, granularidad);
                 casillerosTeoricos.Add(casTeorico);
             }
+
+            //conLINQ
+            //HashSet<Casillero> casillerosTeoricos = recorridoTeorico.Puntos
+            //    .Select   (puntoReco => Casillero.Create(topes2D, puntoReco, granularidad))
+            //    .ToHashSet()
+            //;
 
             // averiguo que cantidad de puntos entran en ese recorrido...
             foreach (var puntoX in puntosReales)

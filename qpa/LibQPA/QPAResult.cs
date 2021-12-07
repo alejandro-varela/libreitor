@@ -6,9 +6,12 @@ namespace LibQPA
 {
     public class QPAResult
     {
-        public string Identificador { get; set; }
-        public Camino<PuntoHistorico> Camino { get; set; }
-        public List<QPASubCamino> SubCaminos { get; set; }
+        public string                   Identificador       { get; set; }
+        public Camino<PuntoHistorico>   Camino              { get; set; }
+        public List<QPASubCamino>       SubCaminos          { get; set; }
+        public List<RecorridoLinBan>    RecorridosTeoricos  { get; set; }   // contexto RecorridosTeoricos con el que fue calculado
+        public Topes2D                  Topes2D             { get; set; }   // contexto Topes2D con el que fue calculado
+        public int                      Granularidad        { get; set; }   // contexto Granularidad con el que fue calculado
 
         public override string ToString()
         {
