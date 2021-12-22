@@ -8,24 +8,47 @@ namespace LibQPA
     public enum QPATipoSubCamino
     {
         MATCH = 0,
-        ERR = 1,
+        ERR   = 1,
         //DESCANSO = 2,
         //CUSTOM = 3,
     }
 
     public class QPASubCamino
     {
-        public QPASubCamino SubCaminoAnterior { get; set; }
-
-        public QPATipoSubCamino Tipo { get; set; } = QPATipoSubCamino.MATCH;
+        public Camino<PuntoHistorico>   CaminoPadre                 { get; set; }
+        public QPASubCamino             SubCaminoAnterior           { get; set; }
+        public QPATipoSubCamino         Tipo                        { get; set; } = QPATipoSubCamino.MATCH;
+        public string                   Patron                      { get; set; }
+        public DateTime                 HoraSalida                  { get; set; }
+        public DateTime                 HoraLlegada                 { get; set; }
+        public List<PuntoHistorico>     PuntosEntreSalidaYLlegada   { get; set; }
+        public List<LineaBanderaPuntuacion> LineasBanderasPuntuaciones { get; set; }
+        public int                      PatronIndexInicial          { get; set; }
+        public int                      PatronIndexFinal            { get; set; }
         
-        public string Patron { get; set; }
 
-        public DateTime HoraSalida { get; set; }
+        public List<PuntoHistorico> PuntosHistoricos
+        {
+            get
+            {
+                var ret = new List<PuntoHistorico>();
+                for (int i = PatronIndexInicial; i <= PatronIndexFinal; i++)
+                {
+                    var grupoide = CaminoPadre.Grupoides[i];
+                    var puntos = grupoide.Nodos.Select(pc => pc.PuntoAsociado);
+                    ret.AddRange(puntos);   
+                }
+                return ret;
+            }
+        }
 
-        public DateTime HoraLlegada { get; set; }
-
-        public List<PuntoHistorico> PuntosEntreSalidaYLlegada { get; set; }
+        public double DuracionHoras
+        {
+            get 
+            {
+                return Duracion.TotalHours;
+            }
+        }
 
         public TimeSpan Duracion
         {
@@ -33,20 +56,6 @@ namespace LibQPA
             {
                 var duracion = HoraLlegada - HoraSalida;
                 return duracion;
-            }
-        }
-
-        public List<LineaBanderaPuntuacion> LineasBanderasPuntuaciones { get; set; }
-
-        public int PatronIndexInicial { get; set; }
-
-        public int PatronIndexFinal { get; set; }
-
-        public double DuracionHoras
-        {
-            get 
-            {
-                return Duracion.TotalHours;
             }
         }
 

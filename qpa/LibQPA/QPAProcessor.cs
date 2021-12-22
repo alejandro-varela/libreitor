@@ -87,6 +87,7 @@ namespace LibQPA
 
                     var subCamino = new QPASubCamino
                     {
+                        CaminoPadre         = caminoHistorico,
                         SubCaminoAnterior   = anterior,
                         HoraSalida          = horaSalida,
                         HoraLlegada         = horaLlegada,

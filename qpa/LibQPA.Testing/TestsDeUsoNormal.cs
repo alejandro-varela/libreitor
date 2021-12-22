@@ -55,80 +55,11 @@ namespace LibQPA.Testing
             Assert.IsTrue(recorridos.Any(), "No hay recorridos");
         }
 
-        [TestMethod]
-        public void FuncionaProveedorHistorico()
-        {
-            var hoy = DateTime.Today;
-            var ayer = hoy.AddDays(-1);
-
-            var config = new ProveedorHistoricoDbXBus.Configuracion
-            {
-                CommandTimeout = 600,
-                ConnectionString = Configu.ConnectionStringPuntosXBus,
-                Tipo = ProveedorHistoricoDbXBus.TipoEquipo.PICOBUS,
-                FechaDesde = ayer,
-                FechaHasta = hoy,
-            };
-
-            var proveedor = new ProveedorHistoricoDbXBus(config);
-
-            var fichas = proveedor.Get().Keys.ToList();
-
-            int foo = 0;
-        }
-
-        List<PuntoHistorico> Desfasar(int segundosDesfase, List<PuntoHistorico> puntoHistoricos)
-        {
-            return puntoHistoricos
-                .Select(ph => new PuntoHistorico { 
-                    Lat   = ph.Lat, 
-                    Lng   = ph.Lng, 
-                    Alt   = ph.Alt, 
-                    Fecha = ph.Fecha.AddSeconds(segundosDesfase) 
-                })
-                .ToList()
-            ;
-        }
-
-        private double MedirDistancia(List<PuntoHistorico> puntoHistoricos)
-        {
-            if (!puntoHistoricos.Any())
-            {
-                return 0.0;
-            }
-            var dist = 0.0;
-            var anterior = puntoHistoricos.First();
-            foreach (var pth in puntoHistoricos.Skip(1))
-            {
-                dist += Haversine.GetDist(anterior, pth);
-                anterior = pth;
-            }
-            return dist;
-        }
-
         public enum ProveedorKey
         { 
             DbSUBE,
             DbXBus,
             JsonSUBE,
-        }
-
-        [TestMethod]
-        public void TestArch()
-        {
-            // fechas desde hasta
-            var desde = new DateTime(2021, 09, 11, 23, 55, 00);
-            var hasta = new DateTime(2021, 09, 12, 00, 05, 00);
-
-            var proveedorPtsHistoJsonSUBE = new ProveedoresHistoricos.JsonSUBE.ProveedorHistoricoJsonSUBE
-            {
-                InputDir = @"D:\EstadosCoches\Agency49\",
-                FechaDesde = desde,
-                FechaHasta = hasta,
-            };
-
-            var pepe = proveedorPtsHistoJsonSUBE.Get();
-            var foo = 0;
         }
 
         [TestMethod]
@@ -713,40 +644,38 @@ namespace LibQPA.Testing
 
         [DataTestMethod]
         [DataRow("AGN132", "2021-10-01", "2021-10-02", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-02", "2021-10-03", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-03", "2021-10-04", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-04", "2021-10-05", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-05", "2021-10-06", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-06", "2021-10-07", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-07", "2021-10-08", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-08", "2021-10-09", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-09", "2021-10-10", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-10", "2021-10-11", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-11", "2021-10-12", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-12", "2021-10-13", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-13", "2021-10-14", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-14", "2021-10-15", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-15", "2021-10-16", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-16", "2021-10-17", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-17", "2021-10-18", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-18", "2021-10-19", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-19", "2021-10-20", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-20", "2021-10-21", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-21", "2021-10-22", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-22", "2021-10-23", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-23", "2021-10-24", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-24", "2021-10-25", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-25", "2021-10-26", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-26", "2021-10-27", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-27", "2021-10-28", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-28", "2021-10-29", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-29", "2021-10-30", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-30", "2021-10-31", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        [DataRow("AGN132", "2021-10-31", "2021-11-01", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        /*
-        [DataRow("AGN49" , "2021-10-01", "2021-10-02", "159,163"    , @"D:\EstadosCoches\Agency49\" , typeof(PuntaLinea) , 20, 800)]
-        */
-        public void TestQPA3(
+        //[DataRow("AGN132", "2021-10-02", "2021-10-03", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-03", "2021-10-04", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-04", "2021-10-05", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-05", "2021-10-06", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-06", "2021-10-07", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-07", "2021-10-08", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-08", "2021-10-09", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-09", "2021-10-10", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-10", "2021-10-11", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-11", "2021-10-12", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-12", "2021-10-13", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-13", "2021-10-14", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-14", "2021-10-15", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-15", "2021-10-16", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-16", "2021-10-17", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-17", "2021-10-18", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-18", "2021-10-19", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-19", "2021-10-20", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-20", "2021-10-21", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-21", "2021-10-22", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-22", "2021-10-23", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-23", "2021-10-24", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-24", "2021-10-25", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-25", "2021-10-26", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-26", "2021-10-27", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-27", "2021-10-28", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-28", "2021-10-29", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-29", "2021-10-30", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-30", "2021-10-31", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN132", "2021-10-31", "2021-11-01", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
+        //[DataRow("AGN49" , "2021-10-01", "2021-10-02", "159,163"    , @"D:\EstadosCoches\Agency49\" , typeof(PuntaLinea) , 20, 800)]
+        public void TestJsonSUBEQPA_ConReporte(
             string identificador,
             string desdeISO8601,
             string hastaISO8601,
@@ -759,6 +688,114 @@ namespace LibQPA.Testing
         {
             var desde = DateTime.Parse(desdeISO8601);
             var hasta = DateTime.Parse(hastaISO8601);
+
+            var proveedorPuntosHistoricos = new ProveedoresHistoricos.JsonSUBE.ProveedorHistoricoJsonSUBE
+            {
+                InputDir   = jsonInputDir,
+                FechaDesde = desde,
+                FechaHasta = hasta,
+            };
+
+            // Funcion local que toma una lista de resultados QPA y los convierte en una lista de Fichas
+            List<int> constructorFichas(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult> resultadosQPA) =>
+                resultadosQPA
+                    .Select(resul => resul.Identificador)
+                    .Select(ident => datosEmpIntFicha.GetFicha(ident, '-', -1))
+                    .ToList()
+                ;
+
+            TestGenericoQPA_ConReporte(
+                identificador,
+                desdeISO8601,
+                hastaISO8601,
+                lineasPosiblesSeparadasPorComa,
+                proveedorPuntosHistoricos,
+                constructorFichas,
+                tipoPuntaLinea, 
+                granularidadMts, 
+                radioPuntasDeLineaMts
+            );
+        }
+
+        [DataTestMethod]
+        //[DataRow("XBUS203", "2021-12-01", "2021-12-02", "159,163", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("XBUS203", "2021-12-02", "2021-12-03", "159,163", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("XBUS203", "2021-12-03", "2021-12-04", "159,163", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("XBUS203", "2021-12-04", "2021-12-05", "159,163", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("XBUS203", "2021-12-05", "2021-12-06", "159,163", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("XBUS203", "2021-12-06", "2021-12-07", "159,163", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("XBUS203", "2021-12-07", "2021-12-08", "159,163", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("XBUS203", "2021-12-08", "2021-12-09", "159,163", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("XBUS203", "2021-12-09", "2021-12-10", "159,163", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("XBUS203", "2021-12-10", "2021-12-11", "159,163", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("XBUS203", "2021-12-11", "2021-12-12", "159,163", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("XBUS203", "2021-12-12", "2021-12-13", "159,163", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("XBUS203", "2021-12-13", "2021-12-14", "159,163", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("XBUS203", "2021-12-14", "2021-12-15", "159,163", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("XBUS203", "2021-12-15", "2021-12-16", "159,163", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("XBUS203", "2021-12-16", "2021-12-17", "159,163", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("XBUS203", "2021-12-17", "2021-12-18", "159,163", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("XBUS203", "2021-12-18", "2021-12-19", "159,163", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("XBUS203", "2021-12-19", "2021-12-20", "159,163", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("XBUS203", "2021-12-20", "2021-12-21", "159,163", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("XBUS203", "2021-12-21", "2021-12-22", "159,163", typeof(PuntaLinea), 20, 800)]
+        public void TestDbXBusQPA_ConReporte(
+            string identificador,
+            string desdeISO8601,
+            string hastaISO8601,
+            string lineasPosiblesSeparadasPorComa,
+            Type tipoPuntaLinea,
+            int granularidadMts = 20,
+            int radioPuntasDeLineaMts = 200
+        )
+        {
+            var desde = DateTime.Parse(desdeISO8601);
+            var hasta = DateTime.Parse(hastaISO8601);
+
+            var proveedorPuntosHistoricos = new ProveedorHistoricoDbXBus(
+                new ProveedorHistoricoDbXBus.Configuracion {
+                    ConnectionString = Configu.ConnectionStringPuntosXBus,
+                    FechaDesde = desde,
+                    FechaHasta = hasta,
+                    Tipo = ProveedorHistoricoDbXBus.TipoEquipo.TECNOBUS | ProveedorHistoricoDbXBus.TipoEquipo.PICOBUS
+                }
+            );
+
+            // Funcion local que toma una lista de resultados QPA y los convierte en una lista de Fichas
+            List<int> constructorFichas(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult> resultadosQPA) =>
+                resultadosQPA
+                    .Select(resul => int.Parse(resul.Identificador ?? "-1"))
+                    .ToList()
+                ;
+
+            TestGenericoQPA_ConReporte(
+                identificador,
+                desdeISO8601,
+                hastaISO8601,
+                lineasPosiblesSeparadasPorComa,
+                proveedorPuntosHistoricos,
+                constructorFichas,
+                tipoPuntaLinea,
+                granularidadMts,
+                radioPuntasDeLineaMts
+            );
+        }
+
+        public void TestGenericoQPA_ConReporte(
+            string identificador,
+            string desdeISO8601,
+            string hastaISO8601,
+            string lineasPosiblesSeparadasPorComa,
+            IQPAProveedorPuntosHistoricos proveedorPuntosHistoricos,
+            ConstructorFichasDesdeResultados constructorFichas,
+            Type tipoPuntaLinea,
+            int granularidadMts = 20,
+            int radioPuntasDeLineaMts = 200
+        )
+        {
+            var desde = DateTime.Parse(desdeISO8601);
+            var hasta = DateTime.Parse(hastaISO8601);
+
             var lineasPosibles = lineasPosiblesSeparadasPorComa
                 .Split(',')
                 .Select(s => int.Parse(s))
@@ -772,7 +809,7 @@ namespace LibQPA.Testing
 
             if (tipoPuntaLinea == typeof(PuntaLinea))
             {
-                creadorPuntasNombradas = recorridosTeoricos => 
+                creadorPuntasNombradas = recorridosTeoricos =>
                     PuntasDeLinea
                         .GetPuntasNombradas(recorridosTeoricos, radioPuntasDeLineaMts)
                         .Select(pulin => (IPuntaLinea)pulin)
@@ -781,65 +818,93 @@ namespace LibQPA.Testing
             }
             else if (tipoPuntaLinea == typeof(PuntaLinea2))
             {
-                creadorPuntasNombradas = recorridosTeoricos => 
+                creadorPuntasNombradas = recorridosTeoricos =>
                     PuntasDeLinea2
                         .GetPuntasNombradas(recorridosTeoricos, radioPuntasDeLineaMts, radioPuntasDeLineaMts * 2)
                         .Select(pulin => (IPuntaLinea)pulin)
                         .ToList()
                     ;
             }
-            
-            CalcularQPA_GenerarReporteQPA_SUBE(
+
+            // los recorridos teóricos...
+            var proveedorRecorridosTeoricos = new ProveedorVersionesTecnobus(dirRepos: DameMockRepos());
+
+            // trabajo... :S
+            CalcularQPA_GenerarReporteQPA(
                 identificador,
                 desde,
                 hasta,
                 lineasPosibles,
-                jsonInputDir,
+                proveedorRecorridosTeoricos,
+                proveedorPuntosHistoricos,
+                constructorFichas,
                 creadorPuntasNombradas,
                 granularidadMts
             );
         }
 
-        public void CalcularQPA_GenerarReporteQPA_SUBE(
+
+        public void CalcularQPA_GenerarReporteQPA(
             string      identificador,
             DateTime    desde,
             DateTime    hasta,
-            int[]       lineasPosibles,
-            string      jsonInputDir, // @"D:\EstadosCoches\Agency132\"
+            int[] lineasPosibles,
+            IQPAProveedorRecorridosTeoricos proveedorRecorridosTeoricos,
+            IQPAProveedorPuntosHistoricos   proveedorPuntosHistoricos,
+            ConstructorFichasDesdeResultados constructorFichas,
             Func<List<RecorridoLinBan>, List<IPuntaLinea>> creadorPuntasNombradas,
             int         granularidadMts = 20
         )
         {
-            var resultadosSUBE = CalcularQPA_SUBE(
+            var resultadosQPA = CalcularQPA(
                 identificador,
                 desde,
                 hasta,
                 lineasPosibles,
-                jsonInputDir,
+                proveedorRecorridosTeoricos,
+                proveedorPuntosHistoricos,
                 creadorPuntasNombradas,
                 granularidadMts
             );
+
+            //foreach (var resu in resultadosSUBE)
+            //foreach (var scamx in resu.SubCaminos)
+            //{
+            //    var indexInicial= scamx.PatronIndexInicial;
+            //    var indexFinal  = scamx.PatronIndexFinal;
+            //    var puntetes    = new List<PuntoHistorico>();
+            //    for (int i=indexInicial; i<=indexFinal; i++)
+            //    {
+            //        var grupoide = resu.Camino.Grupoides[i];
+            //        puntetes.AddRange(grupoide.Nodos
+            //            .Select(pc => pc.PuntoAsociado)
+            //        );
+            //    }
+            //    var puntetes1 = scamx.PuntosHistoricos;
+            //    int foofoo = 0;
+            //}
 
             GenerarReporteQPA(
                 identificador, 
                 desde, 
                 hasta, 
-                resultadosSUBE
+                resultadosQPA,
+                constructorFichas
             );
         }
+
+        public delegate List<int> ConstructorFichasDesdeResultados(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult> resultados);
 
         public void GenerarReporteQPA(
             string          identificador,
             DateTime        desde,
             DateTime        hasta,
-            List<QPAResult> resultadosSUBE
+            List<QPAResult> resultadosQPA,
+            ConstructorFichasDesdeResultados constructorFichas
         )
         {
             ///////////////////////////////////////////////////////////////////
             // Datos Empresa-Interno / Ficha
-            //  Sirve para:
-            //      Puntos SUBE
-            //      Ventas de boleto SUBE
             ///////////////////////////////////////////////////////////////////
             var datosEmpIntFicha = new ComunSUBE.DatosEmpIntFicha(new ComunSUBE.DatosEmpIntFicha.Configuration()
             {
@@ -886,11 +951,7 @@ namespace LibQPA.Testing
                 );
             }
 
-            var resulFichasSUBE = resultadosSUBE
-                .Select(resul => resul.Identificador)
-                .Select(ident => datosEmpIntFicha.GetFicha(ident, '-', -1))
-                .ToList()
-            ;
+            var resulFichas = constructorFichas(datosEmpIntFicha, resultadosQPA);
 
             Dictionary<int, (int, int)> fichasXEmpIntSUBE = datosEmpIntFicha
                 .Get()
@@ -904,8 +965,8 @@ namespace LibQPA.Testing
                 HeaderBuilder = (sep) => string.Join(sep, new[] { "empresaSUBE", "internoSUBE", "ficha", "linea", "bandera", "inicio", "fin", "cantbol", "cantbolopt" }),
                 ItemsBuilder = (sep) => CrearItemsCSV(
                     sep, 
-                    resultadosSUBE, 
-                    resulFichasSUBE, 
+                    resultadosQPA, 
+                    resulFichas, 
                     fichasXEmpIntSUBE, 
                     proveedorVentaBoletos
                 )
@@ -915,44 +976,11 @@ namespace LibQPA.Testing
             File.WriteAllText(nombreReporte, reporte.ToString());
         }
 
-        public List<QPAResult> CalcularQPA_SUBE(
-            string      identificador,
-            DateTime    desde,
-            DateTime    hasta,
-            int[]       lineasPosibles,
-            string      jsonInputDir, // @"D:\EstadosCoches\Agency132\"
-            Func<List<RecorridoLinBan>, List<IPuntaLinea>> creadorPuntasNombradas,
-            int         granularidadMts = 20
-        )
-        {
-            var proveedorRecorridosTeoricos = new ProveedorVersionesTecnobus(dirRepos: DameMockRepos());
-
-            var proveedorPuntosHistoricos = new ProveedoresHistoricos.JsonSUBE.ProveedorHistoricoJsonSUBE
-            {
-                InputDir = jsonInputDir,
-                FechaDesde = desde,
-                FechaHasta = hasta,
-            };
-
-            var resultadosSUBE = CalcularQPA(
-                identificador,
-                lineasPosibles,
-                desde,
-                hasta,
-                proveedorRecorridosTeoricos,
-                proveedorPuntosHistoricos,
-                creadorPuntasNombradas,
-                granularidadMts
-            );
-
-            return resultadosSUBE;
-        }
-
         public List<QPAResult> CalcularQPA(
             string                          identificador,
-            int[]                           lineasPosibles,
             DateTime                        desde,
             DateTime                        hasta,
+            int[]                           lineasPosibles,
             IQPAProveedorRecorridosTeoricos proveedorRecorridosTeoricos,
             IQPAProveedorPuntosHistoricos   proveedorPuntosHistoricos,
             Func<List<RecorridoLinBan>, List<IPuntaLinea>> creadorPuntasNombradas,
@@ -1023,21 +1051,21 @@ namespace LibQPA.Testing
             // Puntos históricos
             ///////////////////////////////////////////////////////////////////
 
-            Dictionary<string, List<PuntoHistorico>> ptsHistoSUBEPorIdent = null;
+            Dictionary<string, List<PuntoHistorico>> ptsHistoPorIdent = null;
             string ARCHIVO_PUNTOS_HISTORICOS = $"PtsHist__{identificador}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json";
 
             if (File.Exists(ARCHIVO_PUNTOS_HISTORICOS))
             {
                 var json = File.ReadAllText(ARCHIVO_PUNTOS_HISTORICOS);
-                ptsHistoSUBEPorIdent = JsonConvert.DeserializeObject<Dictionary<string, List<PuntoHistorico>>>(json);
+                ptsHistoPorIdent = JsonConvert.DeserializeObject<Dictionary<string, List<PuntoHistorico>>>(json);
             }
             else
             {
-                ptsHistoSUBEPorIdent = proveedorPuntosHistoricos.Get();
+                ptsHistoPorIdent = proveedorPuntosHistoricos.Get();
 
                 File.WriteAllText(
                     ARCHIVO_PUNTOS_HISTORICOS,
-                    JsonConvert.SerializeObject(ptsHistoSUBEPorIdent)
+                    JsonConvert.SerializeObject(ptsHistoPorIdent)
                 );
             }
 
@@ -1051,7 +1079,7 @@ namespace LibQPA.Testing
                 topes2D, 
                 puntasNombradas.Select(pu => (IPuntaLinea)pu).ToList(), 
                 recoPatterns,
-                ptsHistoSUBEPorIdent
+                ptsHistoPorIdent
             );
 
             return resultadosSUBE;
@@ -1112,6 +1140,9 @@ namespace LibQPA.Testing
         delegate HashSet<Casillero> FuncCasillerosXLinBan(int linea, int bandera, int granularidad);
 
         HashSet<string> _boletosReconocidos = new HashSet<string>();
+
+        int DBG_recosmal = 0;
+        int DBG_recosbien = 0;
 
         string CrearItemCSV(
             char                        sep, 
@@ -1175,6 +1206,12 @@ namespace LibQPA.Testing
                 var deltaGran = 2;
                 var boletosOpt = new List<BoletoComun>();
 
+                var DBG_cantBoletosConLatLng = boletos
+                    .Where(bolx => bolx.Latitud != 0 && bolx.Longitud != 0)
+                    .Count()
+                ;
+                var DBG_cantBoletosQueEntranEnRecorrido = 0;
+
                 // 1) los boletos que entran en el recorrido
                 foreach (var bolx in boletos)
                 {
@@ -1189,7 +1226,20 @@ namespace LibQPA.Testing
                     {
                         boletosOpt.Add(bolx);
                         _boletosReconocidos.Add(bolx.Id);
+                        DBG_cantBoletosQueEntranEnRecorrido++;
                     }
+                }
+
+                if (DBG_cantBoletosConLatLng > 0 && DBG_cantBoletosQueEntranEnRecorrido == 0)
+                {
+                    int QUE_bandera = bandera;
+                    int QUE_linea = linea;
+                    int foo = 0;
+                    DBG_recosmal++;
+                }
+                else
+                {
+                    DBG_recosbien++;
                 }
 
                 // 2) los boletos que están a un radio "grande" de la salida
@@ -1238,7 +1288,7 @@ namespace LibQPA.Testing
                 //    veremos si entran los boletos con lat=0 lng=0 que quedaron afuera
                 foreach (var bolx in boletos)
                 {
-                    if (/*(bolx.Latitud == 0 || bolx.Longitud == 0) &&*/
+                    if ((bolx.Latitud == 0 || bolx.Longitud == 0) &&
                         bolx.FechaCancelacion >= subCamino.HoraSalida  &&
                         !_boletosReconocidos.Contains(bolx.Id))
                     {
@@ -1249,22 +1299,8 @@ namespace LibQPA.Testing
                     }
                 }
 
+                // cantidad de boletos "optimizados"
                 var cantBoletosOpt = boletosOpt.Count;
-
-                //////////////// CALCULO ANTERIOR DE BOLETOS OPTIMIZADOS //////////////
-                //var cantBoletosOpt = boletos
-                //    .Where(boleto => 
-                //        boleto.Latitud  == 0 || 
-                //        boleto.Longitud == 0 || 
-                //        Geom.PuntoEnRecorrido(
-                //            new Punto { Lat = boleto.Latitud, Lng = boleto.Longitud }, 
-                //            dameCasillerosXLinBan(linea, bandera, qpaResult.Granularidad * deltaGran), 
-                //            qpaResult.Granularidad * deltaGran,
-                //            qpaResult.Topes2D
-                //        ))
-                //    .Count()
-                //;
-                ///////////////////////////////////////////////////////////////////////
 
                 // construcción del renglón
                 var valores = new object[] { empresaSUBE, internoSUBE, ficha, linea, bandera, inicio, fin, cantBoletosNaive, cantBoletosOpt };
