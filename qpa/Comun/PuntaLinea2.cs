@@ -63,7 +63,8 @@ namespace Comun
 
         public override string ToString()
         {
-            return $"{ Nombre } { Punto.Lat.ToString().Replace(',', '.') }, { Punto.Lng.ToString().Replace(',', '.') }";
+
+            return $"{ Nombre } { Puntos[0].Lat.ToString().Replace(',', '.') }, { Puntos[0].Lng.ToString().Replace(',', '.') }";
         }
     }
 }

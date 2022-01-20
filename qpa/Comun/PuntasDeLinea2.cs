@@ -96,17 +96,17 @@ namespace Comun
                             conjx.Add(pi);
                             conjx.Add(pj);
                             conjuntos.Add(conjx);
-                            Console.Write("Caso1 ");
+                            //Console.Write("Caso1 ");
                         }
                         else if (conji != null && conjj == null)
                         {
                             conji.Add(pj);
-                            Console.Write("Caso2 ");
+                            //Console.Write("Caso2 ");
                         }
                         else if (conji == null && conjj != null)
                         {
                             conjj.Add(pi);
-                            Console.Write("Caso3 ");
+                            //Console.Write("Caso3 ");
                         }
                         else if (conji == conjj)
                         {
@@ -121,7 +121,7 @@ namespace Comun
                             conjuntos.Add(conjx);
                             conjuntos.Remove(conji);
                             conjuntos.Remove(conjj);
-                            Console.Write("Caso5 ");
+                            //Console.Write("Caso5 ");
                         }
                     }
                 }

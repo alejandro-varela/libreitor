@@ -16,7 +16,7 @@ namespace Comun
 
         public override string ToString()
         {
-            return $"p{IndexHorizontal:00000}{IndexVertical:00000}";
+            return $"horiz_{IndexHorizontal:00000}_vert_{IndexVertical:00000}";
         }
 
         public bool PresenteFlexEn(HashSet<Casillero> casilleros, int granularidad)
