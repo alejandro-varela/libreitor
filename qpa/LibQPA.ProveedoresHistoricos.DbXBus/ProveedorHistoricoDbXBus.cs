@@ -5,7 +5,7 @@ using Comun;
 
 namespace LibQPA.ProveedoresHistoricos.DbXBus
 {
-	public partial class ProveedorHistoricoDbXBus : IQPAProveedorPuntosHistoricos
+	public partial class ProveedorHistoricoDbXBus : IQPAProveedorPuntosHistoricos<string>
 	{
 		DateTime _fechaCache = DateTime.MinValue;
 		Dictionary<string, List<PuntoHistorico>> _cache = new Dictionary<string, List<PuntoHistorico>>();

@@ -8,19 +8,19 @@ using System.Text;
 
 namespace LibQPA.ProveedoresHistoricos.DbSUBE
 {
-    public class ProveedorHistoricoDbSUBE : IQPAProveedorPuntosHistoricos
+    public class ProveedorHistoricoDbSUBE : IQPAProveedorPuntosHistoricos<ParEmpresaInterno>
     {
-		DateTime                                _fechaCachePuntosHistoricos = DateTime.MinValue;
-        Dictionary<string, List<PuntoHistorico>>_cachePuntosHistoricos      = new Dictionary<string, List<PuntoHistorico>>();
-        public Configuracion                    Config      { get; set; }
-        public bool                             UsarCache   { get; set; }
+		DateTime _fechaCachePuntosHistoricos = DateTime.MinValue;
+        Dictionary<ParEmpresaInterno, List<PuntoHistorico>>_cachePuntosHistoricos  = new Dictionary<ParEmpresaInterno, List<PuntoHistorico>>();
+
+        public Configuracion Config { get; set; }
+        public bool UsarCache { get; set; }
 
         public class Configuracion
         {
             public int				CommandTimeout			{ get; set; } = 600;
             public string			ConnectionStringPuntos	{ get; set; }
 			public int				MaxCacheSeconds			{ get; set; } = 15 * 60; // 15 mins
-			public DatosEmpIntFicha DatosEmpIntFicha		{ get; set; }
 			public DateTime			FechaDesde				{ get; set; }
 			public DateTime			FechaHasta				{ get; set; }
 		}
@@ -31,7 +31,7 @@ namespace LibQPA.ProveedoresHistoricos.DbSUBE
             UsarCache = usarCache;
         }
 
-        public Dictionary<string, List<PuntoHistorico>> Get()
+        public Dictionary<ParEmpresaInterno, List<PuntoHistorico>> Get()
         {
             if (DateTime.Now.Subtract(_fechaCachePuntosHistoricos) > TimeSpan.FromMinutes(5))
             {
@@ -42,13 +42,13 @@ namespace LibQPA.ProveedoresHistoricos.DbSUBE
             return _cachePuntosHistoricos;
         }
 
-        private Dictionary<string, List<PuntoHistorico>> LeerDBPuntosHistoricos(
+        private Dictionary<ParEmpresaInterno, List<PuntoHistorico>> LeerDBPuntosHistoricos(
 			string connString, 
 			DateTime fechaDesde, 
 			DateTime fechaHasta
 		)
         {
-			var ret = new Dictionary<string, List<PuntoHistorico>>();
+			var ret = new Dictionary<ParEmpresaInterno, List<PuntoHistorico>>();
 
 			// hacer consulta
 			var consulta = ConsultaPuntosBuilder(
@@ -62,33 +62,16 @@ namespace LibQPA.ProveedoresHistoricos.DbSUBE
 			cmd.CommandTimeout = Config.CommandTimeout;
 			using var reader = cmd.ExecuteReader();
 			
-			var malfichos = new List<string>();
-
 			while (reader.Read())
 			{
-				int empresaSUBE = Convert.ToInt32(reader["empresaSube"] ?? 0);
-				int interno = Convert.ToInt32(reader["interno"] ?? 0);
+				int empresaSUBE = Convert.ToInt32(reader["C_EMPRESA"] ?? 0);
+				int interno = Convert.ToInt32(reader["C_INTERNO"] ?? 0);
 
-				string identificador = $"{empresaSUBE}-{interno}";
-				//int identificador = Config.DatosEmpIntFicha.GetFicha(
-				//	empresa: empresaSUBE, 
-				//	interno: interno, 
-				//	@default: -1
-				//);
+				ParEmpresaInterno identificador = new ParEmpresaInterno { Empresa = empresaSUBE, Interno = interno };
 
-				//if (identificador == -1)
-				//{
-				//	malfichos.Add($"Empresa: {empresaSUBE} Interno: {interno} No entcontrados en ficha...");
-				//	continue;
-				//}
-
-				DateTime fecha = Convert.ToDateTime(reader["fechaHoraUTC"] ?? DateTime.MinValue);
-				double lat = Convert.ToDouble(reader["latitud" ] ?? 0.0);
-				double lng = Convert.ToDouble(reader["longitud"] ?? 0.0);
-
-				// corrijo la latitud / longitud rosariobusense
-				var latitudCorregida  = -Math.Abs(lat);
-				var longitudCorregida = -Math.Abs(lng);
+				DateTime fecha = Convert.ToDateTime(reader["C_FECHA_EVENTO"] ?? DateTime.MinValue);
+				double lat = Convert.ToDouble(reader["LATITUD" ] ?? 0.0);
+				double lng = Convert.ToDouble(reader["LONGITUD"] ?? 0.0);
 
 				if (!ret.ContainsKey(identificador))
 				{
@@ -98,9 +81,10 @@ namespace LibQPA.ProveedoresHistoricos.DbSUBE
 				var puntoHistorico = new PuntoHistorico
 				{
 					Alt = 0,
-					Fecha = fecha.AddHours(-3),
-					Lat = latitudCorregida,
-					Lng = longitudCorregida,
+					//Fecha = fecha.AddHours(-3),
+					Fecha = fecha,
+					Lat = lat,
+					Lng = lng,
 				};
 
 				ret[identificador].Add(puntoHistorico);
@@ -111,19 +95,38 @@ namespace LibQPA.ProveedoresHistoricos.DbSUBE
 
         private string ConsultaPuntosBuilder(DateTime fechaDesde, DateTime fechaHasta)
         {
+			//var consulta =
+			//	@"
+			//		select		*
+			//		from		log_posicionamientoSUBE
+			//		where		fechaHoraUTC >= '{{FECHA_DESDE}}'
+			//					and
+			//					fechaHoraUTC <  '{{FECHA_HASTA}}'
+			//		order by	fechaHoraUTC asc
+			//	"
+			//	.Trim()
+			//	.Replace("{{FECHA_DESDE}}", fechaDesde.AddHours(3).ToString("dd/MM/yyyy HH:mm:ss"))
+			//	.Replace("{{FECHA_HASTA}}", fechaHasta.AddHours(3).ToString("dd/MM/yyyy HH:mm:ss"))
+			//;
+
 			var consulta =
 				@"
-					select		*
-					from		log_posicionamientoSUBE
-					where		fechaHoraUTC >= '{{FECHA_DESDE}}'
-								and
-								fechaHoraUTC <  '{{FECHA_HASTA}}'
-					order by	fechaHoraUTC asc
-				"
-				.Trim()
-				.Replace("{{FECHA_DESDE}}", fechaDesde.AddHours(3).ToString("dd/MM/yyyy HH:mm:ss"))
-				.Replace("{{FECHA_HASTA}}", fechaHasta.AddHours(3).ToString("dd/MM/yyyy HH:mm:ss"))
-			;
+					select
+						C_EMPRESA,
+						C_INTERNO,
+						C_FECHA_EVENTO,
+						-1 * ABS(C_LATITUD  / 100000) as LATITUD,
+						-1 * ABS(C_LONGITUD / 100000) as LONGITUD
+					from SUBE_VENTAS_CONCENTRADOR_KM
+					where 
+						C_FECHA_EVENTO >= '{{FECHA_DESDE}}'
+						and
+						C_FECHA_EVENTO <  '{{FECHA_HASTA}}'
+					order by C_FECHA_EVENTO
+			"
+			.Trim()
+			.Replace("{{FECHA_DESDE}}", fechaDesde.ToString("dd/MM/yyyy HH:mm:ss"))
+			.Replace("{{FECHA_HASTA}}", fechaHasta.ToString("dd/MM/yyyy HH:mm:ss"));
 
 			return consulta;
         }

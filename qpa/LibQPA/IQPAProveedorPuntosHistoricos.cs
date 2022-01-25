@@ -4,8 +4,8 @@ using Comun;
 
 namespace LibQPA
 {
-    public interface IQPAProveedorPuntosHistoricos
+    public interface IQPAProveedorPuntosHistoricos<IdType>
     {
-        Dictionary<string, List<PuntoHistorico>> Get();
+        Dictionary<IdType, List<PuntoHistorico>> Get();
     }
 }

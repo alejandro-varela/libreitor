@@ -1,16 +1,34 @@
 ﻿using Comun;
+using ComunSUBE;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using LibQPA.ProveedoresVentas.DbSUBE;
+using LibQPA.ProveedoresHistoricos.DbSUBE;
+using System.IO;
 
 namespace PruebaConstruccionSegmentos
 {
-    internal partial class Program
+    class Program
     {
+        static DatosEmpIntFicha             _datosEmpIntFicha;
+        static ProveedorVentaBoletosDbSUBE  _proveedorVentaBoletosDbSUBE;
+        static ProveedorHistoricoDbSUBE     _proveedorHistoricoDbSUBE;
+
         static void Main(string[] args)
         {
+            var desde = new DateTime(2022, 1, 10, 0, 0, 0);
+            var hasta = new DateTime(2022, 1, 11, 0, 0, 0);
+
+            //IniciarDatosEmpIntFicha();
+            //IniciarProveedorPuntosKms(desde, hasta);
+            //IniciarProveedorVentasSUBE(desde, hasta);
+
+            //DamePuntosFromTablaKms(0, desde, hasta);
+
+            var poropopop = DamePuntosPrueba(default, default, default);
+
             string   DIR_REC      = "../../../../Datos/ZipRepo/";
             int[]    lineas       = { 159, 163 };
             DateTime date         = DateTime.Now;
@@ -42,11 +60,13 @@ namespace PruebaConstruccionSegmentos
             var dicCasillerosXSegmento  = new Dictionary<string, HashSet<Casillero>>();
 
             // para cada recorrido
-            foreach (Recorrido recorrido in recorridos)
+            foreach (RecorridoLinBan recorrido in recorridos)
             {
                 var camino = Camino<PuntoRecorrido>.CreateFromPuntos(puntas, recorrido.Puntos);
                 List<Link<char>> links = GetLinks(camino.DescriptionRawSinSimplificar, recorrido);
-                
+
+                Console.WriteLine($"{ recorrido.Linea } { recorrido.Bandera } { LinksToString(links) }");
+
                 // para cada link en el recorrido actual
                 foreach (Link<char> linkX in links)
                 {
@@ -112,36 +132,18 @@ namespace PruebaConstruccionSegmentos
                 }
             }
 
-            ///////////////////////////////////////////////////////////////////
-            // Datos Empresa-Interno / Ficha
-            ///////////////////////////////////////////////////////////////////
-            var datosEmpIntFicha = new ComunSUBE.DatosEmpIntFicha(new ComunSUBE.DatosEmpIntFicha.Configuration()
-            {
-                CommandTimeout = 600,
-                ConnectionString = "Data Source=192.168.201.42;Initial Catalog=sube;Persist Security Info=True;User ID=sa;Password=Bondi.amarillo", //Configu.ConnectionStringFichasXEmprIntSUBE,
-                MaxCacheSeconds = 15 * 60,
-            });
-
-            ///////////////////////////////////////////////////////////////////
-            // Venta de boletos
-            ///////////////////////////////////////////////////////////////////
-            var desde = new DateTime(2022, 1, 10, 0, 0, 0);
-            var hasta = new DateTime(2022, 1, 11, 0, 0, 0);
-
-            var proveedorVentaBoletosConfig = new ProveedorVentaBoletosDbSUBE.Configuracion
-            {
-                CommandTimeout = 600,
-                ConnectionString = "Data Source=192.168.201.42;Initial Catalog=sube;Persist Security Info=True;User ID=sa;Password=Bondi.amarillo", //Configu.ConnectionStringVentasSUBE,
-                DatosEmpIntFicha = datosEmpIntFicha,
-                FechaDesde = desde,
-                FechaHasta = hasta,
-            };
-
-            ProveedorVentaBoletosDbSUBE proveedorVentaBoletosDbSUBE = new ProveedorVentaBoletosDbSUBE(
-                proveedorVentaBoletosConfig
-            );
             
-            var boletosXIdentificador = proveedorVentaBoletosDbSUBE.BoletosXIdentificador;
+
+            IniciarDatosEmpIntFicha();
+            IniciarProveedorPuntosKms(desde, hasta);
+            DamePuntosFromTablaKms(0, desde, hasta);
+
+            IniciarProveedorVentasSUBE(desde, hasta);
+            
+
+            
+
+            var boletosXIdentificador = _proveedorVentaBoletosDbSUBE.BoletosXIdentificador;
             //var boletos = boletosXIdentificador[4072];
             //var boletos = boletosXIdentificador[4353];
             var boletos = boletosXIdentificador[4307];
@@ -178,6 +180,137 @@ namespace PruebaConstruccionSegmentos
             }
 
             int foo = 0;
+        }
+
+        private static void IniciarDatosEmpIntFicha()
+        {
+            ///////////////////////////////////////////////////////////////////
+            // Datos Empresa-Interno / Ficha
+            ///////////////////////////////////////////////////////////////////
+            _datosEmpIntFicha = new ComunSUBE.DatosEmpIntFicha(new ComunSUBE.DatosEmpIntFicha.Configuration()
+            {
+                CommandTimeout = 600,
+                ConnectionString = File.ReadAllText("connstring_sube.txt").Trim(),
+                MaxCacheSeconds = 15 * 60,
+            });
+        }
+
+        private static void IniciarProveedorVentasSUBE(DateTime desde, DateTime hasta)
+        {
+            ///////////////////////////////////////////////////////////////////
+            // Venta de boletos
+            ///////////////////////////////////////////////////////////////////
+            var proveedorVentaBoletosConfig = new ProveedorVentaBoletosDbSUBE.Configuracion
+            {
+                CommandTimeout = 600,
+                ConnectionString = File.ReadAllText("connstring_sube.txt").Trim(),
+                DatosEmpIntFicha = _datosEmpIntFicha,
+                FechaDesde = desde,
+                FechaHasta = hasta,
+            };
+
+            _proveedorVentaBoletosDbSUBE = new ProveedorVentaBoletosDbSUBE(
+                proveedorVentaBoletosConfig
+            );
+        }
+
+        private static void IniciarProveedorPuntosKms(DateTime desde, DateTime hasta)
+        {
+            ProveedorHistoricoDbSUBE.Configuracion config = new ProveedorHistoricoDbSUBE.Configuracion
+            {
+                ConnectionStringPuntos = File.ReadAllText("connstring_sube.txt").Trim(),
+                FechaDesde = desde,
+                FechaHasta = hasta,
+            };
+
+            _proveedorHistoricoDbSUBE = new ProveedorHistoricoDbSUBE(config);
+        }
+
+        static List<(PuntoHistorico, bool, BoletoComun)> DamePuntosPrueba(int identificador, DateTime desde, DateTime hasta)
+        {
+            var ret = new List<(PuntoHistorico, bool, BoletoComun)>();
+            var fbase = DateTime.Now;
+
+            // boletos
+            ret.Add((new PuntoHistorico { Fecha = fbase.AddHours(1.0), Lat=32, Lng=60 }, true, new BoletoComun { FechaCancelacion = fbase.AddHours(1.0) }));
+            ret.Add((new PuntoHistorico { Fecha = fbase.AddHours(1.2), Lat=32, Lng=60 }, true, new BoletoComun { FechaCancelacion = fbase.AddHours(1.2) }));
+            ret.Add((new PuntoHistorico { Fecha = fbase.AddHours(1.4), Lat=32, Lng=60 }, true, new BoletoComun { FechaCancelacion = fbase.AddHours(1.4) }));
+            ret.Add((new PuntoHistorico { Fecha = fbase.AddHours(1.6), Lat=32, Lng=60 }, true, new BoletoComun { FechaCancelacion = fbase.AddHours(1.6) }));
+            ret.Add((new PuntoHistorico { Fecha = fbase.AddHours(1.8), Lat=32, Lng=60 }, true, new BoletoComun { FechaCancelacion = fbase.AddHours(1.8) }));
+
+            // puntos kms
+            ret.Add((new PuntoHistorico { Fecha = fbase.AddHours(1.1), Lat=32, Lng=60 }, false, null));
+            ret.Add((new PuntoHistorico { Fecha = fbase.AddHours(1.3), Lat=32, Lng=60 }, false, null));
+            ret.Add((new PuntoHistorico { Fecha = fbase.AddHours(1.5), Lat=32, Lng=60 }, false, null));
+            ret.Add((new PuntoHistorico { Fecha = fbase.AddHours(1.7), Lat=32, Lng=60 }, false, null));
+            ret.Add((new PuntoHistorico { Fecha = fbase.AddHours(1.9), Lat=32, Lng=60 }, false, null));
+
+            // ordenamos por fecha
+            return ret
+                .OrderBy(t => t.Item1.Fecha)
+                .ToList()
+            ;
+        }
+
+        static List<(PuntoHistorico,bool,BoletoComun)> DamePuntos(int identificador, DateTime desde, DateTime hasta)
+        {
+            var ret = new List<(PuntoHistorico, bool, BoletoComun)>();
+
+            List<BoletoComun> boletos = _proveedorVentaBoletosDbSUBE.BoletosXIdentificador[identificador];
+
+            foreach (var boleto in boletos)
+            {
+                var puntoHistorico = new PuntoHistorico {
+                    Lat = boleto.Latitud,
+                    Lng = boleto.Longitud,
+                    Fecha = boleto.FechaCancelacion,
+                };
+
+                var tripla = (puntoHistorico, true, boleto);
+
+                ret.Add(tripla);
+            }
+
+            // aca debo tomar los puntos de la vista de kms...
+            List<PuntoHistorico> puntosKms = DamePuntosFromTablaKms(identificador, desde, hasta);
+
+            foreach (var puntoKms in puntosKms)
+            {
+                var tripla = (puntoKms, false, (BoletoComun) null);
+                ret.Add(tripla);
+            }
+            
+            // aca debo ordenar todo por fecha...
+            return ret.OrderBy(t => t.Item1.Fecha).ToList();
+        }
+
+        static List<PuntoHistorico> DamePuntosFromTablaKms(int identificador, DateTime desde, DateTime hasta)
+        {
+            var pepe = _proveedorHistoricoDbSUBE.Get();
+
+            var pape = pepe
+                .Where(kvp => kvp.Key.Empresa == 49)
+                .ToList()
+            ;
+
+            var pipo = pepe
+                .Where(kvp => kvp.Key.Empresa == 49 && kvp.Key.Interno == 4388)
+                .FirstOrDefault()
+            ;
+
+            // 49 4388
+
+            return null;
+        }
+
+        static string LinksToString(List<Link<char>> links)
+        {
+            var sb = new StringBuilder();
+            foreach (var link in links)
+            {
+                sb.Append(link.NameRay);
+            }
+            return sb.ToString();
         }
 
         public static List<Link<char>> GetLinks(string descriptionRawSinSimplificar, Recorrido recorrido)

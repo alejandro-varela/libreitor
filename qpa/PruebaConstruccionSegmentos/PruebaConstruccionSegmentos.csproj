@@ -12,6 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Comun\Comun.csproj" />
     <ProjectReference Include="..\Datos\Datos.csproj" />
+    <ProjectReference Include="..\LibQPA.ProveedoresHistoricos.DbSUBE\LibQPA.ProveedoresHistoricos.DbSUBE.csproj" />
     <ProjectReference Include="..\LibQPA.ProveedoresVentas.DbSUBE\LibQPA.ProveedoresVentas.DbSUBE.csproj" />
   </ItemGroup>
 

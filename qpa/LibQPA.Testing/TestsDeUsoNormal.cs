@@ -202,22 +202,22 @@ namespace LibQPA.Testing
             }
             else if (proveedorKey == ProveedorKey.DbSUBE)
             {
-                var proveedorPtsHistoDbSUBE = new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE(
-                    new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE.Configuracion
-                    {
-                        CommandTimeout = 600,
-                        ConnectionStringPuntos = Configu.ConnectionStringPuntosSUBE,
-                        //DatosEmpIntFicha = datosEmpIntFicha,
-                        FechaDesde = desde,
-                        FechaHasta = hasta,
-                    });
+                //var proveedorPtsHistoDbSUBE = new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE(
+                //    new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE.Configuracion
+                //    {
+                //        CommandTimeout = 600,
+                //        ConnectionStringPuntos = Configu.ConnectionStringPuntosSUBE,
+                //        //DatosEmpIntFicha = datosEmpIntFicha,
+                //        FechaDesde = desde,
+                //        FechaHasta = hasta,
+                //    });
                 
-                ptsHistoSUBEPorIdent = proveedorPtsHistoDbSUBE.Get();
+                //ptsHistoSUBEPorIdent = proveedorPtsHistoDbSUBE.Get();
 
-                File.WriteAllText(
-                    ARCHIVO_PUNTOS_SUBE,
-                    JsonConvert.SerializeObject(ptsHistoSUBEPorIdent)
-                );
+                //File.WriteAllText(
+                //    ARCHIVO_PUNTOS_SUBE,
+                //    JsonConvert.SerializeObject(ptsHistoSUBEPorIdent)
+                //);
             }
             else if (proveedorKey == ProveedorKey.JsonSUBE)
             { 
@@ -517,22 +517,22 @@ namespace LibQPA.Testing
             }
             else if (proveedorKey == ProveedorKey.DbSUBE)
             {
-                var proveedorPtsHistoDbSUBE = new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE(
-                    new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE.Configuracion
-                    {
-                        CommandTimeout = 600,
-                        ConnectionStringPuntos = Configu.ConnectionStringPuntosSUBE,
-                        //DatosEmpIntFicha = datosEmpIntFicha,
-                        FechaDesde = desde,
-                        FechaHasta = hasta,
-                    });
+                //var proveedorPtsHistoDbSUBE = new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE(
+                //    new ProveedoresHistoricos.DbSUBE.ProveedorHistoricoDbSUBE.Configuracion
+                //    {
+                //        CommandTimeout = 600,
+                //        ConnectionStringPuntos = Configu.ConnectionStringPuntosSUBE,
+                //        //DatosEmpIntFicha = datosEmpIntFicha,
+                //        FechaDesde = desde,
+                //        FechaHasta = hasta,
+                //    });
 
-                ptsHistoSUBEPorIdent = proveedorPtsHistoDbSUBE.Get();
+                //ptsHistoSUBEPorIdent = proveedorPtsHistoDbSUBE.Get();
 
-                File.WriteAllText(
-                    ARCHIVO_PUNTOS_SUBE,
-                    JsonConvert.SerializeObject(ptsHistoSUBEPorIdent)
-                );
+                //File.WriteAllText(
+                //    ARCHIVO_PUNTOS_SUBE,
+                //    JsonConvert.SerializeObject(ptsHistoSUBEPorIdent)
+                //);
             }
             else if (proveedorKey == ProveedorKey.JsonSUBE)
             {
@@ -786,7 +786,7 @@ namespace LibQPA.Testing
             string desdeISO8601,
             string hastaISO8601,
             string lineasPosiblesSeparadasPorComa,
-            IQPAProveedorPuntosHistoricos proveedorPuntosHistoricos,
+            IQPAProveedorPuntosHistoricos<string> proveedorPuntosHistoricos,
             ConstructorFichasDesdeResultados constructorFichas,
             Type tipoPuntaLinea,
             int granularidadMts = 20,
@@ -850,7 +850,7 @@ namespace LibQPA.Testing
             DateTime    hasta,
             int[] lineasPosibles,
             IQPAProveedorRecorridosTeoricos proveedorRecorridosTeoricos,
-            IQPAProveedorPuntosHistoricos   proveedorPuntosHistoricos,
+            IQPAProveedorPuntosHistoricos<string> proveedorPuntosHistoricos,
             ConstructorFichasDesdeResultados constructorFichas,
             Func<List<RecorridoLinBan>, List<IPuntaLinea>> creadorPuntasNombradas,
             int         granularidadMts = 20
@@ -982,7 +982,7 @@ namespace LibQPA.Testing
             DateTime                        hasta,
             int[]                           lineasPosibles,
             IQPAProveedorRecorridosTeoricos proveedorRecorridosTeoricos,
-            IQPAProveedorPuntosHistoricos   proveedorPuntosHistoricos,
+            IQPAProveedorPuntosHistoricos<string> proveedorPuntosHistoricos,
             Func<List<RecorridoLinBan>, List<IPuntaLinea>> creadorPuntasNombradas,
             int granularidadMts             = 20
         )

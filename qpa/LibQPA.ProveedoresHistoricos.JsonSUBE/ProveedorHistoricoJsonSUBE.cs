@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace LibQPA.ProveedoresHistoricos.JsonSUBE
 {
-    public class ProveedorHistoricoJsonSUBE : IQPAProveedorPuntosHistoricos
+    public class ProveedorHistoricoJsonSUBE : IQPAProveedorPuntosHistoricos<string>
     {
         public string   InputDir    { get; set; } = ".";
         public DateTime FechaDesde  { get; set; } = DateTime.MinValue;
