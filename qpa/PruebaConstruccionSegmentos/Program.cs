@@ -47,7 +47,12 @@ namespace PruebaConstruccionSegmentos
                 .Select(pulin => (IPuntaLinea) pulin)
                 .ToList()
             ;
-            
+
+            //////////////////////////////////////////////////////////////////
+            // Construyo diccionarios de:
+            //   Puntos x Segmento
+            //   Puntos x Semirectas
+
             var dicPuntosXSemirecta     = new Dictionary<string, List<PuntoRecorrido>>();
             var dicCasillerosXSemirecta = new Dictionary<string, HashSet<Casillero>>();
             var dicPuntosXSegmento      = new Dictionary<string, List<PuntoRecorrido>>();
@@ -125,6 +130,15 @@ namespace PruebaConstruccionSegmentos
                     }
                 }
             }
+
+            //////////////////////////////////////////////////////////////////
+            // Puntos históricos: averiguo que pasó en este lapso de tiempo
+            //  -con esto obtendré un diccionario de tipo:
+            //   Dictionary<ParEmpresaInterno,List<Puntos>>
+            //  -debo filtrar por empresa, probablemente en el proveedor
+            //  -para cada cole, busco su coleccion de semirectas
+            //  -interpreto las semirectas
+            //  -fin
 
             IniciarProveedorPuntosKms(desde, hasta);
             DamePuntosFromTablaKms(49, 123, desde, hasta);
