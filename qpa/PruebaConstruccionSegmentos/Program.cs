@@ -21,13 +21,7 @@ namespace PruebaConstruccionSegmentos
             var desde = new DateTime(2022, 1, 10, 0, 0, 0);
             var hasta = new DateTime(2022, 1, 11, 0, 0, 0);
 
-            //IniciarDatosEmpIntFicha();
-            //IniciarProveedorPuntosKms(desde, hasta);
-            //IniciarProveedorVentasSUBE(desde, hasta);
-
-            //DamePuntosFromTablaKms(0, desde, hasta);
-
-            var poropopop = DamePuntosPrueba(default, default, default);
+            //var poropopop = DamePuntosPrueba(default, default, default);
 
             string   DIR_REC      = "../../../../Datos/ZipRepo/";
             int[]    lineas       = { 159, 163 };
@@ -132,52 +126,44 @@ namespace PruebaConstruccionSegmentos
                 }
             }
 
-            
-
-            IniciarDatosEmpIntFicha();
             IniciarProveedorPuntosKms(desde, hasta);
-            DamePuntosFromTablaKms(0, desde, hasta);
-
-            IniciarProveedorVentasSUBE(desde, hasta);
+            DamePuntosFromTablaKms(49, 123, desde, hasta);
             
+            //IniciarDatosEmpIntFicha();
+            //IniciarProveedorVentasSUBE(desde, hasta);
+            //var boletosXIdentificador = _proveedorVentaBoletosDbSUBE.BoletosXIdentificador;
+            //var boletos = boletosXIdentificador[4307];
 
-            
+            //foreach (var boleto in boletos.Where(b => b.Latitud != 0 && b.Longitud != 0 ))
+            //{
+            //    var puntoide        = new Punto { Lat = boleto.Latitud, Lng = boleto.Longitud };
+            //    var hacerWriteLine  = false;
 
-            var boletosXIdentificador = _proveedorVentaBoletosDbSUBE.BoletosXIdentificador;
-            //var boletos = boletosXIdentificador[4072];
-            //var boletos = boletosXIdentificador[4353];
-            var boletos = boletosXIdentificador[4307];
+            //    foreach (string kk in dicCasillerosXSemirecta.Keys)
+            //    {
+            //        var casilleroEnCuestion = Casillero.Create(
+            //            topes2D,
+            //            puntoide,
+            //            granularidad
+            //        );
 
-            foreach (var boleto in boletos.Where(b => b.Latitud != 0 && b.Longitud != 0 ))
-            {
-                var puntoide        = new Punto { Lat = boleto.Latitud, Lng = boleto.Longitud };
-                var hacerWriteLine  = false;
+            //        var contiene = Casillero.HashSetContieneCasilleroFlex(
+            //            dicCasillerosXSemirecta[kk], 
+            //            casilleroEnCuestion, 
+            //            granularidad
+            //        );
 
-                foreach (string kk in dicCasillerosXSemirecta.Keys)
-                {
-                    var casilleroEnCuestion = Casillero.Create(
-                        topes2D,
-                        puntoide,
-                        granularidad
-                    );
-
-                    var contiene = Casillero.HashSetContieneCasilleroFlex(
-                        dicCasillerosXSemirecta[kk], 
-                        casilleroEnCuestion, 
-                        granularidad
-                    );
-
-                    if (contiene)
-                    {
-                        Console.Write($"{kk} ");
-                        hacerWriteLine = true;
-                    }
-                }
-                if (hacerWriteLine)
-                {
-                    Console.WriteLine();
-                }
-            }
+            //        if (contiene)
+            //        {
+            //            Console.Write($"{kk} ");
+            //            hacerWriteLine = true;
+            //        }
+            //    }
+            //    if (hacerWriteLine)
+            //    {
+            //        Console.WriteLine();
+            //    }
+            //}
 
             int foo = 0;
         }
@@ -252,11 +238,11 @@ namespace PruebaConstruccionSegmentos
             ;
         }
 
-        static List<(PuntoHistorico,bool,BoletoComun)> DamePuntos(int identificador, DateTime desde, DateTime hasta)
+        static List<(PuntoHistorico,bool,BoletoComun)> DamePuntos(int empresa, int interno, DateTime desde, DateTime hasta)
         {
             var ret = new List<(PuntoHistorico, bool, BoletoComun)>();
 
-            List<BoletoComun> boletos = _proveedorVentaBoletosDbSUBE.BoletosXIdentificador[identificador];
+            List<BoletoComun> boletos = _proveedorVentaBoletosDbSUBE.BoletosXIdentificador[_datosEmpIntFicha.GetFicha(empresa, interno)];
 
             foreach (var boleto in boletos)
             {
@@ -272,7 +258,7 @@ namespace PruebaConstruccionSegmentos
             }
 
             // aca debo tomar los puntos de la vista de kms...
-            List<PuntoHistorico> puntosKms = DamePuntosFromTablaKms(identificador, desde, hasta);
+            List<PuntoHistorico> puntosKms = DamePuntosFromTablaKms(empresa, interno, desde, hasta);
 
             foreach (var puntoKms in puntosKms)
             {
@@ -284,9 +270,13 @@ namespace PruebaConstruccionSegmentos
             return ret.OrderBy(t => t.Item1.Fecha).ToList();
         }
 
-        static List<PuntoHistorico> DamePuntosFromTablaKms(int identificador, DateTime desde, DateTime hasta)
+        static List<PuntoHistorico> DamePuntosFromTablaKms(int empresa, int interno, DateTime desde, DateTime hasta)
         {
-            var pepe = _proveedorHistoricoDbSUBE.Get();
+            var pepe = _proveedorHistoricoDbSUBE.Get()
+                .OrderBy(kvp => kvp.Key.Empresa)
+                .ThenBy (kvp => kvp.Key.Interno)
+                .ToList ()
+            ;
 
             var pape = pepe
                 .Where(kvp => kvp.Key.Empresa == 49)
