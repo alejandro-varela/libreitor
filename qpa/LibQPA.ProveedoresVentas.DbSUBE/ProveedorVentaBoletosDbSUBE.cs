@@ -1,4 +1,5 @@
-﻿using ComunSUBE;
+﻿using Comun;
+using ComunSUBE;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;

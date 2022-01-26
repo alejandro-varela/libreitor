@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using Comun;
+using ComunSUBE;
 using LibQPA.ProveedoresVentas.DbSUBE;
 using Newtonsoft.Json;
 using Pinturas;

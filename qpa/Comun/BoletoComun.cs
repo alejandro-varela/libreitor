@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LibQPA.ProveedoresVentas.DbSUBE
+namespace Comun
 {
     public class BoletoComun
     {
