@@ -8,7 +8,7 @@ using System.Linq;
 namespace LibQPA.ProveedoresVentas.DbSUBE
 {
     [Obsolete("Esta clase está deprecated, usar ProveedorBoletosSUBE en su lugar")]
-    public class ProveedorVentaBoletosDbSUBE : QPAProveedorVentaBoletos<BoletoComun>
+    public class ProveedorVentaBoletosDbSUBE : QPAProveedorVentaBoletos<int, BoletoComun>
     {
         public class Configuracion
         {

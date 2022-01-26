@@ -2,12 +2,12 @@
 
 namespace LibQPA
 {
-    public abstract class QPAProveedorVentaBoletos<TBoleto>
+    public abstract class QPAProveedorVentaBoletos<IdType, BolType>
     {
         private readonly object _lockInterno = new object();
-        private Dictionary<int, List<TBoleto>> _boletosXIdentificador;
+        private Dictionary<IdType, List<BolType>> _boletosXIdentificador;
 
-        public Dictionary<int, List<TBoleto>> BoletosXIdentificador
+        public Dictionary<IdType, List<BolType>> BoletosXIdentificador
         {
             get
             {
@@ -30,6 +30,6 @@ namespace LibQPA
             }
         }
 
-        public abstract Dictionary<int, List<TBoleto>> LeerDB();
+        public abstract Dictionary<IdType, List<BolType>> LeerDB();
     }
 }
