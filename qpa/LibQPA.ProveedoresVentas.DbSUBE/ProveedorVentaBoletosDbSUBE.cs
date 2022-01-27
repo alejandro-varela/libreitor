@@ -31,6 +31,7 @@ namespace LibQPA.ProveedoresVentas.DbSUBE
             Configuracion configuracion, 
             Dictionary<int, List<BoletoComun>> boletosXIdentificador)
         {
+            Config = configuracion;
             BoletosXIdentificador = boletosXIdentificador;
         }
 
