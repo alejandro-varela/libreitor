@@ -14,7 +14,6 @@ namespace LibQPA.ProveedoresVentas.DbSUBE
         {
             public int CommandTimeout { get; set; }
             public string ConnectionString { get; set; }
-            public string Consulta { get; set; }
             public DateTime FechaDesde { get; set; }
             public DateTime FechaHasta { get; set; }
             public DatosEmpIntFicha DatosEmpIntFicha { get; set; }
