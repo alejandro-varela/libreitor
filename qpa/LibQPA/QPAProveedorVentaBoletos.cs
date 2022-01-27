@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using Comun;
+using System.Collections.Generic;
 
 namespace LibQPA
 {
-    public abstract class QPAProveedorVentaBoletos<IdType, BolType>
+    public abstract class QPAProveedorVentaBoletos<IdType>
     {
         private readonly object _lockInterno = new object();
-        private Dictionary<IdType, List<BolType>> _boletosXIdentificador;
+        private Dictionary<IdType, List<BoletoComun>> _boletosXIdentificador;
 
-        public Dictionary<IdType, List<BolType>> BoletosXIdentificador
+        public Dictionary<IdType, List<BoletoComun>> BoletosXIdentificador
         {
             get
             {
@@ -30,6 +31,6 @@ namespace LibQPA
             }
         }
 
-        public abstract Dictionary<IdType, List<BolType>> LeerDB();
+        public abstract Dictionary<IdType, List<BoletoComun>> LeerDB();
     }
 }
