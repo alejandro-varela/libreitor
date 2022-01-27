@@ -35,42 +35,6 @@ namespace LibQPA.ProveedoresVentas.DbSUBE
             BoletosXIdentificador = boletosXIdentificador;
         }
 
-        public IEnumerable<BoletoComun> GetBoletos(int ficha)
-        {
-            var todasLasKeys = BoletosXIdentificador.Keys.ToList();
-
-            if (!BoletosXIdentificador.ContainsKey(ficha))
-            {
-                yield break;
-            }
-
-            var boletos = BoletosXIdentificador[ficha];
-
-            foreach (var boletoX in boletos)
-            {
-                yield return boletoX;
-            }
-        }
-
-        public IEnumerable<BoletoComun> GetBoletosEnIntervalo(int ficha, DateTime fechaComienzo, DateTime fechaFin)
-        {
-            var boletos = GetBoletos(ficha)
-                .Where(boleto =>
-                    boleto.FechaCancelacion >= fechaComienzo &&
-                    boleto.FechaCancelacion <  fechaFin
-                );
-
-            foreach (var boletoX in boletos)
-            {
-                yield return boletoX;
-            }
-        }
-
-        public bool TieneBoletosEnIntervalo(int ficha, DateTime horaComienzo, DateTime horaFin)
-        {
-            return GetBoletosEnIntervalo(ficha, horaComienzo, horaFin).Any();
-        }
-
         public override Dictionary<int, List<BoletoComun>> LeerDB()
         {
             var ret = new Dictionary<int, List<BoletoComun>>();
