@@ -24,7 +24,7 @@ namespace LibQPA.ProveedoresVentas.DbSUBE
         public ProveedorVentaBoletosDbSUBE(Configuracion configuracion) : 
             this(configuracion, null)
         {
-            Config = configuracion;
+            //
         }
 
         public ProveedorVentaBoletosDbSUBE(
