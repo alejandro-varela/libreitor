@@ -75,11 +75,11 @@ namespace LibQPA.ProveedoresVentas.DbSUBE
                 var longitud        = Convert.ToDouble(reader["C_LATITUD"]) / 100000.0;
                 // ********************************************************************
 
-                var ficha = new ParEmpresaInterno { Empresa=empresa, Interno=interno };
+                var identificador = new ParEmpresaInterno { Empresa=empresa, Interno=interno };
 
-                if (!ret.ContainsKey(ficha))
+                if (!ret.ContainsKey(identificador))
                 {
-                    ret.Add(ficha, new List<BoletoComun>());
+                    ret.Add(identificador, new List<BoletoComun>());
                 }
 
                 boletoId++;
@@ -95,7 +95,7 @@ namespace LibQPA.ProveedoresVentas.DbSUBE
                     ValorFinal          = valorFinal,
                 };
 
-                ret[ficha].Add(boleto);                
+                ret[identificador].Add(boleto);                
             }
 
             return ret;
