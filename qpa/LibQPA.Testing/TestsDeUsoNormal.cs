@@ -1,5 +1,6 @@
 using Comun;
 using ComunSUBE;
+using LibQPA.ProveedoresHistoricos.DbSUBE;
 using LibQPA.ProveedoresHistoricos.DbXBus;
 using LibQPA.ProveedoresHistoricos.JsonSUBE;
 using LibQPA.ProveedoresTecnobus;
@@ -696,7 +697,7 @@ namespace LibQPA.Testing
                 FechaHasta = hasta,
             };
 
-            // Funcion local que toma una lista de resultados QPA y los convierte en una lista de Fichas
+            // Función local que toma una lista de resultados QPA y los convierte en una lista de Fichas
             List<int> constructorFichas(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult<string>> resultadosQPA) =>
                 resultadosQPA
                     .Select(resul => resul.Identificador)
@@ -713,6 +714,49 @@ namespace LibQPA.Testing
                 constructorFichas,
                 tipoPuntaLinea, 
                 granularidadMts, 
+                radioPuntasDeLineaMts
+            );
+        }
+
+        [DataTestMethod]
+        [DataRow("AGN49", "2021-10-01", "2021-10-02", "159,163", typeof(PuntaLinea), 20, 800)]
+        public void TestKmsSUBEQPA_ConReporte(
+            string identificador,
+            string desdeISO8601,
+            string hastaISO8601,
+            string lineasPosiblesSeparadasPorComa,
+            Type tipoPuntaLinea,
+            int granularidadMts = 20,
+            int radioPuntasDeLineaMts = 200)
+        {
+            var desde = DateTime.Parse(desdeISO8601);
+            var hasta = DateTime.Parse(hastaISO8601);
+
+            var proveedorPuntosHistoricos = new ProveedorHistoricoDbSUBE(
+                new ProveedorHistoricoDbSUBE.Configuracion
+                {
+                    ConnectionStringPuntos = Configu.ConnectionStringVentasSUBE,
+                    FechaDesde = desde,
+                    FechaHasta = hasta,
+                }
+            );
+
+            // Función local que toma una lista de resultados QPA y los convierte en una lista de Fichas
+            List<int> constructorFichas(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult<ParEmpresaInterno>> resultadosQPA) =>
+                resultadosQPA
+                    .Select(resul => datosEmpIntFicha.GetFicha(resul.Identificador.Empresa, resul.Identificador.Interno))
+                    .ToList()
+                ;
+
+            TestGenericoQPA_ConReporte(
+                identificador,
+                desdeISO8601,
+                hastaISO8601,
+                lineasPosiblesSeparadasPorComa,
+                proveedorPuntosHistoricos,
+                constructorFichas,
+                tipoPuntaLinea,
+                granularidadMts,
                 radioPuntasDeLineaMts
             );
         }
@@ -761,7 +805,7 @@ namespace LibQPA.Testing
                 }
             );
             
-            // Funcion local que toma una lista de resultados QPA y los convierte en una lista de Fichas
+            // Función local que toma una lista de resultados QPA y los convierte en una lista de Fichas
             List<int> constructorFichas(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult<string>> resultadosQPA) =>
                 resultadosQPA
                     .Select(resul => int.Parse(resul.Identificador ?? "-1"))
