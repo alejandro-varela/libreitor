@@ -12,9 +12,9 @@ namespace PruebaConstruccionSegmentos
 {
     class Program
     {
-        static DatosEmpIntFicha             _datosEmpIntFicha;
-        static ProveedorVentaBoletosDbSUBE  _proveedorVentaBoletosDbSUBE;
-        static ProveedorHistoricoDbSUBE     _proveedorHistoricoDbSUBE;
+        //static DatosEmpIntFicha         _datosEmpIntFicha;
+        static ProveedorBoletosSUBE     _proveedorBoletosSUBE;
+        static ProveedorHistoricoDbSUBE _proveedorPuntosSUBE;
 
         static void Main(string[] args)
         {
@@ -141,10 +141,43 @@ namespace PruebaConstruccionSegmentos
             //  -fin
 
             IniciarProveedorPuntosKms(desde, hasta);
-            DamePuntosFromTablaKms(49, 123, desde, hasta);
-            
+
+            var puntosXId = _proveedorPuntosSUBE.Get();
+
+            var puntos203 = puntosXId
+                .Where(kvp => kvp.Key.Empresa == 49)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value)
+            ;
+
+            // para cada cole de la 203 debo crear su "camino"
+            foreach (var kvp in puntos203)
+            {
+                Console.WriteLine(kvp.Key);
+                var puntos = puntos203[kvp.Key];
+
+                List<List<string>> historia = GetHistoria(
+                    kvp.Value,
+                    dicCasillerosXSemirecta,
+                    topes2D,
+                    granularidad
+                )
+                    .Where  (l => l.Count > 0)
+                    .ToList ()
+                ;
+
+                int fff = 0;
+            }
+
+            var puntosGB = puntosXId
+                .Where(kvp => kvp.Key.Empresa == 132)
+                .ToHashSet()
+            ;
+
+            int foo1 = 0;
+            IniciarProveedorVentasSUBE(desde, hasta);
+
             //IniciarDatosEmpIntFicha();
-            //IniciarProveedorVentasSUBE(desde, hasta);
+
             //var boletosXIdentificador = _proveedorVentaBoletosDbSUBE.BoletosXIdentificador;
             //var boletos = boletosXIdentificador[4307];
 
@@ -179,38 +212,64 @@ namespace PruebaConstruccionSegmentos
             //    }
             //}
 
-            int foo = 0;
+            int foo2 = 0;
         }
 
-        private static void IniciarDatosEmpIntFicha()
+        private static List<List<string>> GetHistoria(
+            List<PuntoHistorico> value,
+            Dictionary<string, HashSet<Casillero>> dicCasillerosXSemirecta,
+            Topes2D topes2D,
+            int granularidad
+        )
         {
-            ///////////////////////////////////////////////////////////////////
-            // Datos Empresa-Interno / Ficha
-            ///////////////////////////////////////////////////////////////////
-            _datosEmpIntFicha = new ComunSUBE.DatosEmpIntFicha(new ComunSUBE.DatosEmpIntFicha.Configuration()
+            var ret = new List<List<string>>();
+
+            foreach (var px in value)
             {
-                CommandTimeout = 600,
-                ConnectionString = File.ReadAllText("connstring_sube.txt").Trim(),
-                MaxCacheSeconds = 15 * 60,
-            });
+                var casillero = Casillero.Create(topes2D, px, granularidad);
+
+                var subret = new List<string>();
+                foreach (var (repr, hcas) in dicCasillerosXSemirecta)
+                {
+                    if (hcas.Contains(casillero))
+                    {
+                        subret.Add(repr);
+                    }
+                }
+                ret.Add(subret);
+            }
+
+            return ret;
         }
+
+        //private static void IniciarDatosEmpIntFicha()
+        //{
+        //    ///////////////////////////////////////////////////////////////////
+        //    // Datos Empresa-Interno / Ficha
+        //    ///////////////////////////////////////////////////////////////////
+        //    _datosEmpIntFicha = new ComunSUBE.DatosEmpIntFicha(new ComunSUBE.DatosEmpIntFicha.Configuration()
+        //    {
+        //        CommandTimeout = 600,
+        //        ConnectionString = File.ReadAllText("connstring_sube.txt").Trim(),
+        //        MaxCacheSeconds = 15 * 60,
+        //    });
+        //}
 
         private static void IniciarProveedorVentasSUBE(DateTime desde, DateTime hasta)
         {
             ///////////////////////////////////////////////////////////////////
             // Venta de boletos
             ///////////////////////////////////////////////////////////////////
-            var proveedorVentaBoletosConfig = new ProveedorVentaBoletosDbSUBE.Configuracion
+            var proveedorBoletosConfig = new ProveedorBoletosSUBE.Configuracion
             {
                 CommandTimeout = 600,
                 ConnectionString = File.ReadAllText("connstring_sube.txt").Trim(),
-                DatosEmpIntFicha = _datosEmpIntFicha,
                 FechaDesde = desde,
                 FechaHasta = hasta,
             };
 
-            _proveedorVentaBoletosDbSUBE = new ProveedorVentaBoletosDbSUBE(
-                proveedorVentaBoletosConfig
+            _proveedorBoletosSUBE = new ProveedorBoletosSUBE(
+                proveedorBoletosConfig
             );
         }
 
@@ -223,7 +282,7 @@ namespace PruebaConstruccionSegmentos
                 FechaHasta = hasta,
             };
 
-            _proveedorHistoricoDbSUBE = new ProveedorHistoricoDbSUBE(config);
+            _proveedorPuntosSUBE = new ProveedorHistoricoDbSUBE(config);
         }
 
         static List<(PuntoHistorico, bool, BoletoComun)> DamePuntosPrueba(int identificador, DateTime desde, DateTime hasta)
@@ -256,7 +315,8 @@ namespace PruebaConstruccionSegmentos
         {
             var ret = new List<(PuntoHistorico, bool, BoletoComun)>();
 
-            List<BoletoComun> boletos = _proveedorVentaBoletosDbSUBE.BoletosXIdentificador[_datosEmpIntFicha.GetFicha(empresa, interno)];
+            var parEmpresaInterno = new ParEmpresaInterno { Empresa=empresa, Interno=interno };
+            List<BoletoComun> boletos = _proveedorBoletosSUBE.BoletosXIdentificador[parEmpresaInterno];
 
             foreach (var boleto in boletos)
             {
@@ -286,7 +346,7 @@ namespace PruebaConstruccionSegmentos
 
         static List<PuntoHistorico> DamePuntosFromTablaKms(int empresa, int interno, DateTime desde, DateTime hasta)
         {
-            var pepe = _proveedorHistoricoDbSUBE.Get()
+            var pepe = _proveedorPuntosSUBE.Get()
                 .OrderBy(kvp => kvp.Key.Empresa)
                 .ThenBy (kvp => kvp.Key.Interno)
                 .ToList ()
