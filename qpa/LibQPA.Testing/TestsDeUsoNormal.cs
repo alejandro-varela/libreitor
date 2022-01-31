@@ -719,7 +719,7 @@ namespace LibQPA.Testing
         }
 
         [DataTestMethod]
-        [DataRow("AGN49", "2021-10-01", "2021-10-02", "159,163", typeof(PuntaLinea), 20, 800)]
+        [DataRow("KMS49", "2022-01-10", "2022-01-11", "159,163", typeof(PuntaLinea), 20, 800)]
         public void TestKmsSUBEQPA_ConReporte(
             string identificador,
             string desdeISO8601,
