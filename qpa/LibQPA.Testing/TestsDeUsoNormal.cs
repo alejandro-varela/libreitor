@@ -697,14 +697,14 @@ namespace LibQPA.Testing
             };
 
             // Funcion local que toma una lista de resultados QPA y los convierte en una lista de Fichas
-            List<int> constructorFichas(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult> resultadosQPA) =>
+            List<int> constructorFichas(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult<string>> resultadosQPA) =>
                 resultadosQPA
                     .Select(resul => resul.Identificador)
                     .Select(ident => datosEmpIntFicha.GetFicha(ident, '-', -1))
                     .ToList()
                 ;
 
-            TestGenericoQPA_ConReporte(
+            TestGenericoQPA_ConReporte<string>(
                 identificador,
                 desdeISO8601,
                 hastaISO8601,
@@ -760,15 +760,15 @@ namespace LibQPA.Testing
                     Tipo = ProveedorHistoricoDbXBus.TipoEquipo.TECNOBUS | ProveedorHistoricoDbXBus.TipoEquipo.PICOBUS
                 }
             );
-
+            
             // Funcion local que toma una lista de resultados QPA y los convierte en una lista de Fichas
-            List<int> constructorFichas(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult> resultadosQPA) =>
+            List<int> constructorFichas(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult<string>> resultadosQPA) =>
                 resultadosQPA
                     .Select(resul => int.Parse(resul.Identificador ?? "-1"))
                     .ToList()
                 ;
 
-            TestGenericoQPA_ConReporte(
+            TestGenericoQPA_ConReporte<string>(
                 identificador,
                 desdeISO8601,
                 hastaISO8601,
@@ -781,13 +781,13 @@ namespace LibQPA.Testing
             );
         }
 
-        public void TestGenericoQPA_ConReporte(
+        public void TestGenericoQPA_ConReporte<TIdent>(
             string identificador,
             string desdeISO8601,
             string hastaISO8601,
             string lineasPosiblesSeparadasPorComa,
-            IQPAProveedorPuntosHistoricos<string> proveedorPuntosHistoricos,
-            ConstructorFichasDesdeResultados constructorFichas,
+            IQPAProveedorPuntosHistoricos<TIdent> proveedorPuntosHistoricos,
+            ConstructorFichasDesdeResultados<TIdent> constructorFichas,
             Type tipoPuntaLinea,
             int granularidadMts = 20,
             int radioPuntasDeLineaMts = 200
@@ -844,19 +844,19 @@ namespace LibQPA.Testing
         }
 
 
-        public void CalcularQPA_GenerarReporteQPA(
+        public void CalcularQPA_GenerarReporteQPA<TIdent>(
             string      identificador,
             DateTime    desde,
             DateTime    hasta,
             int[] lineasPosibles,
             IQPAProveedorRecorridosTeoricos proveedorRecorridosTeoricos,
-            IQPAProveedorPuntosHistoricos<string> proveedorPuntosHistoricos,
-            ConstructorFichasDesdeResultados constructorFichas,
+            IQPAProveedorPuntosHistoricos<TIdent> proveedorPuntosHistoricos,
+            ConstructorFichasDesdeResultados<TIdent> constructorFichas,
             Func<List<RecorridoLinBan>, List<IPuntaLinea>> creadorPuntasNombradas,
             int         granularidadMts = 20
         )
         {
-            var resultadosQPA = CalcularQPA(
+            var resultadosQPA = CalcularQPA<TIdent>(
                 identificador,
                 desde,
                 hasta,
@@ -884,7 +884,7 @@ namespace LibQPA.Testing
             //    int foofoo = 0;
             //}
 
-            GenerarReporteQPA(
+            GenerarReporteQPA<TIdent>(
                 identificador, 
                 desde, 
                 hasta, 
@@ -893,14 +893,14 @@ namespace LibQPA.Testing
             );
         }
 
-        public delegate List<int> ConstructorFichasDesdeResultados(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult> resultados);
+        public delegate List<int> ConstructorFichasDesdeResultados<TIdent>(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult<TIdent>> resultados);
 
-        public void GenerarReporteQPA(
+        public void GenerarReporteQPA<TIdent>(
             string          identificador,
             DateTime        desde,
             DateTime        hasta,
-            List<QPAResult> resultadosQPA,
-            ConstructorFichasDesdeResultados constructorFichas
+            List<QPAResult<TIdent>> resultadosQPA,
+            ConstructorFichasDesdeResultados<TIdent> constructorFichas
         )
         {
             ///////////////////////////////////////////////////////////////////
@@ -976,13 +976,13 @@ namespace LibQPA.Testing
             File.WriteAllText(nombreReporte, reporte.ToString());
         }
 
-        public List<QPAResult> CalcularQPA(
+        public List<QPAResult<TIdent>> CalcularQPA<TIdent>(
             string                          identificador,
             DateTime                        desde,
             DateTime                        hasta,
             int[]                           lineasPosibles,
             IQPAProveedorRecorridosTeoricos proveedorRecorridosTeoricos,
-            IQPAProveedorPuntosHistoricos<string> proveedorPuntosHistoricos,
+            IQPAProveedorPuntosHistoricos<TIdent> proveedorPuntosHistoricos,
             Func<List<RecorridoLinBan>, List<IPuntaLinea>> creadorPuntasNombradas,
             int granularidadMts             = 20
         )
@@ -1051,13 +1051,13 @@ namespace LibQPA.Testing
             // Puntos históricos
             ///////////////////////////////////////////////////////////////////
 
-            Dictionary<string, List<PuntoHistorico>> ptsHistoPorIdent = null;
+            Dictionary<TIdent, List<PuntoHistorico>> ptsHistoPorIdent = null;
             string ARCHIVO_PUNTOS_HISTORICOS = $"PtsHist__{identificador}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json";
 
             if (File.Exists(ARCHIVO_PUNTOS_HISTORICOS))
             {
                 var json = File.ReadAllText(ARCHIVO_PUNTOS_HISTORICOS);
-                ptsHistoPorIdent = JsonConvert.DeserializeObject<Dictionary<string, List<PuntoHistorico>>>(json);
+                ptsHistoPorIdent = JsonConvert.DeserializeObject<Dictionary<TIdent, List<PuntoHistorico>>>(json);
             }
             else
             {
@@ -1074,7 +1074,7 @@ namespace LibQPA.Testing
             ///////////////////////////////////////////////////////////////////
             // Procesamiento de los datos (para todas las fichas)
             ///////////////////////////////////////////////////////////////////
-            var resultadosSUBE = ProcesarTodo(
+            var resultadosSUBE = ProcesarTodo<TIdent>(
                 recorridosTeoricos, 
                 topes2D, 
                 puntasNombradas.Select(pu => (IPuntaLinea)pu).ToList(), 
@@ -1085,9 +1085,9 @@ namespace LibQPA.Testing
             return resultadosSUBE;
         }
 
-        IEnumerable<string> CrearItemsCSV(
+        IEnumerable<string> CrearItemsCSV<TIdent>(
             char                        sep, 
-            List<QPAResult>             resultadosSUBE, 
+            List<QPAResult<TIdent>>     resultadosSUBE, 
             List<int>                   fichasSUBE, 
             Dictionary<int, (int, int)> fichasXEmpIntSUBE, 
             ProveedorVentaBoletosDbSUBE proveedorVentaBoletos
@@ -1144,9 +1144,9 @@ namespace LibQPA.Testing
         int DBG_recosmal = 0;
         int DBG_recosbien = 0;
 
-        string CrearItemCSV(
+        string CrearItemCSV<TIdent>(
             char                        sep, 
-            QPAResult                   qpaResult, 
+            QPAResult<TIdent>           qpaResult, 
             int                         ficha, 
             Dictionary<int, (int, int)> fichasXEmpIntSUBE, 
             ProveedorVentaBoletosDbSUBE proveedorVentaBoletos,
@@ -1315,16 +1315,16 @@ namespace LibQPA.Testing
             return ret;
         }
 
-        private List<QPAResult> ProcesarTodo(
+        private List<QPAResult<TIdent>> ProcesarTodo<TIdent>(
             List<RecorridoLinBan>                               recorridosTeoricos,
             Topes2D                                             topes2D,
             List<IPuntaLinea>                                   puntasNombradas,
             Dictionary<string, List<KeyValuePair<int, int>>>    recoPatterns,
-            Dictionary<string, List<PuntoHistorico>>            puntosHistoricosPorIdent
+            Dictionary<TIdent, List<PuntoHistorico>>            puntosHistoricosPorIdent
         )
         {
             var qpaProcessor= new QPAProcessor();
-            var resultados  = new List<QPAResult>();
+            var resultados  = new List<QPAResult<TIdent>>();
 
             foreach (var ident in puntosHistoricosPorIdent.Keys)
             {
@@ -1371,7 +1371,7 @@ namespace LibQPA.Testing
         List<double> _durasMal = new List<double>();
         List<double> _durasBien = new List<double>();
 
-        private QPAResult VelocidadNormal(QPAResult res)
+        private QPAResult<TIdent> VelocidadNormal<TIdent>(QPAResult<TIdent> res)
         {
             var newSubCaminos = res.SubCaminos
                 .Where(subCamino => 
@@ -1396,7 +1396,7 @@ namespace LibQPA.Testing
             //    _velosBien.AddRange(newSubCaminos.Select(sc => sc.VelocidadKmhPromedio));
             //}
 
-            return new QPAResult
+            return new QPAResult<TIdent>
             {
                 Granularidad        = res.Granularidad,
                 RecorridosTeoricos  = res.RecorridosTeoricos,
@@ -1407,7 +1407,7 @@ namespace LibQPA.Testing
             };
         }
 
-        private QPAResult DuracionPositiva(QPAResult res)
+        private QPAResult<TIdent> DuracionPositiva<TIdent>(QPAResult<TIdent> res)
         {
             var newSubCaminos = res.SubCaminos
                 .Where  (subCamino => subCamino.HoraLlegada > subCamino.HoraSalida)
@@ -1429,7 +1429,7 @@ namespace LibQPA.Testing
             //    _durasBien.AddRange(newSubCaminos.Select(sc => sc.DuracionHoras));
             //}
 
-            return new QPAResult
+            return new QPAResult<TIdent>
             {
                 Granularidad        = res.Granularidad,
                 RecorridosTeoricos  = res.RecorridosTeoricos,

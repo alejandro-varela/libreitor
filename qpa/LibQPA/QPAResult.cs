@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace LibQPA
 {
-    public class QPAResult
+    public class QPAResult<TIdent>
     {
-        public string                   Identificador       { get; set; }
+        public TIdent                   Identificador       { get; set; }
         public Camino<PuntoHistorico>   Camino              { get; set; }
         public List<QPASubCamino>       SubCaminos          { get; set; }
         public List<RecorridoLinBan>    RecorridosTeoricos  { get; set; }   // contexto RecorridosTeoricos con el que fue calculado
