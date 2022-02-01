@@ -719,7 +719,43 @@ namespace LibQPA.Testing
         }
 
         [DataTestMethod]
-        [DataRow("KMS49", "2022-01-10", "2022-01-11", "159,163", typeof(PuntaLinea), 20, 800)]
+
+        //[DataRow("KMS132", "2022-01-10", "2022-01-11", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        // enero 2022 línea 203
+        [DataRow("KMS49", "2022-01-01", "2022-01-02", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-02", "2022-01-03", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-03", "2022-01-04", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-04", "2022-01-05", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-05", "2022-01-06", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-06", "2022-01-07", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-07", "2022-01-08", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-08", "2022-01-09", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-09", "2022-01-10", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-10", "2022-01-11", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-11", "2022-01-12", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-12", "2022-01-13", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-13", "2022-01-14", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-14", "2022-01-15", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-15", "2022-01-16", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-16", "2022-01-17", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-17", "2022-01-18", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-18", "2022-01-19", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-19", "2022-01-20", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-20", "2022-01-21", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-21", "2022-01-22", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-22", "2022-01-23", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-23", "2022-01-24", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-24", "2022-01-25", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-25", "2022-01-26", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-26", "2022-01-27", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-27", "2022-01-28", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-28", "2022-01-29", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-29", "2022-01-30", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-30", "2022-01-31", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-31", "2022-02-01", "159,163", typeof(PuntaLinea2), 20, 800)]
+        
         public void TestKmsSUBEQPA_ConReporte(
             string identificador,
             string desdeISO8601,
@@ -736,8 +772,13 @@ namespace LibQPA.Testing
                 new ProveedorHistoricoDbSUBE.Configuracion
                 {
                     ConnectionStringPuntos = Configu.ConnectionStringVentasSUBE,
-                    FechaDesde = desde,
-                    FechaHasta = hasta,
+                    FechaDesde    = desde,
+                    FechaHasta    = hasta,
+                    Transformador = (ident, pts) => pts
+                        .Where          (p => p.Lat != 0 && p.Lng != 0)
+                        .OrderBy        (p => p.Fecha)
+                        .HacerGranular  (100)
+                        .ToList         (),
                 }
             );
 

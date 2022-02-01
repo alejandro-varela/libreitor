@@ -23,7 +23,8 @@ namespace LibQPA.ProveedoresHistoricos.DbSUBE
 			public int				MaxCacheSeconds			{ get; set; } = 15 * 60; // 15 mins
 			public DateTime			FechaDesde				{ get; set; }
 			public DateTime			FechaHasta				{ get; set; }
-		}
+			public Func<ParEmpresaInterno, List<PuntoHistorico>, List<PuntoHistorico>> Transformador { get; set; }
+        }
 
         public ProveedorHistoricoDbSUBE(Configuracion config, bool usarCache = true)
         {
@@ -31,7 +32,7 @@ namespace LibQPA.ProveedoresHistoricos.DbSUBE
             UsarCache = usarCache;
         }
 
-        public Dictionary<ParEmpresaInterno, List<PuntoHistorico>> Get()
+		public Dictionary<ParEmpresaInterno, List<PuntoHistorico>> Get()
         {
             if (DateTime.Now.Subtract(_fechaCachePuntosHistoricos) > TimeSpan.FromMinutes(5))
             {
@@ -39,7 +40,20 @@ namespace LibQPA.ProveedoresHistoricos.DbSUBE
                 _fechaCachePuntosHistoricos = DateTime.Now;
             }
 
-            return _cachePuntosHistoricos;
+			if (Config.Transformador == null)
+			{
+				return _cachePuntosHistoricos;
+			}
+			else
+			{
+				var ret = new Dictionary<ParEmpresaInterno, List<PuntoHistorico>>();
+				foreach (var (ident, pts) in _cachePuntosHistoricos)
+				{
+					var puntosTrafo = Config.Transformador(ident, pts).ToList();
+					ret.Add(ident, puntosTrafo);
+				}
+				return ret;
+			}
         }
 
         private Dictionary<ParEmpresaInterno, List<PuntoHistorico>> LeerDBPuntosHistoricos(
