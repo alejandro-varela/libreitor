@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
 
 namespace LibQPA.ProveedoresHistoricos.DbSUBE
 {
@@ -63,29 +62,25 @@ namespace LibQPA.ProveedoresHistoricos.DbSUBE
 		)
         {
 			var ret = new Dictionary<ParEmpresaInterno, List<PuntoHistorico>>();
-
-			// hacer consulta
-			var consulta = ConsultaPuntosBuilder(
-				fechaDesde,
-				fechaHasta
-			);
+			var consulta = GetConsulta(fechaDesde, fechaHasta);
 
 			using var conn = new SqlConnection(connString);
 			conn.Open();
+
 			using var cmd = new SqlCommand(consulta, conn);
 			cmd.CommandTimeout = Config.CommandTimeout;
+
 			using var reader = cmd.ExecuteReader();
 			
 			while (reader.Read())
 			{
-				int empresaSUBE = Convert.ToInt32(reader["C_EMPRESA"] ?? 0);
-				int interno = Convert.ToInt32(reader["C_INTERNO"] ?? 0);
+				int			empresaSUBE	= Convert.ToInt32	(reader["C_EMPRESA"] ?? 0);
+				int			interno		= Convert.ToInt32	(reader["C_INTERNO"] ?? 0);
+				DateTime	fecha		= Convert.ToDateTime(reader["C_FECHA_EVENTO"] ?? DateTime.MinValue);
+				double		lat			= Convert.ToDouble	(reader["LATITUD" ] ?? 0.0);
+				double		lng			= Convert.ToDouble	(reader["LONGITUD"] ?? 0.0);
 
-				ParEmpresaInterno identificador = new ParEmpresaInterno { Empresa = empresaSUBE, Interno = interno };
-
-				DateTime fecha = Convert.ToDateTime(reader["C_FECHA_EVENTO"] ?? DateTime.MinValue);
-				double lat = Convert.ToDouble(reader["LATITUD" ] ?? 0.0);
-				double lng = Convert.ToDouble(reader["LONGITUD"] ?? 0.0);
+				var identificador = new ParEmpresaInterno { Empresa = empresaSUBE, Interno = interno };
 
 				if (!ret.ContainsKey(identificador))
 				{
@@ -95,7 +90,6 @@ namespace LibQPA.ProveedoresHistoricos.DbSUBE
 				var puntoHistorico = new PuntoHistorico
 				{
 					Alt = 0,
-					//Fecha = fecha.AddHours(-3),
 					Fecha = fecha,
 					Lat = lat,
 					Lng = lng,
@@ -107,28 +101,48 @@ namespace LibQPA.ProveedoresHistoricos.DbSUBE
 			return ret;
 		}
 
-        private string ConsultaPuntosBuilder(DateTime fechaDesde, DateTime fechaHasta)
+        private string GetConsulta(DateTime fechaDesde, DateTime fechaHasta)
         {
 			//var consulta =
 			//	@"
-			//		select		*
-			//		from		log_posicionamientoSUBE
-			//		where		fechaHoraUTC >= '{{FECHA_DESDE}}'
-			//					and
-			//					fechaHoraUTC <  '{{FECHA_HASTA}}'
-			//		order by	fechaHoraUTC asc
+			//		select
+			//			C_EMPRESA,
+			//			C_INTERNO,
+			//			C_FECHA_EVENTO,
+			//			-1 * ABS(C_LATITUD  / 100000) as LATITUD,
+			//			-1 * ABS(C_LONGITUD / 100000) as LONGITUD
+			//		from SUBE_VENTAS_CONCENTRADOR_KM
+			//		where 
+			//			C_FECHA_EVENTO >= '{{FECHA_DESDE}}'
+			//			and
+			//			C_FECHA_EVENTO <  '{{FECHA_HASTA}}'
+			//		order by C_FECHA_EVENTO
 			//	"
 			//	.Trim()
-			//	.Replace("{{FECHA_DESDE}}", fechaDesde.AddHours(3).ToString("dd/MM/yyyy HH:mm:ss"))
-			//	.Replace("{{FECHA_HASTA}}", fechaHasta.AddHours(3).ToString("dd/MM/yyyy HH:mm:ss"))
+			//	.Replace("{{FECHA_DESDE}}", fechaDesde.ToString("dd/MM/yyyy HH:mm:ss"))
+			//	.Replace("{{FECHA_HASTA}}", fechaHasta.ToString("dd/MM/yyyy HH:mm:ss"))
 			//;
 
+			// - Se evitan duplicados (select distinct)
+			// - Solo se toman los eventos de tipo 3 y 9 (por ahora) 
+			// +---------------+-----------------------+
+			// | C_TIPO_EVENTO | Des_Evento            |
+			// +---------------+-----------------------+
+			// | 3             | DATO DE GEOREFERENCIA |
+			// | 5             | INICIO DE TURNO       |
+			// | 6             | FIN DE TURNO          |
+			// | 7             | INICIO DE SERVICIO    |
+			// | 8             | FIN DE SERVICIO       |
+			// | 9             | SIN CLASIFICAR        |
+			// +---------------+-----------------------+
+			
 			var consulta =
 				@"
-					select
+					select distinct
 						C_EMPRESA,
 						C_INTERNO,
 						C_FECHA_EVENTO,
+						C_TIPO_EVENTO,
 						-1 * ABS(C_LATITUD  / 100000) as LATITUD,
 						-1 * ABS(C_LONGITUD / 100000) as LONGITUD
 					from SUBE_VENTAS_CONCENTRADOR_KM
@@ -136,11 +150,18 @@ namespace LibQPA.ProveedoresHistoricos.DbSUBE
 						C_FECHA_EVENTO >= '{{FECHA_DESDE}}'
 						and
 						C_FECHA_EVENTO <  '{{FECHA_HASTA}}'
+						and
+						C_TIPO_EVENTO in (3,9)
+						and
+						C_LATITUD != 0
+						and
+						C_LONGITUD != 0
 					order by C_FECHA_EVENTO
-			"
-			.Trim()
-			.Replace("{{FECHA_DESDE}}", fechaDesde.ToString("dd/MM/yyyy HH:mm:ss"))
-			.Replace("{{FECHA_HASTA}}", fechaHasta.ToString("dd/MM/yyyy HH:mm:ss"));
+				"
+				.Trim()
+				.Replace("{{FECHA_DESDE}}", fechaDesde.ToString("dd/MM/yyyy HH:mm:ss"))
+				.Replace("{{FECHA_HASTA}}", fechaHasta.ToString("dd/MM/yyyy HH:mm:ss"))
+			;
 
 			return consulta;
         }
