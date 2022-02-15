@@ -36,21 +36,30 @@ namespace Comun
         static IEnumerable<PuntoHistorico> CrearPuntosIntermediosNaif(
             PuntoHistorico puntoA,
             PuntoHistorico puntoB,
-            double cant
+            double cant,
+            bool granularTiempoTambien
         )
         {
             var latDiff = puntoB.Lat - puntoA.Lat;
-            var lngDiff = puntoB.Lng - puntoA.Lng;
-
             var latPart = latDiff / cant;
+
+            var lngDiff = puntoB.Lng - puntoA.Lng;
             var lngPart = lngDiff / cant;
 
-            // para que no aparezca distancia cero poner (cantPuntosRelleno - 1)
+            double tmpDiff = default;
+            double tmpPart = default;
+            if (granularTiempoTambien)
+            {
+                tmpDiff = puntoB.Fecha.Subtract(puntoA.Fecha).TotalSeconds;
+                tmpPart = tmpDiff / cant;
+            }
+
+            // (cant - 1) para que no aparezca el punto con distancia cero
             for (int i = 0; i < cant - 1; i++)
             {
                 yield return new PuntoHistorico
                 {
-                    Fecha   = puntoA.Fecha,
+                    Fecha   = granularTiempoTambien ? puntoA.Fecha.AddSeconds(tmpPart * (i + 1)) : puntoA.Fecha,
                     Alt     = puntoA.Alt,
                     Lat     = puntoA.Lat + (latPart * (i + 1)),
                     Lng     = puntoA.Lng + (lngPart * (i + 1)),
@@ -59,8 +68,8 @@ namespace Comun
         }
 
         public static IEnumerable<PuntoRecorrido> HacerGranular(
-            this IEnumerable<PuntoRecorrido> recorrido,
-            double maxDistMetros
+            this    IEnumerable<PuntoRecorrido> recorrido,
+            double  maxDistMetros
         )
         {
             PuntoRecorrido puntoAnterior = default;
@@ -109,7 +118,8 @@ namespace Comun
 
         public static IEnumerable<PuntoHistorico> HacerGranular(
             this IEnumerable<PuntoHistorico> recorrido,
-            double maxDistMetros
+            double maxDistMetros,
+            bool granularTiempoTambien
         )
         {
             PuntoHistorico puntoAnterior = default;
@@ -123,8 +133,8 @@ namespace Comun
                 }
                 else
                 {
-                    // sacar distacia entre anterior y actual
-                    var distancia = Haversine.GetDist(
+                    // sacar distancia espacial entre anterior y actual
+                    var distanciaEspacial = Haversine.GetDist(
                         puntoAnterior.Lat, puntoAnterior.Lng,
                         puntoActual.Lat, puntoActual.Lng
                     );
@@ -134,13 +144,14 @@ namespace Comun
                     //    1,1 <-- intermedio
                     //       2,2 <-- intermedio
                     //          3,3 <-- actual
-                    var cantPuntosIntermedios = Math.Ceiling(distancia / maxDistMetros);
+                    var cantPuntosIntermedios = Math.Ceiling(distanciaEspacial / maxDistMetros);
 
                     // creamos los puntos intermedios y los retornamos
                     var puntosIntermediosNaif = CrearPuntosIntermediosNaif(
                         puntoAnterior,
                         puntoActual,
-                        cantPuntosIntermedios
+                        cantPuntosIntermedios,
+                        granularTiempoTambien
                     );
 
                     foreach (var puntoIntermedio in puntosIntermediosNaif)

@@ -690,12 +690,11 @@ namespace LibQPA.Testing
             var desde = DateTime.Parse(desdeISO8601);
             var hasta = DateTime.Parse(hastaISO8601);
 
-            var proveedorPuntosHistoricos = new ProveedoresHistoricos.JsonSUBE.ProveedorHistoricoJsonSUBE
-            {
-                InputDir   = jsonInputDir,
-                FechaDesde = desde,
-                FechaHasta = hasta,
-            };
+            // Puntos históricos
+            var puntosXIdentificador = MemoizarPorArchivo(
+                $"PtsHist__{identificador}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json",
+                () => new ProveedorHistoricoJsonSUBE { InputDir = jsonInputDir, FechaDesde = desde, FechaHasta = hasta }.Get()
+            );
 
             // Función local que toma una lista de resultados QPA y los convierte en una lista de Fichas
             List<int> constructorFichas(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult<string>> resultadosQPA) =>
@@ -710,7 +709,7 @@ namespace LibQPA.Testing
                 desdeISO8601,
                 hastaISO8601,
                 lineasPosiblesSeparadasPorComa,
-                proveedorPuntosHistoricos,
+                puntosXIdentificador,
                 constructorFichas,
                 tipoPuntaLinea, 
                 granularidadMts, 
@@ -719,75 +718,74 @@ namespace LibQPA.Testing
         }
 
         [DataTestMethod]
-
         ///////////////////////////////////////////////////////////////////////////////////////
         // enero 2022 grandbourg
-        [DataRow("KMS132", "2022-01-01", "2022-01-02", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-02", "2022-01-03", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-03", "2022-01-04", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-04", "2022-01-05", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-05", "2022-01-06", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-06", "2022-01-07", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-07", "2022-01-08", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-08", "2022-01-09", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-09", "2022-01-10", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-10", "2022-01-11", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-11", "2022-01-12", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-12", "2022-01-13", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-13", "2022-01-14", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-14", "2022-01-15", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-15", "2022-01-16", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-16", "2022-01-17", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-17", "2022-01-18", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-18", "2022-01-19", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-19", "2022-01-20", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-20", "2022-01-21", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-21", "2022-01-22", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-22", "2022-01-23", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-23", "2022-01-24", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-24", "2022-01-25", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-25", "2022-01-26", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-26", "2022-01-27", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-27", "2022-01-28", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-28", "2022-01-29", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-29", "2022-01-30", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-30", "2022-01-31", "165,166,167", typeof(PuntaLinea2), 20, 150)]
-        [DataRow("KMS132", "2022-01-31", "2022-02-01", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-01", "2022-01-02", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-02", "2022-01-03", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-03", "2022-01-04", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-04", "2022-01-05", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-05", "2022-01-06", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-06", "2022-01-07", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-07", "2022-01-08", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-08", "2022-01-09", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-09", "2022-01-10", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-10", "2022-01-11", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-11", "2022-01-12", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-12", "2022-01-13", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-13", "2022-01-14", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-14", "2022-01-15", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-15", "2022-01-16", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-16", "2022-01-17", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-17", "2022-01-18", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-18", "2022-01-19", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-19", "2022-01-20", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-20", "2022-01-21", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-21", "2022-01-22", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-22", "2022-01-23", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-23", "2022-01-24", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-24", "2022-01-25", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-25", "2022-01-26", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-26", "2022-01-27", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-27", "2022-01-28", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-28", "2022-01-29", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-29", "2022-01-30", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-30", "2022-01-31", "165,166,167", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("KMS132", "2022-01-31", "2022-02-01", "165,166,167", typeof(PuntaLinea2), 20, 150)]
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-        //// enero 2022 línea 203
-        //[DataRow("KMS49", "2022-01-01", "2022-01-02", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-02", "2022-01-03", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-03", "2022-01-04", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-04", "2022-01-05", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-05", "2022-01-06", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-06", "2022-01-07", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-07", "2022-01-08", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-08", "2022-01-09", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-09", "2022-01-10", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-10", "2022-01-11", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-11", "2022-01-12", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-12", "2022-01-13", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-13", "2022-01-14", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-14", "2022-01-15", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-15", "2022-01-16", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-16", "2022-01-17", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-17", "2022-01-18", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-18", "2022-01-19", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-19", "2022-01-20", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-20", "2022-01-21", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-21", "2022-01-22", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-22", "2022-01-23", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-23", "2022-01-24", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-24", "2022-01-25", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-25", "2022-01-26", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-26", "2022-01-27", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-27", "2022-01-28", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-28", "2022-01-29", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-29", "2022-01-30", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-30", "2022-01-31", "159,163", typeof(PuntaLinea2), 20, 800)]
-        //[DataRow("KMS49", "2022-01-31", "2022-02-01", "159,163", typeof(PuntaLinea2), 20, 800)]
-        
+        ///////////////////////////////////////////////////////////////////////////////////////
+        // enero 2022 línea 203
+        [DataRow("KMS49", "2022-01-01", "2022-01-02", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-02", "2022-01-03", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-03", "2022-01-04", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-04", "2022-01-05", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-05", "2022-01-06", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-06", "2022-01-07", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-07", "2022-01-08", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-08", "2022-01-09", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-09", "2022-01-10", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-10", "2022-01-11", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-11", "2022-01-12", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-12", "2022-01-13", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-13", "2022-01-14", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-14", "2022-01-15", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-15", "2022-01-16", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-16", "2022-01-17", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-17", "2022-01-18", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-18", "2022-01-19", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-19", "2022-01-20", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-20", "2022-01-21", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-21", "2022-01-22", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-22", "2022-01-23", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-23", "2022-01-24", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-24", "2022-01-25", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-25", "2022-01-26", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-26", "2022-01-27", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-27", "2022-01-28", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-28", "2022-01-29", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-29", "2022-01-30", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-30", "2022-01-31", "159,163", typeof(PuntaLinea2), 20, 800)]
+        [DataRow("KMS49", "2022-01-31", "2022-02-01", "159,163", typeof(PuntaLinea2), 20, 800)]
+
         public void TestKmsSUBEQPA_ConReporte(
             string identificador,
             string desdeISO8601,
@@ -800,19 +798,23 @@ namespace LibQPA.Testing
             var desde = DateTime.Parse(desdeISO8601);
             var hasta = DateTime.Parse(hastaISO8601);
 
-            var proveedorPuntosHistoricos = new ProveedorHistoricoDbSUBE(
-                new ProveedorHistoricoDbSUBE.Configuracion
+            // Puntos históricos
+            var arrayKVP = MemoizarPorArchivo(
+                $"PtsHist__{identificador}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json",
+                () =>
                 {
-                    ConnectionStringPuntos = Configu.ConnectionStringVentasSUBE,
-                    FechaDesde    = desde,
-                    FechaHasta    = hasta,
-                    Transformador = (ident, pts) => pts
-                        .Where          (p => p.Lat != 0 && p.Lng != 0)
-                        .OrderBy        (p => p.Fecha)
-                        .HacerGranular  (100)
-                        .ToList         (),
+                    var configProveedorPuntosHistorico = new ProveedorHistoricoDbSUBE.Configuracion
+                    {
+                        ConnectionStringPuntos = Configu.ConnectionStringVentasSUBE,
+                        FechaDesde = desde,
+                        FechaHasta = hasta,
+                        Transformador = (ident, pts) => pts.Where(p => p.Lat != 0 && p.Lng != 0).OrderBy(p => p.Fecha).ToList()
+                    };
+                    return new ProveedorHistoricoDbSUBE(configProveedorPuntosHistorico).Get().ToArray();
                 }
             );
+
+            var puntosXIdentificador = arrayKVP.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
             // Función local que toma una lista de resultados QPA y los convierte en una lista de Fichas
             List<int> constructorFichas(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult<ParEmpresaInterno>> resultadosQPA) =>
@@ -826,12 +828,44 @@ namespace LibQPA.Testing
                 desdeISO8601,
                 hastaISO8601,
                 lineasPosiblesSeparadasPorComa,
-                proveedorPuntosHistoricos,
+                puntosXIdentificador,
                 constructorFichas,
                 tipoPuntaLinea,
                 granularidadMts,
                 radioPuntasDeLineaMts
             );
+        }
+
+        //private Dictionary<TKey, TValue> MemoizarDiccionarioPorArchivo<TKey, TValue>(string nombreArchivo, Func<Dictionary<TKey, TValue>> productor)
+        //{
+        //    if (File.Exists(nombreArchivo))
+        //    {
+        //        var json = File.ReadAllText(nombreArchivo);
+        //        return JsonConvert.DeserializeObject<T>(json);
+        //    }
+        //    else
+        //    {
+        //        var producto = productor();
+        //        var productoSerializado = JsonConvert.SerializeObject(producto, Formatting.Indented);
+        //        File.WriteAllText(nombreArchivo, productoSerializado);
+        //        return producto;
+        //    }
+        //}
+
+        private T MemoizarPorArchivo<T>(string nombreArchivo, Func<T> productor)
+        {
+            if (File.Exists(nombreArchivo))
+            {
+                var json = File.ReadAllText(nombreArchivo);
+                return JsonConvert.DeserializeObject<T>(json);
+            }
+            else
+            {
+                var producto = productor();
+                var productoSerializado = JsonConvert.SerializeObject(producto, Formatting.Indented);
+                File.WriteAllText(nombreArchivo, productoSerializado);
+                return producto;
+            }
         }
 
         [DataTestMethod]
@@ -869,12 +903,19 @@ namespace LibQPA.Testing
             var desde = DateTime.Parse(desdeISO8601);
             var hasta = DateTime.Parse(hastaISO8601);
 
-            var proveedorPuntosHistoricos = new ProveedorHistoricoDbXBus(
-                new ProveedorHistoricoDbXBus.Configuracion {
-                    ConnectionString = Configu.ConnectionStringPuntosXBus,
-                    FechaDesde = desde,
-                    FechaHasta = hasta,
-                    Tipo = ProveedorHistoricoDbXBus.TipoEquipo.TECNOBUS | ProveedorHistoricoDbXBus.TipoEquipo.PICOBUS
+            // Puntos históricos
+            var puntosXIdentificador = MemoizarPorArchivo(
+                $"PtsHist__{identificador}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json",
+                () =>
+                {
+                    var config = new ProveedorHistoricoDbXBus.Configuracion
+                    { 
+                        ConnectionString = Configu.ConnectionStringPuntosXBus, 
+                        FechaDesde = desde, 
+                        FechaHasta = hasta, 
+                        Tipo = ProveedorHistoricoDbXBus.TipoEquipo.TECNOBUS | ProveedorHistoricoDbXBus.TipoEquipo.PICOBUS 
+                    };
+                    return new ProveedorHistoricoDbXBus(config).Get();
                 }
             );
             
@@ -890,7 +931,7 @@ namespace LibQPA.Testing
                 desdeISO8601,
                 hastaISO8601,
                 lineasPosiblesSeparadasPorComa,
-                proveedorPuntosHistoricos,
+                puntosXIdentificador,
                 constructorFichas,
                 tipoPuntaLinea,
                 granularidadMts,
@@ -903,7 +944,7 @@ namespace LibQPA.Testing
             string desdeISO8601,
             string hastaISO8601,
             string lineasPosiblesSeparadasPorComa,
-            IQPAProveedorPuntosHistoricos<TIdent> proveedorPuntosHistoricos,
+            Dictionary<TIdent, List<PuntoHistorico>> ptsHistoPorIdent,
             ConstructorFichasDesdeResultados<TIdent> constructorFichas,
             Type tipoPuntaLinea,
             int granularidadMts = 20,
@@ -953,7 +994,7 @@ namespace LibQPA.Testing
                 hasta,
                 lineasPosibles,
                 proveedorRecorridosTeoricos,
-                proveedorPuntosHistoricos,
+                ptsHistoPorIdent,
                 constructorFichas,
                 creadorPuntasNombradas,
                 granularidadMts
@@ -967,7 +1008,7 @@ namespace LibQPA.Testing
             DateTime    hasta,
             int[] lineasPosibles,
             IQPAProveedorRecorridosTeoricos proveedorRecorridosTeoricos,
-            IQPAProveedorPuntosHistoricos<TIdent> proveedorPuntosHistoricos,
+            Dictionary<TIdent, List<PuntoHistorico>> ptsHistoPorIdent,
             ConstructorFichasDesdeResultados<TIdent> constructorFichas,
             Func<List<RecorridoLinBan>, List<IPuntaLinea>> creadorPuntasNombradas,
             int         granularidadMts = 20
@@ -979,7 +1020,7 @@ namespace LibQPA.Testing
                 hasta,
                 lineasPosibles,
                 proveedorRecorridosTeoricos,
-                proveedorPuntosHistoricos,
+                ptsHistoPorIdent,
                 creadorPuntasNombradas,
                 granularidadMts
             );
@@ -1099,7 +1140,7 @@ namespace LibQPA.Testing
             DateTime                        hasta,
             int[]                           lineasPosibles,
             IQPAProveedorRecorridosTeoricos proveedorRecorridosTeoricos,
-            IQPAProveedorPuntosHistoricos<TIdent> proveedorPuntosHistoricos,
+            Dictionary<TIdent, List<PuntoHistorico>> ptsHistoPorIdent,
             Func<List<RecorridoLinBan>, List<IPuntaLinea>> creadorPuntasNombradas,
             int granularidadMts             = 20
         )
@@ -1162,36 +1203,10 @@ namespace LibQPA.Testing
 
             #endregion
 
-            #region Puntos Históricos
-
-            ///////////////////////////////////////////////////////////////////
-            // Puntos históricos
-            ///////////////////////////////////////////////////////////////////
-
-            Dictionary<TIdent, List<PuntoHistorico>> ptsHistoPorIdent = null;
-            string ARCHIVO_PUNTOS_HISTORICOS = $"PtsHist__{identificador}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json";
-
-            if (File.Exists(ARCHIVO_PUNTOS_HISTORICOS))
-            {
-                var json = File.ReadAllText(ARCHIVO_PUNTOS_HISTORICOS);
-                ptsHistoPorIdent = JsonConvert.DeserializeObject<Dictionary<TIdent, List<PuntoHistorico>>>(json);
-            }
-            else
-            {
-                ptsHistoPorIdent = proveedorPuntosHistoricos.Get();
-
-                File.WriteAllText(
-                    ARCHIVO_PUNTOS_HISTORICOS,
-                    JsonConvert.SerializeObject(ptsHistoPorIdent)
-                );
-            }
-
-            #endregion
-
             ///////////////////////////////////////////////////////////////////
             // Procesamiento de los datos (para todas las fichas)
             ///////////////////////////////////////////////////////////////////
-            var resultadosSUBE = ProcesarTodo<TIdent>(
+            var resultadosQPA = ProcesarTodo<TIdent>(
                 recorridosTeoricos, 
                 topes2D, 
                 puntasNombradas.Select(pu => (IPuntaLinea)pu).ToList(), 
@@ -1199,7 +1214,7 @@ namespace LibQPA.Testing
                 ptsHistoPorIdent
             );
 
-            return resultadosSUBE;
+            return resultadosQPA;
         }
 
         IEnumerable<string> CrearItemsCSV<TIdent>(
@@ -1447,37 +1462,83 @@ namespace LibQPA.Testing
             {
                 try
                 {
-                    var res = qpaProcessor.Procesar(
-                        identificador       : ident,
-                        recorridosTeoricos  : recorridosTeoricos,
-                        puntosHistoricos    : puntosHistoricosPorIdent[ident],
-                        topes2D             : topes2D,
-                        puntasNombradas     : puntasNombradas,
-                        recoPatterns        : recoPatterns
-                    );
+                    // OK...
+                    // 1) es aca en donde tenemos que procesar los puntos reales para determinar si hay "islas"
+                    // 2) una vez determinadas las islas, se deben desechar aquellas que no tengan "movimiento"
+                    // 3) teniendo ya las islas válidas se obtiene el QPAResult ~para cada isla~ 
 
-                    // PASARLE AL PROCESAR LOS CRITERIOS...
-                    // ¿POR QUÉ ACA Y NO ANTES?
-                    // PORQUE ACA TENEMOS CRITERIOS DE USUARIO.
+                    var puntos = puntosHistoricosPorIdent[ident];
+                    
+                    var islas  = DetectorIslas
+                        .GetIslas(puntos, (ph1, ph2) => Math.Abs(ph1.Fecha.Subtract(ph2.Fecha).TotalSeconds) < 15*60)
+                        .ToList()
+                    ;
 
-                    // 1) la duración de cada subcamino debe ser positiva
-                    // 2) los subcaminos no deben estar superpuestos en el tiempo
-                    // 3) la velocidad del subcamino que representa debe ser una velocidad real
-                    //      (no demasiado rápida) ej: no puede ser mas de 120-kmh
-                    // 4) los puntos deben completar (por lo menos en un 65%) realmente el camino que dicen ser
+                    var islasConMovimiento = islas
+                        .Where(isla => TieneMovimiento(isla, radioMts: 500))
+                        .ToList()
+                    ;
 
-                    res = VelocidadNormal   (res);
-                    res = DuracionPositiva  (res);
+                    if (islasConMovimiento.Any())
+                    {
+                        List<QPAResult<TIdent>> resultadosAux = new List<QPAResult<TIdent>>();
+                        
+                        foreach (var islaX in islasConMovimiento)
+                        {
+                            var resultadoAux = qpaProcessor.Procesar(
+                                identificador      : ident,
+                                recorridosTeoricos : recorridosTeoricos,
+                                puntosHistoricos   : islaX.HacerGranular(100, true).ToList(),
+                                topes2D            : topes2D,
+                                puntasNombradas    : puntasNombradas,
+                                recoPatterns       : recoPatterns
+                            );
 
-                    resultados.Add(res);
+                            // PASARLE AL PROCESAR LOS CRITERIOS...
+                            // ¿POR QUÉ ACA Y NO ANTES?
+                            // PORQUE ACA TENEMOS CRITERIOS DE USUARIO.
+                            // 1) la duración de cada subcamino debe ser positiva
+                            // 2) los subcaminos no deben estar superpuestos en el tiempo
+                            // 3) la velocidad del subcamino que representa debe ser una velocidad real
+                            //      (no demasiado rápida) ej: no puede ser mas de 120-kmh
+                            // 4) los puntos deben completar (por lo menos en un 65%) realmente el camino que dicen ser
+                            resultadoAux = VelocidadNormal (resultadoAux);
+                            resultadoAux = DuracionPositiva(resultadoAux);
+
+                            resultadosAux.Add(resultadoAux);
+                        }
+
+                        resultados.AddRange(resultadosAux);
+                    
+                    } // si hay islas con movimiento
                 }
                 catch (Exception exx)
                 {
                     int foofoo = 0;
                 }
-            }
+            } // para cada identificador...
 
             return resultados;
+        }
+
+        private static bool TieneMovimiento<PointType>(List<PointType> puntos, int radioMts)
+            where PointType : Punto
+        {
+            if (puntos == null) { throw new ArgumentNullException(nameof(puntos)); }
+            if (!puntos.Any())  { return false; }
+
+            PointType p = puntos.First();
+
+            foreach (PointType px in puntos.Skip(1))
+            {
+                var dist = Haversine.GetDist(p, px);
+                if (dist > Math.Abs(radioMts))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         int _veloMal = 0; // generalmente por no sanitizar las lng que vienen mal
