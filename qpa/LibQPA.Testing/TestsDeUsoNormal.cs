@@ -754,37 +754,37 @@ namespace LibQPA.Testing
 
         ///////////////////////////////////////////////////////////////////////////////////////
         // enero 2022 línea 203
-        [DataRow("KMS49", "2022-01-01", "2022-01-02", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-02", "2022-01-03", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-03", "2022-01-04", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-04", "2022-01-05", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-05", "2022-01-06", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-06", "2022-01-07", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-07", "2022-01-08", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-08", "2022-01-09", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-09", "2022-01-10", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-10", "2022-01-11", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-11", "2022-01-12", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-12", "2022-01-13", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-13", "2022-01-14", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-14", "2022-01-15", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-15", "2022-01-16", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-16", "2022-01-17", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-17", "2022-01-18", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-18", "2022-01-19", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-19", "2022-01-20", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-20", "2022-01-21", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-21", "2022-01-22", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-22", "2022-01-23", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-23", "2022-01-24", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-24", "2022-01-25", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-01", "2022-01-02", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-02", "2022-01-03", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-03", "2022-01-04", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-04", "2022-01-05", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-05", "2022-01-06", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-06", "2022-01-07", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-07", "2022-01-08", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-08", "2022-01-09", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-09", "2022-01-10", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-10", "2022-01-11", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-11", "2022-01-12", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-12", "2022-01-13", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-13", "2022-01-14", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-14", "2022-01-15", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-15", "2022-01-16", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-16", "2022-01-17", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-17", "2022-01-18", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-18", "2022-01-19", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-19", "2022-01-20", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-20", "2022-01-21", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-21", "2022-01-22", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-22", "2022-01-23", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-23", "2022-01-24", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-24", "2022-01-25", "159,163", typeof(PuntaLinea2), 20, 800)]
         [DataRow("KMS49", "2022-01-25", "2022-01-26", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-26", "2022-01-27", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-27", "2022-01-28", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-28", "2022-01-29", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-29", "2022-01-30", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-30", "2022-01-31", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-31", "2022-02-01", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-26", "2022-01-27", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-27", "2022-01-28", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-28", "2022-01-29", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-29", "2022-01-30", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-30", "2022-01-31", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-31", "2022-02-01", "159,163", typeof(PuntaLinea2), 20, 800)]
 
         public void TestKmsSUBEQPA_ConReporte(
             string identificador,
@@ -820,7 +820,7 @@ namespace LibQPA.Testing
             var puntosXIdentificador = arrayKVP.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
             // Función local que toma una lista de resultados QPA y los convierte en una lista de Fichas
-            List<int> constructorFichas(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult<ParEmpresaInterno>> resultadosQPA) =>
+            static List<int> constructorFichas(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult<ParEmpresaInterno>> resultadosQPA) =>
                 resultadosQPA
                     .Select(resul => datosEmpIntFicha.GetFicha(resul.Identificador.Empresa, resul.Identificador.Interno))
                     .ToList()
@@ -837,38 +837,6 @@ namespace LibQPA.Testing
                 granularidadMts,
                 radioPuntasDeLineaMts
             );
-        }
-
-        //private Dictionary<TKey, TValue> MemoizarDiccionarioPorArchivo<TKey, TValue>(string nombreArchivo, Func<Dictionary<TKey, TValue>> productor)
-        //{
-        //    if (File.Exists(nombreArchivo))
-        //    {
-        //        var json = File.ReadAllText(nombreArchivo);
-        //        return JsonConvert.DeserializeObject<T>(json);
-        //    }
-        //    else
-        //    {
-        //        var producto = productor();
-        //        var productoSerializado = JsonConvert.SerializeObject(producto, Formatting.Indented);
-        //        File.WriteAllText(nombreArchivo, productoSerializado);
-        //        return producto;
-        //    }
-        //}
-
-        private T MemoizarPorArchivo<T>(string nombreArchivo, Func<T> productor)
-        {
-            if (File.Exists(nombreArchivo))
-            {
-                var json = File.ReadAllText(nombreArchivo);
-                return JsonConvert.DeserializeObject<T>(json);
-            }
-            else
-            {
-                var producto = productor();
-                var productoSerializado = JsonConvert.SerializeObject(producto, Formatting.Indented);
-                File.WriteAllText(nombreArchivo, productoSerializado);
-                return producto;
-            }
         }
 
         [DataTestMethod]
@@ -921,9 +889,9 @@ namespace LibQPA.Testing
                     return new ProveedorHistoricoDbXBus(config).Get();
                 }
             );
-            
+
             // Función local que toma una lista de resultados QPA y los convierte en una lista de Fichas
-            List<int> constructorFichas(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult<string>> resultadosQPA) =>
+            static List<int> constructorFichas(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult<string>> resultadosQPA) =>
                 resultadosQPA
                     .Select(resul => int.Parse(resul.Identificador ?? "-1"))
                     .ToList()
@@ -1003,7 +971,6 @@ namespace LibQPA.Testing
                 granularidadMts
             );
         }
-
 
         public void CalcularQPA_GenerarReporteQPA<TIdent>(
             string      identificador,
@@ -1484,11 +1451,9 @@ namespace LibQPA.Testing
 
                     if (islasConMovimiento.Any())
                     {
-                        List<QPAResult<TIdent>> resultadosAux = new List<QPAResult<TIdent>>();
-                        
                         foreach (var islaX in islasConMovimiento)
                         {
-                            var resultadoAux = qpaProcessor.Procesar(
+                            var resultado = qpaProcessor.Procesar(
                                 identificador      : ident,
                                 recorridosTeoricos : recorridosTeoricos,
                                 puntosHistoricos   : islaX.HacerGranular(100, true).ToList(),
@@ -1505,13 +1470,11 @@ namespace LibQPA.Testing
                             // 3) la velocidad del subcamino que representa debe ser una velocidad real
                             //      (no demasiado rápida) ej: no puede ser mas de 120-kmh
                             // 4) los puntos deben completar (por lo menos en un 65%) realmente el camino que dicen ser
-                            resultadoAux = VelocidadNormal (resultadoAux);
-                            resultadoAux = DuracionPositiva(resultadoAux);
+                            resultado = VelocidadNormal (resultado);
+                            resultado = DuracionPositiva(resultado);
 
-                            resultadosAux.Add(resultadoAux);
+                            resultados.Add(resultado);
                         }
-
-                        resultados.AddRange(resultadosAux);
                     
                     } // si hay islas con movimiento
                 }
@@ -1621,121 +1584,30 @@ namespace LibQPA.Testing
             };
         }
 
-        //private void PonerResultadosEnUnArchivo(string nombreSinExtension, List<QPAResult> resultados, List<int> fichas, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos, Func<int, QPAResult, bool> filtroFichaResultado)
-        //{
-        //    var lstTextosPlanos = new List<string>();
-        //    var lstTextosCSV = new List<string>();
-        //    //3199;163;2769;2021/09/07 05:49:38;2021/09/07 07:33:10;50;
-        //    lstTextosCSV.Add("ficha;linea;bandera;inicio;fin;cantbol");
+        private T MemoizarPorArchivo<T>(string nombreArchivo, Func<T> productor)
+        {
+            if (File.Exists(nombreArchivo))
+            {
+                var json = File.ReadAllText(nombreArchivo);
+                return JsonConvert.DeserializeObject<T>(json);
+            }
+            else
+            {
+                var producto = productor();
+                var productoSerializado = JsonConvert.SerializeObject(producto, Formatting.Indented);
+                File.WriteAllText(nombreArchivo, productoSerializado);
+                return producto;
+            }
+        }
 
-        //    for (int i = 0; i < resultados.Count; i++)
-        //    {
-        //        var resultado = resultados[i];
-        //        int ficha = fichas[i];
-
-        //        //if (resultado.PorcentajeReconocido < 80) 
-        //        if (!filtroFichaResultado(ficha, resultado))
-        //        { 
-        //            continue;
-        //        }
-                
-        //        var textoPlano  = CrearTextoPlano   (resultado, proveedorVentaBoletos, ficha);
-        //        var textoCSV    = CrearTextoCSV     (resultado, proveedorVentaBoletos, ficha).TrimEnd();
-
-        //        lstTextosPlanos.Add(textoPlano);
-        //        lstTextosCSV.Add(textoCSV);
-        //    }
-
-        //    File.WriteAllLines(nombreSinExtension + ".txt", lstTextosPlanos .ToArray());
-        //    File.WriteAllLines(nombreSinExtension + ".csv", lstTextosCSV    .ToArray());
-        //}
-
-        //private string CrearTextoCSV(QPAResult resultado, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos, int ficha, char sep = ';')
-        //{
-        //    var sbRenglones = new StringBuilder();
-
-        //    foreach (var subCamino in resultado.SubCaminos)
-        //    {
-        //        var linBanPuns = subCamino
-        //            .LineasBanderasPuntuaciones
-        //            .OrderBy(lbp => lbp.Puntuacion)
-        //            .ToList ()
-        //        ;
-        //        var linea   = linBanPuns[0].Linea;
-        //        var bandera = linBanPuns[0].Bandera;
-        //        var inicio  = subCamino.HoraSalida.ToString("dd/MM/yyyy HH:mm:ss");
-        //        var fin     = subCamino.HoraLlegada.ToString("dd/MM/yyyy HH:mm:ss");
-        //        var cantBoletos = proveedorVentaBoletos
-        //            .GetBoletosEnIntervalo(ficha, subCamino.HoraSalida, subCamino.HoraLlegada)
-        //            .Count  ()
-        //        ;
-        //        var renglon = $"{ficha}{sep}{linea}{sep}{bandera}{sep}{inicio}{sep}{fin}{sep}{cantBoletos}";
-        //        sbRenglones.AppendLine(renglon);
-        //    }
-
-        //    var ret = sbRenglones.ToString();
-        //    return ret;
-        //}
-
-        //private string CrearTextoPlano(QPAResult resultado, ProveedorVentaBoletosDbSUBE proveedorVentaBoletos, int ficha)
-        //{
-        //    var sbResult = new StringBuilder();
-        //    sbResult.AppendLine(new string('-', 80));
-        //    sbResult.AppendLine($"Ficha: {ficha}");
-        //    sbResult.AppendLine($"");
-        //    foreach (var subCamino in resultado.SubCaminos)
-        //    {
-        //        foreach (var linBanPun in subCamino.LineasBanderasPuntuaciones)
-        //        {
-        //            sbResult.AppendLine($"Lin Ban: {linBanPun.Linea} {linBanPun.Bandera}");
-        //        }
-        //        sbResult.AppendLine($"\tInicio  : {subCamino.HoraSalida}");
-        //        sbResult.AppendLine($"\tFin     : {subCamino.HoraLlegada}");
-
-        //        if (proveedorVentaBoletos.TieneBoletosEnIntervalo(ficha, subCamino.HoraSalida, subCamino.HoraLlegada))
-        //        {
-        //            var sbVentas= new StringBuilder();
-        //            var boletos = proveedorVentaBoletos
-        //                .GetBoletosEnIntervalo(ficha, subCamino.HoraSalida, subCamino.HoraLlegada)
-        //                .ToList();
-        //            var fechas  = boletos.Select(bol => bol.FechaCancelacion);
-        //            var sFechas = string.Join(',', fechas);
-        //            sbVentas.Append($"Tiene {boletos.Count} boletos vendidos en: {sFechas}");
-        //            sbResult.AppendLine($"\tVenta   : {sbVentas}");
-        //        }
-        //        else
-        //        {
-        //            sbResult.AppendLine($"\tVenta   : Sin datos por parte de archivos SUBE");
-        //        }
-        //        sbResult.AppendLine($"\tTotMins~: {Convert.ToInt32(subCamino.Duracion.TotalMinutes) }");
-        //        sbResult.AppendLine($"");
-        //    }
-        //    return sbResult.ToString();
-        //}
-
-        // TODO: pasar esta función a RecorridoLinBan
-        // MMMMMMMMMMMMM no se si hay que hacer eso...
-        // !!!!!!!!!!!!! revisar que tengo para la granularizacion en RULOS... puede ser mejor...
         static RecorridoLinBan SanitizarRecorrido(RecorridoLinBan reco, int granularidad)
         {
             return new RecorridoLinBan
             {
                 Bandera = reco.Bandera,
-                Linea = reco.Linea,
-                Puntos = reco.Puntos.HacerGranular(granularidad),
+                Linea   = reco.Linea,
+                Puntos  = reco.Puntos.HacerGranular(granularidad),
             };
-        }
-
-        static int NCaracteresDiferentes(string s)
-        {
-            var conjunto = new HashSet<char>();
-
-            foreach (var c in s)
-            {
-                conjunto.Add(c);
-            }
-
-            return conjunto.Count;
         }
     }
 }
