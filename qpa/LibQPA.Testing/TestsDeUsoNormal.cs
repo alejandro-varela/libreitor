@@ -799,6 +799,7 @@ namespace LibQPA.Testing
             var hasta = DateTime.Parse(hastaISO8601);
 
             // Puntos históricos
+            // .. Newtonsoft.Json no serializa diccionarios con clave compuesta asi que lo guardo como un arreglo de KeyValuePair
             var arrayKVP = MemoizarPorArchivo(
                 $"PtsHist__{identificador}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json",
                 () =>
@@ -814,6 +815,8 @@ namespace LibQPA.Testing
                 }
             );
 
+            // .. Convierto ahora el arreglo de KeyValuePair a un diccionario:
+            // .. de tipo [ParEmpresaInterno, List<PuntoHistorico>]
             var puntosXIdentificador = arrayKVP.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
             // Función local que toma una lista de resultados QPA y los convierte en una lista de Fichas
@@ -944,7 +947,7 @@ namespace LibQPA.Testing
             string desdeISO8601,
             string hastaISO8601,
             string lineasPosiblesSeparadasPorComa,
-            Dictionary<TIdent, List<PuntoHistorico>> ptsHistoPorIdent,
+            Dictionary<TIdent, List<PuntoHistorico>> puntosXIdentificador,
             ConstructorFichasDesdeResultados<TIdent> constructorFichas,
             Type tipoPuntaLinea,
             int granularidadMts = 20,
@@ -994,7 +997,7 @@ namespace LibQPA.Testing
                 hasta,
                 lineasPosibles,
                 proveedorRecorridosTeoricos,
-                ptsHistoPorIdent,
+                puntosXIdentificador,
                 constructorFichas,
                 creadorPuntasNombradas,
                 granularidadMts
@@ -1008,7 +1011,7 @@ namespace LibQPA.Testing
             DateTime    hasta,
             int[] lineasPosibles,
             IQPAProveedorRecorridosTeoricos proveedorRecorridosTeoricos,
-            Dictionary<TIdent, List<PuntoHistorico>> ptsHistoPorIdent,
+            Dictionary<TIdent, List<PuntoHistorico>> puntosXIdentificador,
             ConstructorFichasDesdeResultados<TIdent> constructorFichas,
             Func<List<RecorridoLinBan>, List<IPuntaLinea>> creadorPuntasNombradas,
             int         granularidadMts = 20
@@ -1020,7 +1023,7 @@ namespace LibQPA.Testing
                 hasta,
                 lineasPosibles,
                 proveedorRecorridosTeoricos,
-                ptsHistoPorIdent,
+                puntosXIdentificador,
                 creadorPuntasNombradas,
                 granularidadMts
             );
@@ -1140,7 +1143,7 @@ namespace LibQPA.Testing
             DateTime                        hasta,
             int[]                           lineasPosibles,
             IQPAProveedorRecorridosTeoricos proveedorRecorridosTeoricos,
-            Dictionary<TIdent, List<PuntoHistorico>> ptsHistoPorIdent,
+            Dictionary<TIdent, List<PuntoHistorico>> puntosXIdentificador,
             Func<List<RecorridoLinBan>, List<IPuntaLinea>> creadorPuntasNombradas,
             int granularidadMts             = 20
         )
@@ -1211,7 +1214,7 @@ namespace LibQPA.Testing
                 topes2D, 
                 puntasNombradas.Select(pu => (IPuntaLinea)pu).ToList(), 
                 recoPatterns,
-                ptsHistoPorIdent
+                puntosXIdentificador
             );
 
             return resultadosQPA;
@@ -1452,13 +1455,13 @@ namespace LibQPA.Testing
             Topes2D                                             topes2D,
             List<IPuntaLinea>                                   puntasNombradas,
             Dictionary<string, List<KeyValuePair<int, int>>>    recoPatterns,
-            Dictionary<TIdent, List<PuntoHistorico>>            puntosHistoricosPorIdent
+            Dictionary<TIdent, List<PuntoHistorico>>            puntosXIdentificador
         )
         {
             var qpaProcessor= new QPAProcessor();
             var resultados  = new List<QPAResult<TIdent>>();
 
-            foreach (var ident in puntosHistoricosPorIdent.Keys)
+            foreach (var ident in puntosXIdentificador.Keys)
             {
                 try
                 {
@@ -1467,7 +1470,7 @@ namespace LibQPA.Testing
                     // 2) una vez determinadas las islas, se deben desechar aquellas que no tengan "movimiento"
                     // 3) teniendo ya las islas válidas se obtiene el QPAResult ~para cada isla~ 
 
-                    var puntos = puntosHistoricosPorIdent[ident];
+                    var puntos = puntosXIdentificador[ident];
                     
                     var islas  = DetectorIslas
                         .GetIslas(puntos, (ph1, ph2) => Math.Abs(ph1.Fecha.Subtract(ph2.Fecha).TotalSeconds) < 15*60)
