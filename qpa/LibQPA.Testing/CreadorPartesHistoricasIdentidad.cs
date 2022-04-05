@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LibQPA.Testing
 {
-    public class CreadorPartesHistoricasBasico : CreadorPartesHistoricas
+    public class CreadorPartesHistoricasIdentidad : CreadorPartesHistoricas
     {
         public override IEnumerable<ParteHistorica> Crear(List<PuntoHistorico> puntosHistoricos)
         {

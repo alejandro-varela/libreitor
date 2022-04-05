@@ -1,3 +1,16 @@
+// tirar con los dos algoritmos
+// 	-algoritmo lineal
+// 	-algoritmo de islas
+//
+// comparar los resultados
+//
+// si los resultados son menos por parte del algoritmo de islas
+//	-miro que banderas faltan
+//	-tomo los intervalos de tiempo de las banderas que faltan
+//	-examinar las islas, ver si alguna tiene cubierto el recorrido de esa bandera al menos un 90%
+//
+// (si el resultado es positivo, agregar esa bandera a los resultados "bundle")
+
 using Comun;
 using ComunSUBE;
 using LibQPA.ProveedoresHistoricos.DbSUBE;
@@ -101,45 +114,81 @@ namespace LibQPA.Testing
         }
 
         [DataTestMethod]
-        [DataRow("AGN132", "2021-10-01", "2021-10-02", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-02", "2021-10-03", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-03", "2021-10-04", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-04", "2021-10-05", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-05", "2021-10-06", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-06", "2021-10-07", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-07", "2021-10-08", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-08", "2021-10-09", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-09", "2021-10-10", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-10", "2021-10-11", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-11", "2021-10-12", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-12", "2021-10-13", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-13", "2021-10-14", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-14", "2021-10-15", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-15", "2021-10-16", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-16", "2021-10-17", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-17", "2021-10-18", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-18", "2021-10-19", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-19", "2021-10-20", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-20", "2021-10-21", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-21", "2021-10-22", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-22", "2021-10-23", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-23", "2021-10-24", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-24", "2021-10-25", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-25", "2021-10-26", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-26", "2021-10-27", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-27", "2021-10-28", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-28", "2021-10-29", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-29", "2021-10-30", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-30", "2021-10-31", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN132", "2021-10-31", "2021-11-01", "165,166,167", @"D:\EstadosCoches\Agency132\", typeof(PuntaLinea2), 20, 200)]
-        //[DataRow("AGN49" , "2021-10-01", "2021-10-02", "159,163"    , @"D:\EstadosCoches\Agency49\" , typeof(PuntaLinea) , 20, 800)]
+        //[DataRow("AGN49", "2022-03-01", "2022-03-02", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("AGN49", "2022-03-02", "2022-03-03", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("AGN49", "2022-03-03", "2022-03-04", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("AGN49", "2022-03-04", "2022-03-05", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("AGN49", "2022-03-05", "2022-03-06", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("AGN49", "2022-03-06", "2022-03-07", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("AGN49", "2022-03-07", "2022-03-08", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("AGN49", "2022-03-08", "2022-03-09", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("AGN49", "2022-03-09", "2022-03-10", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("AGN49", "2022-03-10", "2022-03-11", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("AGN49", "2022-03-11", "2022-03-12", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("AGN49", "2022-03-12", "2022-03-13", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("AGN49", "2022-03-13", "2022-03-14", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("AGN49", "2022-03-14", "2022-03-15", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), 20, 800)]
+        //[DataRow("AGN49", "2022-03-15", "2022-03-16", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), 20, 800)]
+
+        [DataRow("AGN49", "2022-03-16", "2022-03-17", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        [DataRow("AGN49", "2022-03-17", "2022-03-18", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        [DataRow("AGN49", "2022-03-18", "2022-03-19", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        [DataRow("AGN49", "2022-03-19", "2022-03-20", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        [DataRow("AGN49", "2022-03-20", "2022-03-21", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        [DataRow("AGN49", "2022-03-21", "2022-03-22", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        [DataRow("AGN49", "2022-03-22", "2022-03-23", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        [DataRow("AGN49", "2022-03-23", "2022-03-24", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        [DataRow("AGN49", "2022-03-24", "2022-03-25", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        [DataRow("AGN49", "2022-03-25", "2022-03-26", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        [DataRow("AGN49", "2022-03-26", "2022-03-27", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        [DataRow("AGN49", "2022-03-27", "2022-03-28", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        [DataRow("AGN49", "2022-03-28", "2022-03-29", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        [DataRow("AGN49", "2022-03-29", "2022-03-30", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        [DataRow("AGN49", "2022-03-30", "2022-03-31", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        [DataRow("AGN49", "2022-03-31", "2022-04-01", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+
+        [DataRow("AGN49TMP", "2022-03-16", "2022-03-17", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        [DataRow("AGN49TMP", "2022-03-17", "2022-03-18", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        [DataRow("AGN49TMP", "2022-03-18", "2022-03-19", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        [DataRow("AGN49TMP", "2022-03-19", "2022-03-20", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        [DataRow("AGN49TMP", "2022-03-20", "2022-03-21", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        [DataRow("AGN49TMP", "2022-03-21", "2022-03-22", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        [DataRow("AGN49TMP", "2022-03-22", "2022-03-23", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        [DataRow("AGN49TMP", "2022-03-23", "2022-03-24", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        [DataRow("AGN49TMP", "2022-03-24", "2022-03-25", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        [DataRow("AGN49TMP", "2022-03-25", "2022-03-26", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        [DataRow("AGN49TMP", "2022-03-26", "2022-03-27", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        [DataRow("AGN49TMP", "2022-03-27", "2022-03-28", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        [DataRow("AGN49TMP", "2022-03-28", "2022-03-29", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        [DataRow("AGN49TMP", "2022-03-29", "2022-03-30", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        [DataRow("AGN49TMP", "2022-03-30", "2022-03-31", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        [DataRow("AGN49TMP", "2022-03-31", "2022-04-01", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+
+        //[DataRow("AGN132", "2022-03-01", "2022-03-02", "165,166,167", @"D:\ApiSUBE\2022\03\", "132_*", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("AGN132", "2022-03-02", "2022-03-03", "165,166,167", @"D:\ApiSUBE\2022\03\", "132_*", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("AGN132", "2022-03-03", "2022-03-04", "165,166,167", @"D:\ApiSUBE\2022\03\", "132_*", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("AGN132", "2022-03-04", "2022-03-05", "165,166,167", @"D:\ApiSUBE\2022\03\", "132_*", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("AGN132", "2022-03-05", "2022-03-06", "165,166,167", @"D:\ApiSUBE\2022\03\", "132_*", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("AGN132", "2022-03-06", "2022-03-07", "165,166,167", @"D:\ApiSUBE\2022\03\", "132_*", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("AGN132", "2022-03-07", "2022-03-08", "165,166,167", @"D:\ApiSUBE\2022\03\", "132_*", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("AGN132", "2022-03-08", "2022-03-09", "165,166,167", @"D:\ApiSUBE\2022\03\", "132_*", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("AGN132", "2022-03-09", "2022-03-10", "165,166,167", @"D:\ApiSUBE\2022\03\", "132_*", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("AGN132", "2022-03-10", "2022-03-11", "165,166,167", @"D:\ApiSUBE\2022\03\", "132_*", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("AGN132", "2022-03-11", "2022-03-12", "165,166,167", @"D:\ApiSUBE\2022\03\", "132_*", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("AGN132", "2022-03-12", "2022-03-13", "165,166,167", @"D:\ApiSUBE\2022\03\", "132_*", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("AGN132", "2022-03-13", "2022-03-14", "165,166,167", @"D:\ApiSUBE\2022\03\", "132_*", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("AGN132", "2022-03-14", "2022-03-15", "165,166,167", @"D:\ApiSUBE\2022\03\", "132_*", typeof(PuntaLinea2), 20, 150)]
+        //[DataRow("AGN132", "2022-03-15", "2022-03-16", "165,166,167", @"D:\ApiSUBE\2022\03\", "132_*", typeof(PuntaLinea2), 20, 150)]
+
         public void TestJsonSUBEQPA_ConReporte(
             string identificador,
             string desdeISO8601,
             string hastaISO8601,
             string lineasPosiblesSeparadasPorComa,
             string jsonInputDir,
+            string zipPrefix, // prefijo del zip
             Type tipoPuntaLinea,
+            Type tipoCreadorPartesHistoricas,
             int granularidadMts = 20,
             int radioPuntasDeLineaMts = 200
         )
@@ -150,11 +199,26 @@ namespace LibQPA.Testing
             // Puntos históricos
             var puntosXIdentificador = MemoizarPorArchivo(
                 $"PtsHist__{identificador}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json",
-                () => new ProveedorHistoricoJsonSUBE { InputDir = jsonInputDir, FechaDesde = desde, FechaHasta = hasta }.Get()
+                () => new ProveedorHistoricoJsonSUBE2 { 
+                    InputDir = jsonInputDir, 
+                    FechaDesde = desde,
+                    FechaHasta = hasta,
+                    ZipPrefix = zipPrefix,
+                    DeleteExtractDirectory = true
+                }.Get()
             );
 
+            //// Puntos históricos
+            //var puntosXIdentificador = MemoizarPorArchivo(
+            //    $"PtsHist__{identificador}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json",
+            //    () => new ProveedorHistoricoJsonSUBE { InputDir = jsonInputDir, FechaDesde = desde, FechaHasta = hasta }.Get()
+            //);
+
             // Ahora convierto puntosXIdentificador en infohXIdentificador
-            var infohXIdentificador = ConvertirPuntosAInformacion(puntosXIdentificador, new CreadorPartesHistoricasBasico());
+            var infohXIdentificador = ConvertirPuntosAInformacion(
+                puntosXIdentificador, 
+                Activator.CreateInstance(tipoCreadorPartesHistoricas) as CreadorPartesHistoricas
+            );
 
             // Función local que toma una lista de resultados QPA y los convierte en una lista de Fichas
             List<int> constructorFichas(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult<string>> resultadosQPA) =>
@@ -238,7 +302,7 @@ namespace LibQPA.Testing
         //[DataRow("KMS49", "2022-01-22", "2022-01-23", "159,163", typeof(PuntaLinea2), 20, 800)]
         //[DataRow("KMS49", "2022-01-23", "2022-01-24", "159,163", typeof(PuntaLinea2), 20, 800)]
         //[DataRow("KMS49", "2022-01-24", "2022-01-25", "159,163", typeof(PuntaLinea2), 20, 800)]
-        [DataRow("KMS49", "2022-01-25", "2022-01-26", "159,163", typeof(PuntaLinea2), 20, 800)]
+        //[DataRow("KMS49", "2022-01-25", "2022-01-26", "159,163", typeof(PuntaLinea2), 20, 800)]
         //[DataRow("KMS49", "2022-01-26", "2022-01-27", "159,163", typeof(PuntaLinea2), 20, 800)]
         //[DataRow("KMS49", "2022-01-27", "2022-01-28", "159,163", typeof(PuntaLinea2), 20, 800)]
         //[DataRow("KMS49", "2022-01-28", "2022-01-29", "159,163", typeof(PuntaLinea2), 20, 800)]
@@ -280,7 +344,7 @@ namespace LibQPA.Testing
             var puntosXIdentificador = arrayKVP.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
             // Ahora convierto puntosXIdentificador en infohXIdentificador
-            var infohXIdentificador = ConvertirPuntosAInformacion(puntosXIdentificador, new CreadorPartesHistoricasBasico());
+            var infohXIdentificador = ConvertirPuntosAInformacion(puntosXIdentificador, new CreadorPartesHistoricasIdentidad());
 
             // Función local que toma una lista de resultados QPA y los convierte en una lista de Fichas
             static List<int> constructorFichas(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult<ParEmpresaInterno>> resultadosQPA) =>
@@ -354,7 +418,7 @@ namespace LibQPA.Testing
             );
 
             // Ahora convierto puntosXIdentificador en infohXIdentificador
-            var infohXIdentificador = ConvertirPuntosAInformacion(puntosXIdentificador, new CreadorPartesHistoricasBasico());
+            var infohXIdentificador = ConvertirPuntosAInformacion(puntosXIdentificador, new CreadorPartesHistoricasIdentidad());
 
             // Función local que toma una lista de resultados QPA y los convierte en una lista de Fichas
             static List<int> constructorFichas(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult<string>> resultadosQPA) =>

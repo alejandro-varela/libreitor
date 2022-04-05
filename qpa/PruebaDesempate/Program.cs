@@ -499,7 +499,7 @@ namespace PruebaDesempate
             foreach (var puntoX in puntosReales)
             {
                 var casReal  = Casillero.Create(topes2D, puntoX, granularidad);
-                var presente = casReal.PresenteFlexEn(casillerosTeoricos, granularidad);
+                var presente = casReal.PresenteFlexEn(casillerosTeoricos);
                 //var presente = casillerosTeoricos.Contains(casReal);
 
                 if (presente)

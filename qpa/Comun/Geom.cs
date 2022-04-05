@@ -27,7 +27,7 @@ namespace Comun
         )
         {
             var casReal = Casillero.Create(topes2D, punto, granularidad);
-            return (casReal.PresenteFlexEn(casillerosDelRecorrido, granularidad));
+            return (casReal.PresenteFlexEn(casillerosDelRecorrido));
         }
 
         public static bool PuntoEnRecorrido(
@@ -57,7 +57,7 @@ namespace Comun
 
             int puntaje = puntosReales
                 .Select (puntoReal => Casillero.Create(topes2D, puntoReal, granularidad))
-                .Where  (casillero => casillero.PresenteFlexEn(casillerosDelRecorrido, granularidad))
+                .Where  (casillero => casillero.PresenteFlexEn(casillerosDelRecorrido))
                 .Count  ()
             ;
 

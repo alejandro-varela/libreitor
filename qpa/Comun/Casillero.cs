@@ -19,10 +19,7 @@ namespace Comun
             return $"horiz_{IndexHorizontal:00000}_vert_{IndexVertical:00000}";
         }
 
-        public bool PresenteFlexEn(HashSet<Casillero> casilleros, int granularidad)
-        {
-            return HashSetContieneCasilleroFlex(casilleros, this, granularidad);
-        }
+        
 
         public static Casillero Create(Topes2D topes2D, Punto puntoide, int granularidad)
         {
@@ -79,6 +76,17 @@ namespace Comun
             return HashCode.Combine(IndexHorizontal, IndexVertical);
         }
 
+        public static HashSet<Casillero> CreateHashSet(Topes2D topes2D, List<Punto> puntos, int granularidad)
+        {
+            var ret = new HashSet<Casillero>();
+            foreach (Punto punto in puntos)
+            {
+                var casillero = Create(topes2D, punto, granularidad);
+                ret.Add(casillero);
+            }
+            return ret;
+        }
+
         public static bool operator ==(Casillero left, Casillero right)
         {
             return EqualityComparer<Casillero>.Default.Equals(left, right);
@@ -89,7 +97,39 @@ namespace Comun
             return !(left == right);
         }
 
-        public static bool HashSetContieneCasilleroFlex(HashSet<Casillero> casilleros, Casillero casillero, int granularidad)
+        public static bool SonCasillerosHermanos(Casillero cas1, Casillero cas2)
+        {
+            return
+                Math.Abs(cas1.IndexHorizontal - cas2.IndexHorizontal) <= 1
+                &&
+                Math.Abs(cas1.IndexVertical - cas2.IndexVertical) <= 1
+            ;
+        }
+
+        public bool PresenteFlexEn(HashSet<Casillero> casilleros)
+        {
+            return PresenteFlexEn(this, casilleros);
+        }
+
+        public bool PresenteFlexEn(IEnumerable<Casillero> casilleros)
+        {
+            return PresenteFlexEn(this, casilleros);
+        }
+
+        public static bool PresenteFlexEn(Casillero casillero, IEnumerable<Casillero> casilleros)
+        {
+            foreach (var casX in casilleros)
+            {
+                if (SonCasillerosHermanos(casillero, casX))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static bool PresenteFlexEn(Casillero casillero, HashSet<Casillero> casilleros)
         {
             if (casilleros.Contains(casillero))
             {
