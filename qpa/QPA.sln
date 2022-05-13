@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.32228.343
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32505.173
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PruebaLecturaDeRecorridos", "PruebaLecturaDeRecorridos\PruebaLecturaDeRecorridos.csproj", "{99465F4A-25B8-433C-808E-71B86BDD9A83}"
 EndProject
@@ -46,11 +46,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PruebaConstruccionSegmentos
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PruebaConstruccionSegmentos.Testing", "PruebaConstruccionSegmentos.Testing\PruebaConstruccionSegmentos.Testing.csproj", "{2AC2F9D7-5F1C-4001-9FDD-139CABC28AFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Correspondencias", "Correspondencias\Correspondencias.csproj", "{5251BD1C-421F-4BD7-87EB-708A2835D527}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Correspondencias", "Correspondencias\Correspondencias.csproj", "{5251BD1C-421F-4BD7-87EB-708A2835D527}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PruebaCorrespondencias", "PruebaCorrespondencias\PruebaCorrespondencias.csproj", "{8C0DB99C-839F-464B-A934-9955B75952D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PruebaCorrespondencias", "PruebaCorrespondencias\PruebaCorrespondencias.csproj", "{8C0DB99C-839F-464B-A934-9955B75952D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComparadorReportes", "ComparadorReportes\ComparadorReportes.csproj", "{E04AF996-7C00-44A1-ABD5-BA6E77497E1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComparadorReportes", "ComparadorReportes\ComparadorReportes.csproj", "{E04AF996-7C00-44A1-ABD5-BA6E77497E1D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibQPA.ProveedoresHistoricos.Ruptela", "LibQPA.ProveedoresHistoricos.Ruptela\LibQPA.ProveedoresHistoricos.Ruptela.csproj", "{BA6BFD30-3BC3-4266-8692-0D494F9FD602}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -134,7 +136,6 @@ Global
 		{2AC2F9D7-5F1C-4001-9FDD-139CABC28AFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2AC2F9D7-5F1C-4001-9FDD-139CABC28AFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2AC2F9D7-5F1C-4001-9FDD-139CABC28AFB}.Release|Any CPU.Build.0 = Release|Any CPU
-<<<<<<< HEAD
 		{5251BD1C-421F-4BD7-87EB-708A2835D527}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5251BD1C-421F-4BD7-87EB-708A2835D527}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5251BD1C-421F-4BD7-87EB-708A2835D527}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -143,12 +144,14 @@ Global
 		{8C0DB99C-839F-464B-A934-9955B75952D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C0DB99C-839F-464B-A934-9955B75952D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C0DB99C-839F-464B-A934-9955B75952D0}.Release|Any CPU.Build.0 = Release|Any CPU
-=======
 		{E04AF996-7C00-44A1-ABD5-BA6E77497E1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E04AF996-7C00-44A1-ABD5-BA6E77497E1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E04AF996-7C00-44A1-ABD5-BA6E77497E1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E04AF996-7C00-44A1-ABD5-BA6E77497E1D}.Release|Any CPU.Build.0 = Release|Any CPU
->>>>>>> 2035fa6997bd1d0bf1e3c6c73c9119f1ff31cd05
+		{BA6BFD30-3BC3-4266-8692-0D494F9FD602}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA6BFD30-3BC3-4266-8692-0D494F9FD602}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA6BFD30-3BC3-4266-8692-0D494F9FD602}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA6BFD30-3BC3-4266-8692-0D494F9FD602}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -16,6 +16,7 @@ using ComunSUBE;
 using LibQPA.ProveedoresHistoricos.DbSUBE;
 using LibQPA.ProveedoresHistoricos.DbXBus;
 using LibQPA.ProveedoresHistoricos.JsonSUBE;
+using LibQPA.ProveedoresHistoricos.Ruptela;
 using LibQPA.ProveedoresTecnobus;
 using LibQPA.ProveedoresVentas.DbSUBE;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -129,40 +130,38 @@ namespace LibQPA.Testing
         //[DataRow("AGN49", "2022-03-13", "2022-03-14", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), 20, 800)]
         //[DataRow("AGN49", "2022-03-14", "2022-03-15", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), 20, 800)]
         //[DataRow("AGN49", "2022-03-15", "2022-03-16", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), 20, 800)]
-
-        [DataRow("AGN49", "2022-03-16", "2022-03-17", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
-        [DataRow("AGN49", "2022-03-17", "2022-03-18", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
-        [DataRow("AGN49", "2022-03-18", "2022-03-19", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
-        [DataRow("AGN49", "2022-03-19", "2022-03-20", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
-        [DataRow("AGN49", "2022-03-20", "2022-03-21", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
-        [DataRow("AGN49", "2022-03-21", "2022-03-22", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
-        [DataRow("AGN49", "2022-03-22", "2022-03-23", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
-        [DataRow("AGN49", "2022-03-23", "2022-03-24", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
-        [DataRow("AGN49", "2022-03-24", "2022-03-25", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
-        [DataRow("AGN49", "2022-03-25", "2022-03-26", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
-        [DataRow("AGN49", "2022-03-26", "2022-03-27", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
-        [DataRow("AGN49", "2022-03-27", "2022-03-28", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
-        [DataRow("AGN49", "2022-03-28", "2022-03-29", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
-        [DataRow("AGN49", "2022-03-29", "2022-03-30", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
-        [DataRow("AGN49", "2022-03-30", "2022-03-31", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
-        [DataRow("AGN49", "2022-03-31", "2022-04-01", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
-
-        [DataRow("AGN49TMP", "2022-03-16", "2022-03-17", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
-        [DataRow("AGN49TMP", "2022-03-17", "2022-03-18", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
-        [DataRow("AGN49TMP", "2022-03-18", "2022-03-19", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
-        [DataRow("AGN49TMP", "2022-03-19", "2022-03-20", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
-        [DataRow("AGN49TMP", "2022-03-20", "2022-03-21", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
-        [DataRow("AGN49TMP", "2022-03-21", "2022-03-22", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
-        [DataRow("AGN49TMP", "2022-03-22", "2022-03-23", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
-        [DataRow("AGN49TMP", "2022-03-23", "2022-03-24", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
-        [DataRow("AGN49TMP", "2022-03-24", "2022-03-25", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
-        [DataRow("AGN49TMP", "2022-03-25", "2022-03-26", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
-        [DataRow("AGN49TMP", "2022-03-26", "2022-03-27", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
-        [DataRow("AGN49TMP", "2022-03-27", "2022-03-28", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
-        [DataRow("AGN49TMP", "2022-03-28", "2022-03-29", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
-        [DataRow("AGN49TMP", "2022-03-29", "2022-03-30", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
-        [DataRow("AGN49TMP", "2022-03-30", "2022-03-31", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
-        [DataRow("AGN49TMP", "2022-03-31", "2022-04-01", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        //[DataRow("AGN49", "2022-03-16", "2022-03-17", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        //[DataRow("AGN49", "2022-03-17", "2022-03-18", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        //[DataRow("AGN49", "2022-03-18", "2022-03-19", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        //[DataRow("AGN49", "2022-03-19", "2022-03-20", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        //[DataRow("AGN49", "2022-03-20", "2022-03-21", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        //[DataRow("AGN49", "2022-03-21", "2022-03-22", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        //[DataRow("AGN49", "2022-03-22", "2022-03-23", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        //[DataRow("AGN49", "2022-03-23", "2022-03-24", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        //[DataRow("AGN49", "2022-03-24", "2022-03-25", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        //[DataRow("AGN49", "2022-03-25", "2022-03-26", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        //[DataRow("AGN49", "2022-03-26", "2022-03-27", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        //[DataRow("AGN49", "2022-03-27", "2022-03-28", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        //[DataRow("AGN49", "2022-03-28", "2022-03-29", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        //[DataRow("AGN49", "2022-03-29", "2022-03-30", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        //[DataRow("AGN49", "2022-03-30", "2022-03-31", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        //[DataRow("AGN49", "2022-03-31", "2022-04-01", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        //[DataRow("AGN49TMP", "2022-03-16", "2022-03-17", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        //[DataRow("AGN49TMP", "2022-03-17", "2022-03-18", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        //[DataRow("AGN49TMP", "2022-03-18", "2022-03-19", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        //[DataRow("AGN49TMP", "2022-03-19", "2022-03-20", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        //[DataRow("AGN49TMP", "2022-03-20", "2022-03-21", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        //[DataRow("AGN49TMP", "2022-03-21", "2022-03-22", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        //[DataRow("AGN49TMP", "2022-03-22", "2022-03-23", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        //[DataRow("AGN49TMP", "2022-03-23", "2022-03-24", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        //[DataRow("AGN49TMP", "2022-03-24", "2022-03-25", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        //[DataRow("AGN49TMP", "2022-03-25", "2022-03-26", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        //[DataRow("AGN49TMP", "2022-03-26", "2022-03-27", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        //[DataRow("AGN49TMP", "2022-03-27", "2022-03-28", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        //[DataRow("AGN49TMP", "2022-03-28", "2022-03-29", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        //[DataRow("AGN49TMP", "2022-03-29", "2022-03-30", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        //[DataRow("AGN49TMP", "2022-03-30", "2022-03-31", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
+        //[DataRow("AGN49TMP", "2022-03-31", "2022-04-01", "159,163", @"D:\ApiSUBE\2022\03\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIslasTemp), 20, 800)]
 
         //[DataRow("AGN132", "2022-03-01", "2022-03-02", "165,166,167", @"D:\ApiSUBE\2022\03\", "132_*", typeof(PuntaLinea2), 20, 150)]
         //[DataRow("AGN132", "2022-03-02", "2022-03-03", "165,166,167", @"D:\ApiSUBE\2022\03\", "132_*", typeof(PuntaLinea2), 20, 150)]
@@ -180,8 +179,15 @@ namespace LibQPA.Testing
         //[DataRow("AGN132", "2022-03-14", "2022-03-15", "165,166,167", @"D:\ApiSUBE\2022\03\", "132_*", typeof(PuntaLinea2), 20, 150)]
         //[DataRow("AGN132", "2022-03-15", "2022-03-16", "165,166,167", @"D:\ApiSUBE\2022\03\", "132_*", typeof(PuntaLinea2), 20, 150)]
 
+        [DataRow("AGN49TMP", "2022-05-02", "2022-05-03", "159,163", @"D:\ApiSUBE\2022\05\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        [DataRow("AGN49TMP", "2022-05-03", "2022-05-04", "159,163", @"D:\ApiSUBE\2022\05\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        [DataRow("AGN49TMP", "2022-05-04", "2022-05-05", "159,163", @"D:\ApiSUBE\2022\05\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        [DataRow("AGN49TMP", "2022-05-05", "2022-05-06", "159,163", @"D:\ApiSUBE\2022\05\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        [DataRow("AGN49TMP", "2022-05-06", "2022-05-07", "159,163", @"D:\ApiSUBE\2022\05\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+        [DataRow("AGN49TMP", "2022-05-07", "2022-05-08", "159,163", @"D:\ApiSUBE\2022\05\", "49_*", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 800)]
+
         public void TestJsonSUBEQPA_ConReporte(
-            string identificador,
+            string identificadorReporte,
             string desdeISO8601,
             string hastaISO8601,
             string lineasPosiblesSeparadasPorComa,
@@ -198,7 +204,7 @@ namespace LibQPA.Testing
 
             // Puntos históricos
             var puntosXIdentificador = MemoizarPorArchivo(
-                $"PtsHist__{identificador}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json",
+                $"PtsHist__{identificadorReporte}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json",
                 () => new ProveedorHistoricoJsonSUBE2 { 
                     InputDir = jsonInputDir, 
                     FechaDesde = desde,
@@ -228,10 +234,10 @@ namespace LibQPA.Testing
                     .ToList()
                 ;
 
-            TestGenericoQPA_ConReporte<string>(
-                identificador,
-                desdeISO8601,
-                hastaISO8601,
+            var reporte = CalculoGenericoQPA_ConReporte<string>(
+                identificadorReporte,
+                desde,
+                hasta,
                 lineasPosiblesSeparadasPorComa,
                 infohXIdentificador,
                 constructorFichas,
@@ -239,7 +245,162 @@ namespace LibQPA.Testing
                 granularidadMts, 
                 radioPuntasDeLineaMts
             );
+
+            /*
+                public int      EmpresaSUBE     { get; set; } // empresaSUBE
+                public int      InternoSUBE     { get; set; } // internoSUBE
+                public int      Ficha           { get; set; } // ficha
+                public int      Linea           { get; set; } // linea
+                public int      Bandera         { get; set; } // bandera
+                public DateTime Inicio          { get; set; } // inicio
+                public DateTime Fin             { get; set; } // fin
+                public int      CantBoletosNaive{ get; set; } // cantbol
+                public int      CantBoletosOpt  { get; set; } // cantbolopt
+             */
+
+            Reporte rpx = new Reporte();
+            var aux = new ReporteQPASubItem<string>();
+            CSVFormatter formatter = new CSVFormatter
+            {
+                EnableTitle = true,
+                NewLine     = "\r\n",
+                Separator   =';',
+                CellBuilders     = new List<CSVCellBuilder>
+                {
+                    new CSVCellBuilder{ PropertyName = nameof(aux.EmpresaSUBE        ), ResultName = "empresaSUBE" },
+                    new CSVCellBuilder{ PropertyName = nameof(aux.InternoSUBE        ), ResultName = "internoSUBE" },
+                    new CSVCellBuilder{ PropertyName = nameof(aux.Ficha              ), ResultName = "ficha"       },
+                    new CSVCellBuilder{ PropertyName = nameof(aux.Linea              ), ResultName = "linea"       },
+                    new CSVCellBuilder{ PropertyName = nameof(aux.Bandera            ), ResultName = "bandera"     },
+                    new CSVCellBuilder{ PropertyName = nameof(aux.Inicio             ), ResultName = "inicio"      , FormatFunction = d => ((DateTime)d).ToString("dd/MM/yyyy HH:mm:ss") },
+                    new CSVCellBuilder{ PropertyName = nameof(aux.Fin                ), ResultName = "fin"         , FormatFunction = d => ((DateTime)d).ToString("dd/MM/yyyy HH:mm:ss") },
+                    new CSVCellBuilder{ PropertyName = nameof(aux.CantBoletosNaive   ), ResultName = "cantbol"     },
+                    new CSVCellBuilder{ PropertyName = nameof(aux.CantBoletosOpt     ), ResultName = "cantbolopt"  },
+                }
+            };
+
+            var txt = rpx.RenderAllText(
+                rpx.Create(reporte.ListaAplanadaSubItems.Cast<object>(), formatter),
+                formatter
+            );
+
+            var nombreArchivo = $"Reporte_{identificadorReporte}_Desde_{desde:yyyyMMdd}_Hasta_{hasta:yyyyMMdd}.txt";
+            File.WriteAllText($"{nombreArchivo}.txt", txt);
+
+            int foo = 0;
         }
+
+        [DataTestMethod]
+        //[DataRow("RUP49", "2022-05-02", "2022-05-03", "159,163", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 750)]
+        //[DataRow("RUP49", "2022-05-03", "2022-05-04", "159,163", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 750)]
+        //[DataRow("RUP49", "2022-05-04", "2022-05-05", "159,163", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 750)]
+        //[DataRow("RUP49", "2022-05-05", "2022-05-06", "159,163", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 750)]
+        //[DataRow("RUP49", "2022-05-06", "2022-05-07", "159,163", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 750)]
+        //[DataRow("RUP49", "2022-05-07", "2022-05-08", "159,163", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 750)]
+        public void TestRuptelaQPA_ConReporte(
+            string identificadorReporte,
+            string desdeISO8601,
+            string hastaISO8601,
+            string lineasPosiblesSeparadasPorComa,
+            //string jsonInputDir,
+            //string zipPrefix, // prefijo del zip
+            Type tipoPuntaLinea,
+            Type tipoCreadorPartesHistoricas,
+            int granularidadMts = 20,
+            int radioPuntasDeLineaMts = 200
+        )
+        {
+            var desde = DateTime.Parse(desdeISO8601);
+            var hasta = DateTime.Parse(hastaISO8601);
+
+            // Puntos históricos
+            var puntosXIdentificador = MemoizarPorArchivo(
+                $"PtsHist__{identificadorReporte}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json",
+                () => new ProveedorHistoricoRuptela
+                {
+                    //InputDir = jsonInputDir,
+                    FechaDesde = desde,
+                    FechaHasta = hasta,
+                    //ZipPrefix = zipPrefix,
+                    //DeleteExtractDirectory = true
+                }.Get()
+            );
+
+            //// Puntos históricos
+            //var puntosXIdentificador = MemoizarPorArchivo(
+            //    $"PtsHist__{identificador}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json",
+            //    () => new ProveedorHistoricoJsonSUBE { InputDir = jsonInputDir, FechaDesde = desde, FechaHasta = hasta }.Get()
+            //);
+
+            // Ahora convierto puntosXIdentificador en infohXIdentificador
+            var infohXIdentificador = ConvertirPuntosAInformacion(
+                puntosXIdentificador,
+                Activator.CreateInstance(tipoCreadorPartesHistoricas) as CreadorPartesHistoricas
+            );
+
+            // Función local que toma una lista de resultados QPA y los convierte en una lista de Fichas
+            static List<int> constructorFichas(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult<int>> resultadosQPA) =>
+                resultadosQPA
+                    .Select(resul => resul.Identificador)
+                    .ToList()
+                ;
+
+            var reporte = CalculoGenericoQPA_ConReporte<int>(
+                identificadorReporte,
+                desde,
+                hasta,
+                lineasPosiblesSeparadasPorComa,
+                infohXIdentificador,
+                constructorFichas,
+                tipoPuntaLinea,
+                granularidadMts,
+                radioPuntasDeLineaMts
+            );
+
+            /*
+                public int      EmpresaSUBE     { get; set; } // empresaSUBE
+                public int      InternoSUBE     { get; set; } // internoSUBE
+                public int      Ficha           { get; set; } // ficha
+                public int      Linea           { get; set; } // linea
+                public int      Bandera         { get; set; } // bandera
+                public DateTime Inicio          { get; set; } // inicio
+                public DateTime Fin             { get; set; } // fin
+                public int      CantBoletosNaive{ get; set; } // cantbol
+                public int      CantBoletosOpt  { get; set; } // cantbolopt
+             */
+
+            Reporte rpx = new Reporte();
+            var aux = new ReporteQPASubItem<string>();
+            CSVFormatter formatter = new CSVFormatter
+            {
+                EnableTitle = true,
+                NewLine     = "\r\n",
+                Separator   =';',
+                CellBuilders     = new List<CSVCellBuilder>
+                {
+                    new CSVCellBuilder{ PropertyName = nameof(aux.EmpresaSUBE        ), ResultName = "empresaSUBE" },
+                    new CSVCellBuilder{ PropertyName = nameof(aux.InternoSUBE        ), ResultName = "internoSUBE" },
+                    new CSVCellBuilder{ PropertyName = nameof(aux.Ficha              ), ResultName = "ficha"       },
+                    new CSVCellBuilder{ PropertyName = nameof(aux.Linea              ), ResultName = "linea"       },
+                    new CSVCellBuilder{ PropertyName = nameof(aux.Bandera            ), ResultName = "bandera"     },
+                    new CSVCellBuilder{ PropertyName = nameof(aux.Inicio             ), ResultName = "inicio"      , FormatFunction = d => ((DateTime)d).ToString("dd/MM/yyyy HH:mm:ss") },
+                    new CSVCellBuilder{ PropertyName = nameof(aux.Fin                ), ResultName = "fin"         , FormatFunction = d => ((DateTime)d).ToString("dd/MM/yyyy HH:mm:ss") },
+                    new CSVCellBuilder{ PropertyName = nameof(aux.CantBoletosNaive   ), ResultName = "cantbol"     },
+                    new CSVCellBuilder{ PropertyName = nameof(aux.CantBoletosOpt     ), ResultName = "cantbolopt"  },
+                }
+            };
+
+            var txt = rpx.RenderAllText(
+                rpx.Create(reporte.ListaAplanadaSubItems.Cast<object>(), formatter),
+                formatter
+            );
+
+            var nombreArchivo = $"Reporte_{identificadorReporte}_Desde_{desde:yyyyMMdd}_Hasta_{hasta:yyyyMMdd}.txt";
+            File.WriteAllText($"{nombreArchivo}.txt", txt);
+
+            int foo = 0;
+        }
+
 
         [DataTestMethod]
         ///////////////////////////////////////////////////////////////////////////////////////
@@ -353,10 +514,10 @@ namespace LibQPA.Testing
                     .ToList()
                 ;
 
-            TestGenericoQPA_ConReporte(
+            var reporte = CalculoGenericoQPA_ConReporte(
                 identificador,
-                desdeISO8601,
-                hastaISO8601,
+                desde,
+                hasta,
                 lineasPosiblesSeparadasPorComa,
                 infohXIdentificador,
                 constructorFichas,
@@ -364,6 +525,8 @@ namespace LibQPA.Testing
                 granularidadMts,
                 radioPuntasDeLineaMts
             );
+
+            int foo = 0;
         }
 
         [DataTestMethod]
@@ -389,7 +552,7 @@ namespace LibQPA.Testing
         //[DataRow("XBUS203", "2021-12-20", "2021-12-21", "159,163", typeof(PuntaLinea), 20, 800)]
         //[DataRow("XBUS203", "2021-12-21", "2021-12-22", "159,163", typeof(PuntaLinea), 20, 800)]
         public void TestDbXBusQPA_ConReporte(
-            string identificador,
+            string identificadorReporte,
             string desdeISO8601,
             string hastaISO8601,
             string lineasPosiblesSeparadasPorComa,
@@ -403,7 +566,7 @@ namespace LibQPA.Testing
 
             // Puntos históricos
             var puntosXIdentificador = MemoizarPorArchivo(
-                $"PtsHist__{identificador}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json",
+                $"PtsHist__{identificadorReporte}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json",
                 () =>
                 {
                     var config = new ProveedorHistoricoDbXBus.Configuracion
@@ -427,10 +590,10 @@ namespace LibQPA.Testing
                     .ToList()
                 ;
 
-            TestGenericoQPA_ConReporte<string>(
-                identificador,
-                desdeISO8601,
-                hastaISO8601,
+            CalculoGenericoQPA_ConReporte<string>(
+                identificadorReporte,
+                desde,
+                hasta,
                 lineasPosiblesSeparadasPorComa,
                 infohXIdentificador,
                 constructorFichas,
@@ -440,10 +603,10 @@ namespace LibQPA.Testing
             );
         }
 
-        public void TestGenericoQPA_ConReporte<TIdent>(
-            string identificador,
-            string desdeISO8601,
-            string hastaISO8601,
+        public ReporteQPA<TIdent> CalculoGenericoQPA_ConReporte<TIdent>(
+            string identificadorReporte,
+            DateTime desde,
+            DateTime hasta,
             string lineasPosiblesSeparadasPorComa,
             Dictionary<TIdent, InformacionHistorica> infohXIdentificador,
             ConstructorFichasDesdeResultados<TIdent> constructorFichas,
@@ -452,15 +615,6 @@ namespace LibQPA.Testing
             int radioPuntasDeLineaMts = 200
         )
         {
-            var desde = DateTime.Parse(desdeISO8601);
-            var hasta = DateTime.Parse(hastaISO8601);
-
-            var lineasPosibles = lineasPosiblesSeparadasPorComa
-                .Split(',')
-                .Select(s => int.Parse(s))
-                .ToArray()
-            ;
-
             Assert.IsTrue(hasta.Subtract(desde).TotalDays == 1);
             Assert.IsTrue(hasta > desde);
 
@@ -485,61 +639,72 @@ namespace LibQPA.Testing
                     ;
             }
 
-            // los recorridos teóricos...
-            var proveedorRecorridosTeoricos = new ProveedorVersionesTecnobus(dirRepos: DameMockRepos());
-
-            // trabajo... :S
-            CalcularQPA_GenerarReporteQPA(
-                identificador,
-                desde,
-                hasta,
-                lineasPosibles,
-                proveedorRecorridosTeoricos,
-                infohXIdentificador,
-                constructorFichas,
-                creadorPuntasNombradas,
-                granularidadMts
-            );
-        }
-
-        public void CalcularQPA_GenerarReporteQPA<TIdent>(
-            string      identificador,
-            DateTime    desde,
-            DateTime    hasta,
-            int[] lineasPosibles,
-            IQPAProveedorRecorridosTeoricos proveedorRecorridosTeoricos,
-            Dictionary<TIdent, InformacionHistorica> infohXIdentificador,
-            ConstructorFichasDesdeResultados<TIdent> constructorFichas,
-            Func<List<RecorridoLinBan>, List<IPuntaLinea>> creadorPuntasNombradas,
-            int         granularidadMts = 20
-        )
-        {
             var resultadosQPA = CalcularQPA<TIdent>(
-                identificador,
+                identificadorReporte,
                 desde,
                 hasta,
-                lineasPosibles,
-                proveedorRecorridosTeoricos,
+                lineasPosibles              : lineasPosiblesSeparadasPorComa.Split(',').Select(s => int.Parse(s)).ToArray(),
+                proveedorRecorridosTeoricos : new ProveedorVersionesTecnobus(dirRepos: DameMockRepos()), // los recorridos teóricos
                 infohXIdentificador,
                 creadorPuntasNombradas,
                 granularidadMts
             );
 
-            GenerarReporteQPA<TIdent>(
-                identificador, 
-                desde, 
-                hasta, 
+            var reporte = GenerarReporteQPA<TIdent>(
+                identificadorReporte,
+                desde,
+                hasta,
                 resultadosQPA,
                 constructorFichas
             );
+
+            //// poner reporte en un archivo...
+            //string nombreReporte = $"Reporte__{identificadorReporte}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.txt";
+            //File.WriteAllText(nombreReporte, reporte.ToString());
+
+            return reporte;
         }
+
+        //public ReporteQPA<TIdent> CalcularQPA_GenerarReporteQPA<TIdent>(
+        //    string                                          identificadorReporte,
+        //    DateTime                                        desde,
+        //    DateTime                                        hasta,
+        //    int[]                                           lineasPosibles,
+        //    IQPAProveedorRecorridosTeoricos                 proveedorRecorridosTeoricos,
+        //    Dictionary<TIdent, InformacionHistorica>        infohXIdentificador,
+        //    ConstructorFichasDesdeResultados<TIdent>        constructorFichas,
+        //    Func<List<RecorridoLinBan>, List<IPuntaLinea>>  creadorPuntasNombradas,
+        //    int                                             granularidadMts = 20
+        //)
+        //{
+        //    var resultadosQPA = CalcularQPA<TIdent>(
+        //        identificadorReporte,
+        //        desde,
+        //        hasta,
+        //        lineasPosibles,
+        //        proveedorRecorridosTeoricos,
+        //        infohXIdentificador,
+        //        creadorPuntasNombradas,
+        //        granularidadMts
+        //    );
+
+        //    var reporte = GenerarReporteQPA<TIdent>(
+        //        identificadorReporte, 
+        //        desde, 
+        //        hasta, 
+        //        resultadosQPA,
+        //        constructorFichas
+        //    );
+
+        //    return reporte;
+        //}
 
         public delegate List<int> ConstructorFichasDesdeResultados<TIdent>(DatosEmpIntFicha datosEmpIntFicha, List<QPAResult<TIdent>> resultados);
 
-        public void GenerarReporteQPA<TIdent>(
-            string          identificador,
-            DateTime        desde,
-            DateTime        hasta,
+        public ReporteQPA<TIdent> GenerarReporteQPA<TIdent>(
+            string      identificador,
+            DateTime    desde,
+            DateTime    hasta,
             List<QPAResult<TIdent>> resultadosQPA,
             ConstructorFichasDesdeResultados<TIdent> constructorFichas
         )
@@ -561,60 +726,83 @@ namespace LibQPA.Testing
             
             string ARCHIVO_BOLETOS = $"Boletos__{identificador}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json";
 
-            var proveedorVentaBoletosConfig = new ProveedorVentaBoletosDbSUBE.Configuracion
+            //var proveedorVentaBoletosConfig = new ProveedorVentaBoletosDbSUBE.Configuracion
+            //{
+            //    CommandTimeout = 600,
+            //    ConnectionString = Configu.ConnectionStringVentasSUBE,
+            //    DatosEmpIntFicha = datosEmpIntFicha,
+            //    FechaDesde = desde,
+            //    FechaHasta = hasta,
+            //};
+
+            var proveedorVentaBoletosConfig2 = new ProveedorBoletosSUBE.Configuracion
             {
                 CommandTimeout = 600,
                 ConnectionString = Configu.ConnectionStringVentasSUBE,
-                DatosEmpIntFicha = datosEmpIntFicha,
                 FechaDesde = desde,
                 FechaHasta = hasta,
             };
 
-            ProveedorVentaBoletosDbSUBE proveedorVentaBoletos;
+            //ProveedorVentaBoletosDbSUBE proveedorVentaBoletos;
 
-            if (File.Exists(ARCHIVO_BOLETOS))
-            {
-                var json = File.ReadAllText(ARCHIVO_BOLETOS);
-                boletosXFicha = JsonConvert.DeserializeObject<Dictionary<int, List<BoletoComun>>>(json);
-                proveedorVentaBoletos = new ProveedorVentaBoletosDbSUBE(
-                    proveedorVentaBoletosConfig,
-                    boletosXFicha
-                );
-            }
-            else
-            {
-                proveedorVentaBoletos = new ProveedorVentaBoletosDbSUBE(proveedorVentaBoletosConfig);
-                proveedorVentaBoletos.TieneBoletosEnIntervalo(0, DateTime.Now, DateTime.Now); // esto solo es para inicializar
-                boletosXFicha = proveedorVentaBoletos.BoletosXIdentificador;
-                File.WriteAllText(
-                    ARCHIVO_BOLETOS,
-                    JsonConvert.SerializeObject(boletosXFicha, Formatting.Indented)
-                );
-            }
+            //if (File.Exists(ARCHIVO_BOLETOS))
+            //{
+            //    var json = File.ReadAllText(ARCHIVO_BOLETOS);
+            //    boletosXFicha = JsonConvert.DeserializeObject<Dictionary<int, List<BoletoComun>>>(json);
+            //    proveedorVentaBoletos = new ProveedorVentaBoletosDbSUBE(
+            //        proveedorVentaBoletosConfig,
+            //        boletosXFicha
+            //    );
+            //}
+            //else
+            //{
+            //    proveedorVentaBoletos = new ProveedorVentaBoletosDbSUBE(proveedorVentaBoletosConfig);
+            //    proveedorVentaBoletos.TieneBoletosEnIntervalo(0, DateTime.Now, DateTime.Now); // esto solo es para inicializar
+            //    boletosXFicha = proveedorVentaBoletos.BoletosXIdentificador;
+            //    File.WriteAllText(
+            //        ARCHIVO_BOLETOS,
+            //        JsonConvert.SerializeObject(boletosXFicha, Formatting.Indented)
+            //    );
+            //}
+
+            ProveedorBoletosSUBE proveedorVentaBoletos2 = new ProveedorBoletosSUBE(proveedorVentaBoletosConfig2);
 
             var resulFichas = constructorFichas(datosEmpIntFicha, resultadosQPA);
 
-            Dictionary<int, (int, int)> fichasXEmpIntSUBE = datosEmpIntFicha
+            Dictionary<int, (int, int)> empresaInternoSUBEXFichas = datosEmpIntFicha
                 .Get()
                 .ToDictionary(x => x.Value, x => x.Key)
             ;
 
-            var reporte = new CSVReport()
+            //var reporte = new CSVReport<string>()
+            //{
+            //    UsesHeader = true,
+            //    Separator = ';',
+            //    HeaderBuilder = (sep) => string.Join(sep, new[] { "empresaSUBE", "internoSUBE", "ficha", "linea", "bandera", "inicio", "fin", "cantbol", "cantbolopt" }),
+            //    ItemsBuilder = (sep) => CrearItemsCSV(
+            //        sep,
+            //        resultadosQPA,
+            //        resulFichas,
+            //        empresaInternoSUBEXFichas,
+            //        proveedorVentaBoletos
+            //    )
+            //};
+
+            //return reporte;
+
+            var lstReporteQPAItems = CrearReporteQPAItems(
+                resultadosQPA,
+                resulFichas,
+                empresaInternoSUBEXFichas,
+                proveedorVentaBoletos2
+            );
+
+            var reporte = new ReporteQPA<TIdent>()
             {
-                UsesHeader = true,
-                Separator = ';',
-                HeaderBuilder = (sep) => string.Join(sep, new[] { "empresaSUBE", "internoSUBE", "ficha", "linea", "bandera", "inicio", "fin", "cantbol", "cantbolopt" }),
-                ItemsBuilder = (sep) => CrearItemsCSV(
-                    sep, 
-                    resultadosQPA, 
-                    resulFichas, 
-                    fichasXEmpIntSUBE, 
-                    proveedorVentaBoletos
-                )
+                Items = lstReporteQPAItems.ToList(),
             };
 
-            string nombreReporte = $"Reporte__{identificador}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.txt";
-            File.WriteAllText(nombreReporte, reporte.ToString());
+            return reporte;
         }
 
         static RecorridoLinBan SanitizarRecorrido(RecorridoLinBan reco, int granularidad)
@@ -714,7 +902,7 @@ namespace LibQPA.Testing
             char                        sep, 
             List<QPAResult<TIdent>>     resultadosSUBE, 
             List<int>                   fichasSUBE, 
-            Dictionary<int, (int, int)> fichasXEmpIntSUBE, 
+            Dictionary<int, (int, int)> empresaInternoSUBEXFichas, 
             ProveedorVentaBoletosDbSUBE proveedorVentaBoletos
         )
         {
@@ -749,7 +937,7 @@ namespace LibQPA.Testing
                         sep, 
                         resultadosSUBE[i], 
                         fichasSUBE[i], 
-                        fichasXEmpIntSUBE, 
+                        empresaInternoSUBEXFichas, 
                         proveedorVentaBoletos,
                         dameCasillerosXLinBan
                     );
@@ -757,6 +945,56 @@ namespace LibQPA.Testing
                     if (!string.IsNullOrEmpty(itemCSV))
                     {
                         yield return itemCSV.Trim();
+                    }
+                }
+            }
+        }
+
+        IEnumerable<ReporteQPAItem<TIdent>> CrearReporteQPAItems<TIdent>(
+            List<QPAResult<TIdent>> resultadosSUBE,
+            List<int> fichasSUBE,
+            Dictionary<int, (int, int)> empresaInternoSUBEXFichas,
+            /*ProveedorVentaBoletosDbSUBE*/ ProveedorBoletosSUBE proveedorVentaBoletos
+        )
+        {
+            var count = 0;
+            var dicCasillerosXLinBan = new Dictionary<(int, int), HashSet<Casillero>>();
+
+            for (int i = 0; i < resultadosSUBE.Count; i++)
+            {
+                var dameCasillerosXLinBan = new FuncCasillerosXLinBan((int linea, int bandera, int granuCustom) =>
+                {
+                    var key = (linea, bandera);
+                    if (!dicCasillerosXLinBan.ContainsKey(key))
+                    {
+                        var recorrido = resultadosSUBE[i].RecorridosTeoricos
+                            .Where(r => r.Linea == linea && r.Bandera == bandera)
+                            .First()
+                        ;
+                        var casilleros = Geom.PuntosAHashSetCasilleros(
+                            recorrido.Puntos,
+                            granuCustom,
+                            resultadosSUBE[i].Topes2D
+                        );
+                        dicCasillerosXLinBan[key] = casilleros;
+                    }
+                    return dicCasillerosXLinBan[key];
+                });
+
+                if (resultadosSUBE[i].PorcentajeReconocido >= 80)
+                {
+                    count++;
+                    var reporteQPAItem = CrearReporteQPAItem(
+                        resultadosSUBE[i],
+                        fichasSUBE[i],
+                        empresaInternoSUBEXFichas,
+                        proveedorVentaBoletos,
+                        dameCasillerosXLinBan
+                    );
+
+                    if (reporteQPAItem != null)
+                    {
+                        yield return reporteQPAItem;
                     }
                 }
             }
@@ -773,7 +1011,7 @@ namespace LibQPA.Testing
             char                        sep, 
             QPAResult<TIdent>           qpaResult, 
             int                         ficha, 
-            Dictionary<int, (int, int)> fichasXEmpIntSUBE, 
+            Dictionary<int, (int, int)> empresaInternoSUBEXFichas, 
             ProveedorVentaBoletosDbSUBE proveedorVentaBoletos,
             FuncCasillerosXLinBan       dameCasillerosXLinBan
         )
@@ -791,8 +1029,8 @@ namespace LibQPA.Testing
             foreach (var subCamino in qpaResult.SubCaminos.ToArray().Reverse())
             {
                 // empresa e ident sube...
-                var empresaSUBE = fichasXEmpIntSUBE[ficha].Item1;
-                var internoSUBE = fichasXEmpIntSUBE[ficha].Item2;
+                var empresaSUBE = empresaInternoSUBEXFichas[ficha].Item1;
+                var internoSUBE = empresaInternoSUBEXFichas[ficha].Item2;
 
                 // linea y bandera
                 var linBanPuns = subCamino
@@ -938,6 +1176,185 @@ namespace LibQPA.Testing
 
             var ret = sbRenglones.ToString();
             return ret;
+        }
+
+        ReporteQPAItem<TIdent> CrearReporteQPAItem<TIdent>(
+            QPAResult<TIdent> qpaResult,
+            int ficha,
+            Dictionary<int, (int, int)> empresaInternoSUBEXFichas,
+            /*ProveedorVentaBoletosDbSUBE*/ ProveedorBoletosSUBE proveedorVentaBoletos,
+            FuncCasillerosXLinBan dameCasillerosXLinBan
+        )
+        {
+            if (ficha == -1)
+            {
+                return null;
+            }
+
+            var subItems = new List<ReporteQPASubItem<TIdent>>();
+
+            foreach (var subCamino in qpaResult.SubCaminos.ToArray().Reverse())
+            {
+                // empresa e ident sube...
+                var empresaSUBE = empresaInternoSUBEXFichas[ficha].Item1;
+                var internoSUBE = empresaInternoSUBEXFichas[ficha].Item2;
+
+                // linea y bandera
+                var linBanPuns = subCamino
+                    .LineasBanderasPuntuaciones
+                    .OrderByDescending(lbp => lbp.Puntuacion)
+                    .ToList()
+                ;
+                var linea = linBanPuns[0].Linea;
+                var bandera = linBanPuns[0].Bandera;
+
+                // inicio y fin
+                var inicio = subCamino.HoraSalida.ToString("dd/MM/yyyy HH:mm:ss");
+                var fin = subCamino.HoraLlegada.ToString("dd/MM/yyyy HH:mm:ss");
+
+                // cant de boletos (naive)
+                var cantBoletosNaive = proveedorVentaBoletos
+                    .GetBoletosEnIntervalo(new ParEmpresaInterno{ Empresa=empresaSUBE, Interno=internoSUBE } /*ficha*/, subCamino.HoraSalida, subCamino.HoraLlegada)
+                    .Count()
+                ;
+
+                // cant de boletos (optimizada)
+                var horaComienzoBoletos = subCamino.SubCaminoAnterior == null ?
+                    subCamino.HoraSalida :
+                    subCamino.SubCaminoAnterior.HoraLlegada
+                ;
+                var horaFinBoletos = subCamino.HoraLlegada;
+
+                // BASE DE DATOS DE BOLETOS = DESASTRE
+                //  - LA LAT Y LNG INVERTIDA Y ENTERAAAAA    - OK
+                //  - BOLETOS QUE TIENEN LAT LNG EN 0        - OK
+                //  - ELIMINAR BOLETOS IGUALES               - TODO
+                var boletos = proveedorVentaBoletos
+                    .GetBoletosEnIntervalo(new ParEmpresaInterno { Empresa=empresaSUBE, Interno=internoSUBE } /*ficha*/, horaComienzoBoletos, horaFinBoletos)
+                    .ToList()
+                ;
+                var deltaGran = 2;
+                var boletosOpt = new List<BoletoComun>();
+
+                var DBG_cantBoletosConLatLng = boletos
+                    .Where(bolx => bolx.Latitud != 0 && bolx.Longitud != 0)
+                    .Count()
+                ;
+                var DBG_cantBoletosQueEntranEnRecorrido = 0;
+
+                // 1) los boletos que entran en el recorrido
+                foreach (var bolx in boletos)
+                {
+                    bool enReco = Geom.PuntoEnRecorrido(
+                        new Punto { Lat = bolx.Latitud, Lng = bolx.Longitud },
+                        dameCasillerosXLinBan(linea, bandera, qpaResult.Granularidad * deltaGran),
+                        qpaResult.Granularidad * deltaGran,
+                        qpaResult.Topes2D
+                    );
+
+                    if (enReco && !_boletosReconocidos.Contains(bolx.Id))
+                    {
+                        boletosOpt.Add(bolx);
+                        _boletosReconocidos.Add(bolx.Id);
+                        DBG_cantBoletosQueEntranEnRecorrido++;
+                    }
+                }
+
+                if (DBG_cantBoletosConLatLng > 0 && DBG_cantBoletosQueEntranEnRecorrido == 0)
+                {
+                    int QUE_bandera = bandera;
+                    int QUE_linea = linea;
+                    int foo = 0;
+                    DBG_recosmal++;
+                }
+                else
+                {
+                    DBG_recosbien++;
+                }
+
+                // 2) los boletos que están a un radio "grande" de la salida
+                //    esto es, unos 250 mts por lo menos
+                var puntoSalida = qpaResult.RecorridosTeoricos
+                    .Where(recot => recot.Linea == linea && recot.Bandera == bandera)
+                    .First()
+                    .Puntos
+                    .First()
+                ;
+                foreach (var bolx in boletos)
+                {
+                    var puntoBoleto = new Punto { Lat=bolx.Latitud, Lng=bolx.Longitud };
+
+                    if ((Haversine.GetDist(puntoSalida, puntoBoleto) <= 250) &&
+                        (!_boletosReconocidos.Contains(bolx.Id)))
+                    {
+                        boletosOpt.Add(bolx);
+                        _boletosReconocidos.Add(bolx.Id);
+                    }
+                }
+
+                // 3) los boletos lat=0 lng=0 que estén en el intervalo de tiempo
+                //    mayor o igual al boleto mas viejo que acabo de calcular
+                if (boletosOpt.Any())
+                {
+                    var fechaMasVieja = boletosOpt
+                        .OrderBy(b => b.FechaCancelacion)
+                        .First()
+                        .FechaCancelacion
+                    ;
+
+                    foreach (var bolx in boletos)
+                    {
+                        if ((bolx.Latitud == 0 || bolx.Longitud == 0) &&
+                            bolx.FechaCancelacion >= fechaMasVieja  &&
+                            !_boletosReconocidos.Contains(bolx.Id))
+                        {
+                            boletosOpt.Add(bolx);
+                            _boletosReconocidos.Add(bolx.Id);
+                        }
+                    }
+                }
+
+                // 4) ahora, con la fecha original de inicio (subCamino.HoraSalida)
+                //    veremos si entran los boletos con lat=0 lng=0 que quedaron afuera
+                foreach (var bolx in boletos)
+                {
+                    if ((bolx.Latitud == 0 || bolx.Longitud == 0) &&
+                        bolx.FechaCancelacion >= subCamino.HoraSalida  &&
+                        !_boletosReconocidos.Contains(bolx.Id))
+                    {
+                        var pepe = linea;
+                        var pipo = bandera;
+                        boletosOpt.Add(bolx);
+                        _boletosReconocidos.Add(bolx.Id);
+                    }
+                }
+
+                // cantidad de boletos "optimizados"
+                var cantBoletosOpt = boletosOpt.Count;
+
+                // construcción del subItem
+                var subItem = new ReporteQPASubItem<TIdent>
+                {
+                    EmpresaSUBE = empresaSUBE,
+                    InternoSUBE = internoSUBE,
+                    Ficha = ficha,
+                    Linea = linea,
+                    Bandera = bandera,
+                    Inicio = subCamino.HoraSalida,
+                    Fin = subCamino.HoraLlegada,
+                    CantBoletosNaive = cantBoletosNaive,
+                    CantBoletosOpt = cantBoletosOpt
+                };
+
+                // acumulo subItems
+                subItems.Insert(0, subItem);
+            }
+
+            return new ReporteQPAItem<TIdent>
+            {
+                Resultado = qpaResult,
+                Items = subItems,
+            };
         }
 
         private List<QPAResult<TIdent>> ProcesarTodo<TIdent>(
