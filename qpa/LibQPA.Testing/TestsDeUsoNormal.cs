@@ -395,7 +395,7 @@ namespace LibQPA.Testing
                 formatter
             );
 
-            var nombreArchivo = $"Reporte_{identificadorReporte}_Desde_{desde:yyyyMMdd}_Hasta_{hasta:yyyyMMdd}.txt";
+            var nombreArchivo = $"Reporte_{identificadorReporte}_Desde_{desde:yyyyMMdd}_Hasta_{hasta:yyyyMMdd}";
             File.WriteAllText($"{nombreArchivo}.txt", txt);
 
             int foo = 0;

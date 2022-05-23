@@ -75,9 +75,9 @@ namespace LibQPA.ProveedoresHistoricos.Ruptela
                 }
             }
 
-            // reconozco la fecha
+            // reconozco la fecha (que es UTC)
             var fecha = DateTime.Parse(
-                partes[1]
+                partes[1] + "Z"
             );
 
             // reconozco la lat
