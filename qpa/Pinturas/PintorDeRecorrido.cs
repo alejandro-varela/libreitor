@@ -25,7 +25,7 @@ namespace Pinturas
             Granularidad = granularidad;
             Width = topes2D.GetAnchoGranular(granularidad);
             Height = topes2D.GetAlturaGranular(granularidad);
-            Tareas = new();
+            Tareas = new List<ITareaDePintura>();
         }
 
         public PintorDeRecorrido SetColorFondo(Color color)

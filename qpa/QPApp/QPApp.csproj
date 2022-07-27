@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Comun\Comun.csproj" />
+    <ProjectReference Include="..\LibQPA\LibQPA.csproj" />
+    <ProjectReference Include="..\QPACreator\QPACreator.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Datos\0127\" />
+    <Folder Include="Datos\0159\" />
+    <Folder Include="Datos\0163\" />
+    <Folder Include="Datos\0165\" />
+    <Folder Include="Datos\0166\" />
+    <Folder Include="Datos\0167\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Datos\0127\verrec00002120220204000000.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Datos\0159\verrec00003220201026114000.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Datos\0163\verrec00003720211016000000.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Datos\0165\verrec00003520211001000000.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Datos\0166\verrec00005020220321000000.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Datos\0167\verrec00003220211231000000.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

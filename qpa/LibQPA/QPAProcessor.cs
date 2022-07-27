@@ -39,7 +39,7 @@ namespace LibQPA
         {
             // camino histórico
             var caminoHistorico = Camino<PuntoHistorico>.CreateFromPuntos(puntasNombradas, puntosHistoricos);
-            Console.WriteLine(caminoHistorico.DescriptionRawSinRuido);
+            //Console.WriteLine(caminoHistorico.DescriptionRawSinRuido);
 
             // reconocimiento del camino histórico
             var reconocimiento = ReconocedorDeCamino.Reconocer(

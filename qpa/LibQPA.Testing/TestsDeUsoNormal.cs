@@ -21,6 +21,7 @@ using LibQPA.ProveedoresTecnobus;
 using LibQPA.ProveedoresVentas.DbSUBE;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using QPACreator;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -234,7 +235,7 @@ namespace LibQPA.Testing
                     .ToList()
                 ;
 
-            var reporte = CalculoGenericoQPA_ConReporte<string>(
+            var (resultadosQPA, reporte) = CalculoGenericoQPA_ConReporte<string>(
                 identificadorReporte,
                 desde,
                 hasta,
@@ -291,12 +292,12 @@ namespace LibQPA.Testing
         }
 
         [DataTestMethod]
-        //[DataRow("RUP49", "2022-05-02", "2022-05-03", "159,163", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 750)]
-        //[DataRow("RUP49", "2022-05-03", "2022-05-04", "159,163", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 750)]
-        //[DataRow("RUP49", "2022-05-04", "2022-05-05", "159,163", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 750)]
-        //[DataRow("RUP49", "2022-05-05", "2022-05-06", "159,163", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 750)]
-        //[DataRow("RUP49", "2022-05-06", "2022-05-07", "159,163", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 750)]
-        //[DataRow("RUP49", "2022-05-07", "2022-05-08", "159,163", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 750)]
+        [DataRow("RUP49", "2022-05-02", "2022-05-03", "159,163", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 750)]
+        [DataRow("RUP49", "2022-05-03", "2022-05-04", "159,163", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 750)]
+        [DataRow("RUP49", "2022-05-04", "2022-05-05", "159,163", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 750)]
+        [DataRow("RUP49", "2022-05-05", "2022-05-06", "159,163", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 750)]
+        [DataRow("RUP49", "2022-05-06", "2022-05-07", "159,163", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 750)]
+        [DataRow("RUP49", "2022-05-07", "2022-05-08", "159,163", typeof(PuntaLinea), typeof(CreadorPartesHistoricasIdentidad), 20, 750)]
         public void TestRuptelaQPA_ConReporte(
             string identificadorReporte,
             string desdeISO8601,
@@ -333,7 +334,7 @@ namespace LibQPA.Testing
             //);
 
             // Ahora convierto puntosXIdentificador en infohXIdentificador
-            var infohXIdentificador = ConvertirPuntosAInformacion(
+             var infohXIdentificador = ConvertirPuntosAInformacion(
                 puntosXIdentificador,
                 Activator.CreateInstance(tipoCreadorPartesHistoricas) as CreadorPartesHistoricas
             );
@@ -345,7 +346,7 @@ namespace LibQPA.Testing
                     .ToList()
                 ;
 
-            var reporte = CalculoGenericoQPA_ConReporte<int>(
+            var (resultadosQPA, reporte) = CalculoGenericoQPA_ConReporte<int>(
                 identificadorReporte,
                 desde,
                 hasta,
@@ -395,7 +396,7 @@ namespace LibQPA.Testing
                 formatter
             );
 
-            var nombreArchivo = $"Reporte_{identificadorReporte}_Desde_{desde:yyyyMMdd}_Hasta_{hasta:yyyyMMdd}";
+            var nombreArchivo = $"XReporte_{identificadorReporte}_Desde_{desde:yyyyMMdd}_Hasta_{hasta:yyyyMMdd}";
             File.WriteAllText($"{nombreArchivo}.txt", txt);
 
             int foo = 0;
@@ -603,7 +604,7 @@ namespace LibQPA.Testing
             );
         }
 
-        public ReporteQPA<TIdent> CalculoGenericoQPA_ConReporte<TIdent>(
+        public (List<QPAResult<TIdent>>, ReporteQPA<TIdent>) CalculoGenericoQPA_ConReporte<TIdent>(
             string identificadorReporte,
             DateTime desde,
             DateTime hasta,
@@ -662,7 +663,7 @@ namespace LibQPA.Testing
             //string nombreReporte = $"Reporte__{identificadorReporte}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.txt";
             //File.WriteAllText(nombreReporte, reporte.ToString());
 
-            return reporte;
+            return (resultadosQPA, reporte);
         }
 
         //public ReporteQPA<TIdent> CalcularQPA_GenerarReporteQPA<TIdent>(
@@ -981,7 +982,7 @@ namespace LibQPA.Testing
                     return dicCasillerosXLinBan[key];
                 });
 
-                if (resultadosSUBE[i].PorcentajeReconocido >= 80)
+                if (resultadosSUBE[i].PorcentajeReconocido > 0) // ex 80%
                 {
                     count++;
                     var reporteQPAItem = CrearReporteQPAItem(
@@ -1388,7 +1389,7 @@ namespace LibQPA.Testing
                         resultado = VelocidadNormal (resultado);
                         resultado = DuracionPositiva(resultado);
                             
-                        if (resultado.SubCaminos.Any())
+                        //if (resultado.SubCaminos.Any())
                         {
                             resultados.Add(resultado);
                         }

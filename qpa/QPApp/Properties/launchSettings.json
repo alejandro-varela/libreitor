@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "QPApp": {
+      "commandName": "Project",
+      "commandLineArgs": "idReporte=driveup\r\ndesde=2022-07-20\r\nlineas=159,163\r\npassword=Bondi.amarillo"
+    }
+  }
+}

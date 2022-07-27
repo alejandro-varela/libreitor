@@ -1,7 +1,7 @@
 ﻿using Comun;
 using System.Collections.Generic;
 
-namespace LibQPA.Testing
+namespace LibQPA
 {
     public class ParteHistorica
     {

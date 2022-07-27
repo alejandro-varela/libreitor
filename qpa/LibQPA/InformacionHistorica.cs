@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LibQPA.Testing
+namespace LibQPA
 {
     public class InformacionHistorica
     {

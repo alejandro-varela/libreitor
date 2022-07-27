@@ -32,7 +32,7 @@ namespace PruebaLecturaDeRecorridos
             // 30 35! 50
 
             var cantidadPuntosLinBan = puntosLinBan.Count();
-            HashSet<Casillero> casilleros = new();
+            HashSet<Casillero> casilleros = new HashSet<Casillero>();
             foreach (var plbX in puntosLinBan)
             {
                 var casillero = Casillero.Create(topes2D, plbX, GRANU);

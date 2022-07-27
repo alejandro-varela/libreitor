@@ -30,6 +30,7 @@
     <ProjectReference Include="..\LibQPA.ProveedoresTecnobus\LibQPA.ProveedoresTecnobus.csproj" />
     <ProjectReference Include="..\LibQPA.ProveedoresVentas.DbSUBE\LibQPA.ProveedoresVentas.DbSUBE.csproj" />
     <ProjectReference Include="..\LibQPA\LibQPA.csproj" />
+    <ProjectReference Include="..\QPACreator\QPACreator.csproj" />
   </ItemGroup>
 
   <ItemGroup>

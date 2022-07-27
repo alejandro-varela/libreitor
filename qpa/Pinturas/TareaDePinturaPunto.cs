@@ -30,7 +30,7 @@ namespace Pinturas
                 int despX = (Size / 2);
                 int despY = (Size / 2);
 
-                Rectangle rect = new()
+                Rectangle rect = new Rectangle()
                 {
                     X = casillero.IndexHorizontal - despX,
                     Y = casillero.IndexVertical - despY,
