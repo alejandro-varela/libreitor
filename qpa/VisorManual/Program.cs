@@ -12,6 +12,11 @@ namespace VisorManual
 {
     class Program
     {
+        static void Main()
+        { 
+            //
+        }
+
         // ConfundeBandera 20220721_060000_F4357
         static void Main000(string[] args)
         {
