@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.2.32630.192
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32630.194
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PruebaLecturaDeRecorridos", "PruebaLecturaDeRecorridos\PruebaLecturaDeRecorridos.csproj", "{99465F4A-25B8-433C-808E-71B86BDD9A83}"
 EndProject
@@ -55,6 +55,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QPApp", "QPApp\QPApp.csproj", "{E4D8915E-9E77-47D5-BC77-154710B188AA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QPACreator", "QPACreator\QPACreator.csproj", "{E48D4999-2F32-46A5-BA2B-47DD6C8080F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisorManual", "VisorManual\VisorManual.csproj", "{D384817A-81C6-4DBC-A533-5CB0EF03EB08}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -158,6 +160,10 @@ Global
 		{E48D4999-2F32-46A5-BA2B-47DD6C8080F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E48D4999-2F32-46A5-BA2B-47DD6C8080F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E48D4999-2F32-46A5-BA2B-47DD6C8080F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D384817A-81C6-4DBC-A533-5CB0EF03EB08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D384817A-81C6-4DBC-A533-5CB0EF03EB08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D384817A-81C6-4DBC-A533-5CB0EF03EB08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D384817A-81C6-4DBC-A533-5CB0EF03EB08}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

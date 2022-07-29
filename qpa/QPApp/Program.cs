@@ -47,7 +47,7 @@ namespace QPApp
             string idReporte = ArgsHelper.SafeGetArgVal(misArgs, "idReporte", Guid.NewGuid().ToString());
             
             // desde hasta
-            string sDesde = ArgsHelper.SafeGetArgVal(misArgs, "desde", ahora.ToString("yyyy-dd-MM"));
+            string sDesde = ArgsHelper.SafeGetArgVal(misArgs, "desde", ahora.ToString("yyyy-MM-dd"));
             DateTime desde = DateTime.Parse(sDesde);
             DateTime hasta = desde.AddDays(1);
             
@@ -68,9 +68,11 @@ namespace QPApp
 
             // granularidad en metros
             string sGranularidad = ArgsHelper.SafeGetArgVal(misArgs, "granularidad", "20");
+            int granularidad = int.Parse(sGranularidad);
 
             // radio de las puntas de línea
             string sRadioPuntas = ArgsHelper.SafeGetArgVal(misArgs, "radioPuntas", "800");
+            int radioPuntas = int.Parse(sRadioPuntas);
 
             // creo el qpaCreator
             var qpaCreator = new QPACreator.Creator(new CreatorConfiguration
@@ -140,7 +142,9 @@ namespace QPApp
                 tipoPuntaLinea,
                 tipoCreadorPartesHistoricas,
                 puntosXIdentificador,
-                ConstructorFichasInt
+                ConstructorFichasInt,
+                granularidadMts: granularidad,
+                radioPuntasDeLineaMts: radioPuntas
             );
 
             /////////////////////////////////////////////////////////
