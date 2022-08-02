@@ -60,6 +60,10 @@ namespace QPApp
                 .ToList()
             ;
 
+            // ficha en especial
+            string sFicha = ArgsHelper.SafeGetArgVal(misArgs, "ficha", "0");
+            int ficha = int.Parse(sFicha);
+
             // tipo punta de línea
             Type tipoPuntaLinea = typeof(PuntaLinea);
 
@@ -125,7 +129,11 @@ namespace QPApp
             Dictionary<int, List<PuntoHistorico>> puntosXIdentificador;
             try
             {
-                puntosXIdentificador = GetPuntosPorIdentificador(pathArchivoLocal);
+                puntosXIdentificador = GetPuntosPorIdentificador(
+                    pathArchivoLocal, 
+                    soloEstaFicha: ficha
+                );
+
                 Console.WriteLine("\tInformación historica ok");
             }
             catch (Exception exx)
@@ -200,7 +208,7 @@ namespace QPApp
             Console.WriteLine(s);
         }
 
-        static Dictionary<int, List<PuntoHistorico>> GetPuntosPorIdentificador(string nombreArchivoLocal)
+        static Dictionary<int, List<PuntoHistorico>> GetPuntosPorIdentificador(string pathArchivoLocal, int soloEstaFicha = 0)
         {
             //0      1          2            3                    4                    5
             //Ficha; Lat;       Lng;         FechaLocal;          Recordedat;          FechaLlegadaLocal
@@ -208,7 +216,7 @@ namespace QPApp
 
             var ret = new Dictionary<int, List<PuntoHistorico>>();
 
-            foreach (var sLine in File.ReadLines(nombreArchivoLocal).Skip(1))
+            foreach (var sLine in File.ReadLines(pathArchivoLocal).Skip(1))
             {
                 var partes = sLine.Split(';');
                 
@@ -220,7 +228,12 @@ namespace QPApp
                 var key = int.Parse(partes[0]);
                 var lat = double.Parse(partes[1], CultureInfo.InvariantCulture);
                 var lng = double.Parse(partes[2], CultureInfo.InvariantCulture);
-                var fec = DateTime.Parse(partes[5]);
+                var fec = DateTime.Parse(partes[3]);
+
+                if (soloEstaFicha != 0 && soloEstaFicha != key)
+                {
+                    continue;
+                }
 
                 if (! ret.ContainsKey(key))
                 { 

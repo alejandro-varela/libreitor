@@ -10,4 +10,8 @@
     <ProjectReference Include="..\Pinturas\Pinturas.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Vistas\MapaConLetras\20220720_MAPA203\" />
+  </ItemGroup>
+
 </Project>

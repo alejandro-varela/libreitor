@@ -246,6 +246,12 @@ namespace QPACreator
                 recoPatterns[camino.Description].Add(new KeyValuePair<int, int>(recox.Linea, recox.Bandera));
             }
 
+            // muestro los patrones de recorridos:
+            foreach (var keyX in recoPatterns.Keys.ToList().OrderBy(k => k))
+            {
+                Avisar($"RecoPattern {keyX}");
+            }
+
             #endregion
 
             ///////////////////////////////////////////////////////////////////

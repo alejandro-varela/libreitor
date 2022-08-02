@@ -12,13 +12,55 @@ namespace VisorManual
 {
     class Program
     {
-        static void Main()
-        { 
-            //
+        static void Main(string[] args)
+        {
+            var dirData = Path.GetFullPath("../../../Vistas/MapaConLetras/20220720_MAPA203/");
+
+            var fechaInicio = new DateTime(2022, 07, 20);
+
+            var recorridosTeoricos = Recorrido.LeerRecorridosPorArchivos(dirData, new int[] { 159, 163 }, fechaInicio);
+
+            // puntos aplanados (todos)
+            var todosLosPuntosDeLosRecorridos = recorridosTeoricos.SelectMany(
+                (reco) => reco.Puntos,
+                (reco, puntoReco) => puntoReco
+            );
+
+            // topes
+            var topes2D = Topes2D.CreateFromPuntos(todosLosPuntosDeLosRecorridos);
+
+            Func<List<RecorridoLinBan>, List<IPuntaLinea>> creadorPuntasNombradas = null;
+
+            creadorPuntasNombradas = recorridosTeoricos =>
+                PuntasDeLinea
+                    .GetPuntasNombradas(recorridosTeoricos, radio: 800)
+                    .Select(pulin => (IPuntaLinea)pulin)
+                    .ToList()
+                ;
+
+            // puntas de línea
+            List<IPuntaLinea> puntasNombradas = creadorPuntasNombradas(recorridosTeoricos);
+
+            var pintor = new PintorDeRecorrido(topes2D, granularidad: 20);
+
+            pintor.SetColorFondo(Color.Silver);
+
+            foreach (var recorrido in recorridosTeoricos)
+            {
+                var color = recorrido.Linea == 159 ? Color.Orange : Color.FromArgb(30, Color.DarkGreen) ;
+                pintor.PintarPuntos(recorrido.Puntos, color, size: 3);
+            }
+
+            foreach (var punteta in puntasNombradas)
+            {
+                var pl = punteta as PuntaLinea;
+                pintor.PintarRadioNombrado(pl.Punto, pl.Nombre, Color.Blue, size: 80);
+            }
+
+            pintor.Render().Save(Path.Combine(dirData, "salida.png"), ImageFormat.Png);
         }
 
-        // ConfundeBandera 20220721_060000_F4357
-        static void Main000(string[] args)
+        static void ConfundeBandera_20220721_060000_F4357(string[] args)
         {
             // 4357
             // 21 JUL 2022

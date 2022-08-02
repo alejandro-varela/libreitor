@@ -2,7 +2,7 @@
   "profiles": {
     "QPApp": {
       "commandName": "Project",
-      "commandLineArgs": "idReporte=driveup desde=2022-07-21 lineas=159,163 password=Bondi.amarillo"
+      "commandLineArgs": "idReporte=driveup desde=2022-07-20 lineas=159,163 password=Bondi.amarillo ficha=4221"
     }
   }
 }
