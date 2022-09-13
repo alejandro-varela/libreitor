@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Globalization;
+using LibQPA.ProveedoresTecnobus;
 
 namespace QPApp
 {
@@ -25,7 +26,7 @@ namespace QPApp
             //      - saber que podemos usar para cada necesidad
 
             // * password                       el password de la DB
-            // * modo (JsonSUBE|DriveUpApi)     (de donde sacaré los datos y en que forma los procesaré)
+            // * modo (JsonSUBE|DriveUp|PicoBus)(de donde sacaré los datos y en que forma los procesaré)
             // * identificadorReporte           (una cadena para identificar univocamente a los reportes)
             // * desdeISO8601                   (la fecha desde en formato ISO8601)
             //   lineasPosiblesSeparadasPorComa default = "159,163"
@@ -41,17 +42,17 @@ namespace QPApp
             string password = ArgsHelper.SafeGetArgVal(misArgs, "password", "");
 
             // modo
-            string modo = ArgsHelper.SafeGetArgVal(misArgs, "modo", "JsonSUBE");
-            
+            string modo = ArgsHelper.SafeGetArgVal(misArgs, "modo", "DriveUp");
+
             // idReporte
-            string idReporte = ArgsHelper.SafeGetArgVal(misArgs, "idReporte", Guid.NewGuid().ToString());
+            string idReporte = modo.ToLower(); //ArgsHelper.SafeGetArgVal(misArgs, "idReporte", modo);
             
             // desde hasta
             string sDesde = ArgsHelper.SafeGetArgVal(misArgs, "desde", ahora.ToString("yyyy-MM-dd"));
             DateTime desde = DateTime.Parse(sDesde);
             DateTime hasta = desde.AddDays(1);
             
-            // lineas
+            // líneas
             string sLineas = ArgsHelper.SafeGetArgVal(misArgs, "lineas", string.Empty);
             List<int> lineas = sLineas
                 .Split(',')
@@ -65,7 +66,10 @@ namespace QPApp
             int ficha = int.Parse(sFicha);
 
             // tipo punta de línea
-            Type tipoPuntaLinea = typeof(PuntaLinea);
+            string sTipoPuntaLinea = ArgsHelper.SafeGetArgVal(misArgs, "tipoPuntas", "PuntaLinea");
+            Type tipoPuntaLinea = null;
+            if      (sTipoPuntaLinea == "PuntaLinea" ) { tipoPuntaLinea = typeof(PuntaLinea ); }
+            else if (sTipoPuntaLinea == "PuntaLinea2") { tipoPuntaLinea = typeof(PuntaLinea2); }
 
             // tipo creador partes históricas
             Type tipoCreadorPartesHistoricas = typeof(CreadorPartesHistoricasIdentidad);
@@ -85,13 +89,25 @@ namespace QPApp
                 ConnectionStringVentasSUBE = "Data Source=192.168.201.42;Initial Catalog=sube;User ID=sa;Password=" + password,
                 ConnectionStringPuntosSUBE = "Data Source=192.168.201.10;Initial Catalog=logsTecnobus;User ID=sa;Password=" + password,
                 ConnectionStringPuntosXBus = "Data Source=192.168.201.10;Initial Catalog=logsTecnobus;User ID=sa;Password=" + password,
-                Repos = new Dictionary<string, string> {
-                    { "MockRepo1", "./Datos" },
-                    { "MockRepo2", "./Datos" },
-                }
             });
-
             qpaCreator.Aviso += QpaCreator_Aviso;
+
+            // recorridos teóricos
+            IQPAProveedorRecorridosTeoricos proveedorRecorridosTeoricos = new ProveedorVersionesTecnobus(
+                new string[] { "./Datos" }
+            );
+
+            Filtro filtro = Filtro.CreateFrom("./Filtros", lineas);
+            
+            var recorridosTeoricos = proveedorRecorridosTeoricos.Get(new QPAProvRecoParams()
+            {
+                LineasPosibles = lineas.ToArray(),
+                FechaVigencia  = desde
+            })
+                .Where (reco => filtro.EsRecorridoPermitido(reco.Linea, reco.Bandera))
+                .Select(reco => SanitizarRecorrido(reco, granularidad))
+                .ToList()
+            ;
 
             // creo el directorio de bajada si no existe...
             var dirBajados = "./Bajados/";
@@ -100,41 +116,51 @@ namespace QPApp
                 Directory.CreateDirectory(dirBajados);
             }
             
-            var nombreArchivoLocal = $"driveup_{desde.Year:0000}_{desde.Month:00}_{desde.Day:00}.csv";
+            var nombreArchivoLocal = $"{modo.ToLower()}_{desde.Year:0000}_{desde.Month:00}_{desde.Day:00}.csv";
             var pathArchivoLocal = Path.Combine(dirBajados, nombreArchivoLocal).Replace('\\', '/');
 
             if (File.Exists(pathArchivoLocal))
             {
                 // ya existe el archivo
-                Console.WriteLine($"El archivo {pathArchivoLocal} existe");
+                Console.WriteLine($"El archivo {pathArchivoLocal} existe en modo '{modo}'");
             }
             else
             {
                 // bajo el nuevo archivo
                 int diasMenos = Convert.ToInt32((DateTime.Now.Date.Subtract(desde.Date)).TotalDays);
-                var remoteUri = new Uri(
-                    "https://vm-coches:5001/HistoriaCochesDriveupAnteriores?formato=csv&diasMenos=" +
-                    diasMenos.ToString()
-                );
+                Uri remoteUri = null;
+
+                // dependiendo del "modo" bajo de un lugar u otro
+                switch (modo.ToLower())
+                {
+                    case "driveup":
+                        remoteUri = new Uri("https://vm-coches:5001/HistoriaCochesDriveUpAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());
+                        break;
+                    case "picobus":
+                        remoteUri = new Uri("https://vm-coches:5003/HistoriaCochesPicoBusAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());
+                        break;
+                    default:
+                        Console.WriteLine($"El modo '{modo}' no es válido");
+                        return -1;
+                }
+
+                // bajar archivo...
+                Console.WriteLine($"Tratando de bajar archivo en modo '{modo}'");
                 var bajadorDeArchivo = new BajadorDeArchivo();
-                Console.WriteLine("Tratando de bajar archivo driveup ");
                 if (!bajadorDeArchivo.BajarArchivo(remoteUri, pathArchivoLocal))
                 {
-                    Console.WriteLine("No pude bajar el archivo " + bajadorDeArchivo.Error);
+                    Console.WriteLine($"No pude bajar el archivo {bajadorDeArchivo.Error}");
                     return -1;
                 }
             }
 
-            Console.WriteLine("Tratando de construir información histórica ");
-            Dictionary<int, List<PuntoHistorico>> puntosXIdentificador;
+            Console.WriteLine("Tratando de construir información histórica");
+            Dictionary<int, List<PuntoHistorico>> puntosXIdentificador = null;
+
             try
             {
-                puntosXIdentificador = GetPuntosPorIdentificador(
-                    pathArchivoLocal, 
-                    soloEstaFicha: ficha
-                );
-
-                Console.WriteLine("\tInformación historica ok");
+                puntosXIdentificador = GetPuntosPorIdentificador(pathArchivoLocal, modo, soloEstaFicha: ficha);
+                Console.WriteLine("\tInformación histórica ok");
             }
             catch (Exception exx)
             {
@@ -149,6 +175,7 @@ namespace QPApp
                 lineas,
                 tipoPuntaLinea,
                 tipoCreadorPartesHistoricas,
+                recorridosTeoricos,
                 puntosXIdentificador,
                 ConstructorFichasInt,
                 granularidadMts: granularidad,
@@ -185,14 +212,26 @@ namespace QPApp
                 }
             };
 
-            var contenido = rpx.RenderAllText(
+            var lineasContenido = rpx.RenderAllLines(
                 rpx.Create(reporteQPA.ListaAplanadaSubItems.Cast<object>(), formatter),
                 formatter
             );
+            
+            IEnumerable<string> contenido = lineasContenido;
+            
+            if (modo == "picobus")
+            {
+                var lineasContenidoFiltrado = lineasContenido
+                    .Where(s => !s.EndsWith(";0;0\n") && !s.EndsWith(";0;0\r\n"))
+                ;
+
+                contenido = lineasContenidoFiltrado;
+            }
 
             var nombreArchivoReporte = $"Reporte_{idReporte}_Desde_{desde:yyyyMMdd}_Hasta_{hasta:yyyyMMdd}";
-            var pathArchivoReporte   = Path.Combine(dirReportes, nombreArchivoReporte);
-            File.WriteAllText($"{pathArchivoReporte}.csv", contenido);
+            var pathArchivoReporte = Path.Combine(dirReportes, nombreArchivoReporte);
+
+            File.WriteAllText($"{pathArchivoReporte}.csv", string.Join(string.Empty, contenido));
 
             return 0;
         }
@@ -203,16 +242,53 @@ namespace QPApp
             Console.WriteLine(e.Mensaje);
         }
 
-        static void Mostrar(string s)
+        static RecorridoLinBan SanitizarRecorrido(RecorridoLinBan reco, int granularidad)
         {
-            Console.WriteLine(s);
+            return new RecorridoLinBan
+            {
+                Bandera = reco.Bandera,
+                Linea   = reco.Linea,
+                Puntos  = reco.Puntos.HacerGranular(granularidad),
+            };
         }
 
-        static Dictionary<int, List<PuntoHistorico>> GetPuntosPorIdentificador(string pathArchivoLocal, int soloEstaFicha = 0)
+        static Dictionary<int, List<PuntoHistorico>> GetPuntosPorIdentificador(
+            string  pathArchivoLocal, 
+            string  modo, 
+            int     soloEstaFicha = 0
+        )
         {
-            //0      1          2            3                    4                    5
-            //Ficha; Lat;       Lng;         FechaLocal;          Recordedat;          FechaLlegadaLocal
-            //3749 ; -34.47732; -58.5095933; 2022-07-06 00:00:01; 2022-07-06 03:00:01; 2022-07-06 00:00:00
+            int posFic = 0;
+            int posLat = 0;
+            int posLng = 0;
+            int posFec = 0;
+            int lenMin = 5;
+
+            // modo driveup
+            //
+            // 0      1          2            3                    4                    5
+            // Ficha; Lat      ; Lng        ; FechaLocal         ; Recordedat         ; FechaLlegadaLocal
+            // 3749 ; -34.47732; -58.5095933; 2022-07-06 00:00:01; 2022-07-06 03:00:01; 2022-07-06 00:00:00
+            if (modo == "driveup")
+            {
+                posFic = 0;
+                posLat = 1;
+                posLng = 2;
+                posFec = 3;
+            }
+
+            // modo picobus
+            //
+            // 0      1        2          3          4                    5
+            // Ficha; Id     ; Lat      ; Lng      ; FechaLlegadaLocal  ; FechaDeProduccion
+            // 4403 ; 3000696; -34.54017; -58.82160; 2022-08-15 00:00:00; 2022-08-15 00:00:00
+            if (modo == "picobus")
+            {
+                posFic = 0;
+                posLat = 2;
+                posLng = 3;
+                posFec = 4;
+            }
 
             var ret = new Dictionary<int, List<PuntoHistorico>>();
 
@@ -220,15 +296,20 @@ namespace QPApp
             {
                 var partes = sLine.Split(';');
                 
-                if (partes.Length < 5)
+                if (partes.Length < lenMin)
                 {
                     continue;
                 }
 
-                var key = int.Parse(partes[0]);
-                var lat = double.Parse(partes[1], CultureInfo.InvariantCulture);
-                var lng = double.Parse(partes[2], CultureInfo.InvariantCulture);
-                var fec = DateTime.Parse(partes[3]);
+                var key = int       .Parse(partes[posFic]);
+                var lat = double    .Parse(partes[posLat], CultureInfo.InvariantCulture);
+                var lng = double    .Parse(partes[posLng], CultureInfo.InvariantCulture);
+                var fec = DateTime  .Parse(partes[posFec]);
+
+                if (key == 0)
+                {
+                    continue;
+                }
 
                 if (soloEstaFicha != 0 && soloEstaFicha != key)
                 {
@@ -284,4 +365,85 @@ namespace QPApp
         }
 
     }
+
+    public class Filtro
+    {
+        public Dictionary<int, Dictionary<int, bool>> _dic = new Dictionary<int, Dictionary<int, bool>>();
+        public Dictionary<int, bool> _overrides = new Dictionary<int, bool>();
+
+        public Filtro(Dictionary<int, Dictionary<int, bool>> dic, Dictionary<int, bool> overrides)
+        {
+            _dic = dic;
+            _overrides = overrides;
+        }
+
+        public static Filtro CreateFrom(string dirBaseFiltros, List<int> lineas)
+        {
+            var dic = new Dictionary<int, Dictionary<int, bool>>();
+            var overrides = new Dictionary<int, bool>();
+
+            foreach (int lineaX in lineas)
+            {
+                var pathFiltro = Path.GetFullPath(
+                    Path.Combine(dirBaseFiltros, $"{lineaX:0000}\\filtros.csv"))
+                .Replace('\\', '/');
+
+                if (File.Exists(pathFiltro))
+                {
+                    overrides.Add(lineaX, false);
+                    dic.Add(lineaX, new Dictionary<int, bool>());
+                    // rellenar con archivo...
+                    //CodLin;CodBan;Clasif
+                    //167;2805;COM
+                    //167;2804;COM
+                    //167;3080;POS
+                    //167;3081;POS
+                    foreach (string renglon in File.ReadLines(pathFiltro).Skip(1))
+                    {
+                        var partes = renglon.Split(";");
+                        var linea = int.Parse(partes[0]);
+                        var bandera = int.Parse(partes[1]);
+                        var ok = partes[2].ToUpper() == "COM";
+                        dic[linea].Add(bandera, ok);
+                    }
+                }
+                else
+                {
+                    // no hay archivo de filtro para esta linea, la guardo en la lista de overrides
+                    // cuando se llame a EsRecorridoPermitido siempre dará true
+                    overrides.Add(lineaX, true);
+                }
+            }
+
+            return new Filtro(dic, overrides);
+        }
+
+        public bool EsRecorridoPermitido(int linea, int bandera)
+        {
+            if (!_overrides.ContainsKey(linea))
+            {
+                throw new Exception($"Este filtro no fue creado para la línea {linea}");
+            }
+
+            if (_overrides[linea])
+            {
+                return true;
+            }
+
+            if (!_dic.ContainsKey(linea))
+            {
+                throw new Exception($"Este filtro no fue creado para la línea {linea}");
+            }
+
+            if (!_dic[linea].ContainsKey(bandera))
+            {
+                //throw new Exception($"Este filtro no fue creado para la bandera {bandera}");
+                return false;
+            }
+
+            return _dic[linea][bandera];
+        }
+
+    }
+
 }

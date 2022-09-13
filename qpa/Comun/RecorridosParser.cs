@@ -8,11 +8,12 @@ namespace Comun
     {
         public static IEnumerable<PuntoRecorrido> ReadFile(string path)
         {
-            using var stream = File.OpenRead(path);
-
-            foreach (PuntoRecorrido prx in ReadFile(stream))
+            using (var stream = File.OpenRead(path))
             {
-                yield return prx;
+                foreach (PuntoRecorrido prx in ReadFile(stream))
+                {
+                    yield return prx;
+                }
             }
         }
 

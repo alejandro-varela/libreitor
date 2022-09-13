@@ -38,7 +38,7 @@ namespace Comun
             var json = JsonConvert.SerializeObject(obj, Formatting.Indented);
             json = json.Replace("\"", "\\\"");
 
-            var partes = json.Split("\r\n");
+            var partes = json.Split(new string[] { "\r\n" }, StringSplitOptions.None);
 
             using (var fs = System.IO.File.Open(fileName, System.IO.FileMode.OpenOrCreate))
             {

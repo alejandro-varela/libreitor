@@ -51,9 +51,8 @@ namespace Comun
             return dist <= radioEnMetros;
         }
 
-        
         ///////////////////////////////////////////////////
-        
+
         public override bool Equals(object obj)
         {
             return Equals(obj as Punto);
@@ -67,9 +66,18 @@ namespace Comun
                    Lng == other.Lng;
         }
 
+        //public override int GetHashCode()
+        //{
+        //    return HashCode.Combine(Alt, Lat, Lng);
+        //}
+
         public override int GetHashCode()
         {
-            return HashCode.Combine(Alt, Lat, Lng);
+            int hashCode = 1682159762;
+            hashCode = hashCode * -1521134295 + Alt.GetHashCode();
+            hashCode = hashCode * -1521134295 + Lat.GetHashCode();
+            hashCode = hashCode * -1521134295 + Lng.GetHashCode();
+            return hashCode;
         }
 
         public static bool operator ==(Punto left, Punto right)
@@ -81,5 +89,6 @@ namespace Comun
         {
             return !(left == right);
         }
+
     }
 }

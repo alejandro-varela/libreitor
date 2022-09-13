@@ -47,7 +47,7 @@ namespace VisorManual
 
             foreach (var recorrido in recorridosTeoricos)
             {
-                var color = recorrido.Linea == 159 ? Color.Orange : Color.FromArgb(30, Color.DarkGreen) ;
+                var color = recorrido.Linea == 159 ? Color.Orange : Color.DarkGreen /*Color.FromArgb(30, Color.DarkGreen)*/ ;
                 pintor.PintarPuntos(recorrido.Puntos, color, size: 3);
             }
 

@@ -2,7 +2,7 @@
   "profiles": {
     "QPApp": {
       "commandName": "Project",
-      "commandLineArgs": "idReporte=driveup desde=2022-07-20 lineas=159,163 password=Bondi.amarillo ficha=4221"
+      "commandLineArgs": "idReporte=picobus desde=2022-08-16 lineas=165,166,167 password=Bondi.amarillo modo=picobus tipoPuntas=PuntaLinea2 radioPuntas=200"
     }
   }
 }

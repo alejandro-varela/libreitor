@@ -56,7 +56,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QPApp", "QPApp\QPApp.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QPACreator", "QPACreator\QPACreator.csproj", "{E48D4999-2F32-46A5-BA2B-47DD6C8080F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisorManual", "VisorManual\VisorManual.csproj", "{D384817A-81C6-4DBC-A533-5CB0EF03EB08}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VisorManual", "VisorManual\VisorManual.csproj", "{D384817A-81C6-4DBC-A533-5CB0EF03EB08}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

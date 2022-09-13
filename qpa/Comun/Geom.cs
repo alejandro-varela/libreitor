@@ -13,10 +13,13 @@ namespace Comun
             Topes2D             topes2D
         )
         { 
-            return puntos
-                .Select     (puntoReco => Casillero.Create(topes2D, puntoReco, granularidad))
-                .ToHashSet  ()
-            ;
+            var casilleros = puntos.Select(puntoReco => Casillero.Create(topes2D, puntoReco, granularidad));
+            var ret = new HashSet<Casillero>();
+
+            foreach (var cx in casilleros)
+                ret.Add(cx);
+
+            return ret;
         }
 
         public static bool PuntoEnRecorrido(

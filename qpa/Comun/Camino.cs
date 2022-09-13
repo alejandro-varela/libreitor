@@ -26,7 +26,7 @@ namespace Comun
                         });
                     }
                     
-                    ret[^1].Nodos.Add(nodox);
+                    ret[ret.Count-1].Nodos.Add(nodox);
                 }
 
                 return QuitarRuido( ret );

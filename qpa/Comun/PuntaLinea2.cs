@@ -17,7 +17,7 @@ namespace Comun
         public double AnchoIndeterminacion { get; set; } = 150.0;
         public object RadioAgrupacion { get; internal set; }
 
-        public IPuntaLinea.InfoPunto GetInformacionPunto(Punto px)
+        public InfoPunto GetInformacionPunto(Punto px)
         {
             /*             
               38_070_230 ¡38M veces!
@@ -49,15 +49,15 @@ namespace Comun
 
             if (minDist <= Radio)
             {
-                return new IPuntaLinea.InfoPunto { DistanciaAlCentroide = minDist, Estado = EstadoPuntoEnPunta.Punta };
+                return new InfoPunto { DistanciaAlCentroide = minDist, Estado = EstadoPuntoEnPunta.Punta };
             }
             else if (minDist <= Radio + AnchoIndeterminacion)
             {
-                return new IPuntaLinea.InfoPunto { DistanciaAlCentroide = minDist, Estado = EstadoPuntoEnPunta.Indet };
+                return new InfoPunto { DistanciaAlCentroide = minDist, Estado = EstadoPuntoEnPunta.Indet };
             }
             else
             {
-                return new IPuntaLinea.InfoPunto { DistanciaAlCentroide = minDist, Estado = EstadoPuntoEnPunta.Normal };
+                return new InfoPunto { DistanciaAlCentroide = minDist, Estado = EstadoPuntoEnPunta.Normal };
             }
         }
 

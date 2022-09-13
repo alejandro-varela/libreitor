@@ -53,12 +53,19 @@ namespace QPACreator
         public string RenderAllText(IEnumerable<CSVItem> items, CSVFormatter formatter)
         {
             StringBuilder sbReturn = new StringBuilder();
-            foreach (var @string in Render(items, formatter))
+            foreach (var stringX in RenderAllLines(items, formatter))
             {
-                sbReturn.Append(@string);
-                sbReturn.Append(formatter.NewLine);
+                sbReturn.AppendLine(stringX);
             }
             return sbReturn.ToString();
+        }
+
+        public IEnumerable<string> RenderAllLines(IEnumerable<CSVItem> items, CSVFormatter formatter)
+        {
+            foreach (var stringX in Render(items, formatter))
+            {
+                yield return $"{stringX}{formatter.NewLine}";
+            }
         }
 
         public IEnumerable<string> Render(IEnumerable<CSVItem> items, CSVFormatter formatter)

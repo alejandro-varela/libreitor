@@ -46,6 +46,7 @@ namespace QPACreator
             List<int> lineas,
             Type tipoPuntaLinea,
             Type tipoCreadorPartesHistoricas,
+            List<RecorridoLinBan> recorridosTeoricos,
             Dictionary<TIdent, List<PuntoHistorico>> puntosXIdentificador,
             ConstructorFichasDesdeResultados<TIdent> constructorFichasDesdeResultados,
             int granularidadMts = 20,
@@ -67,6 +68,7 @@ namespace QPACreator
                 desde,
                 hasta,
                 lineas,
+                recorridosTeoricos,
                 infohXIdentificador,
                 constructorFichasDesdeResultados,
                 tipoPuntaLinea,
@@ -105,6 +107,7 @@ namespace QPACreator
             DateTime desde,
             DateTime hasta,
             List<int> lineas,
+            List<RecorridoLinBan> recorridosTeoricos,
             Dictionary<TIdent, InformacionHistorica> infohXIdentificador,
             ConstructorFichasDesdeResultados<TIdent> constructorFichas,
             Type tipoPuntaLinea,
@@ -150,7 +153,7 @@ namespace QPACreator
                 desde,
                 hasta,
                 lineasPosibles: lineas.ToArray(),
-                proveedorRecorridosTeoricos: new ProveedorVersionesTecnobus(dirRepos: DameMockRepos()), // los recorridos teóricos
+                recorridosTeoricos,
                 infohXIdentificador,
                 creadorPuntasNombradas,
                 granularidadMts
@@ -179,7 +182,7 @@ namespace QPACreator
             DateTime desde,
             DateTime hasta,
             int[] lineasPosibles,
-            IQPAProveedorRecorridosTeoricos proveedorRecorridosTeoricos,
+            List<RecorridoLinBan> recorridosTeoricos,
             Dictionary<TIdent, InformacionHistorica> infohXIdentificador,
             Func<List<RecorridoLinBan>, List<IPuntaLinea>> creadorPuntasNombradas,
             int granularidadMts = 20
@@ -195,15 +198,6 @@ namespace QPACreator
             
             Avisar("Procesando recorridos teóricos");
             
-            var recorridosTeoricos = proveedorRecorridosTeoricos.Get(new QPAProvRecoParams()
-            {
-                LineasPosibles = lineasPosibles,
-                FechaVigencia = desde
-            })
-                .Select(reco => SanitizarRecorrido(reco, granularidadMts))
-                .ToList()
-            ;
-
             // puntos aplanados (todos)
             var todosLosPuntosDeLosRecorridos = recorridosTeoricos.SelectMany(
                 (reco) => reco.Puntos,
@@ -601,17 +595,6 @@ namespace QPACreator
             };
         }
 
-
-        RecorridoLinBan SanitizarRecorrido(RecorridoLinBan reco, int granularidad)
-        {
-            return new RecorridoLinBan
-            {
-                Bandera = reco.Bandera,
-                Linea = reco.Linea,
-                Puntos = reco.Puntos.HacerGranular(granularidad),
-            };
-        }
-
         List<QPAResult<TIdent>> ProcesarTodo<TIdent>(
             List<RecorridoLinBan> recorridosTeoricos,
             Topes2D topes2D,
@@ -699,10 +682,9 @@ namespace QPACreator
             };
         }
 
-        private string[] DameMockRepos()
-        {
-            return new[] { Configu.Repos["MockRepo1"], Configu.Repos["MockRepo2"] };
-        }
-
+        //private string[] DameMockRepos()
+        //{
+        //    return new[] { Configu.Repos["MockRepo1"], Configu.Repos["MockRepo2"] };
+        //}
     }
 }

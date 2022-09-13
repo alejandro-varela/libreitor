@@ -13,21 +13,21 @@ namespace Comun
 
         public double AnchoIndeterminacion { get; set; } = 150.0;
 
-        public IPuntaLinea.InfoPunto GetInformacionPunto(Punto px)
+        public InfoPunto GetInformacionPunto(Punto px)
         {
             var dist = Haversine.GetDist(px, Centroide);
 
             if (dist <= Radio)
             {
-                return new IPuntaLinea.InfoPunto { DistanciaAlCentroide = dist, Estado = EstadoPuntoEnPunta.Punta };
+                return new InfoPunto { DistanciaAlCentroide = dist, Estado = EstadoPuntoEnPunta.Punta };
             }
             else if (dist <= Radio + AnchoIndeterminacion)
             {
-                return new IPuntaLinea.InfoPunto { DistanciaAlCentroide = dist, Estado = EstadoPuntoEnPunta.Indet };
+                return new InfoPunto { DistanciaAlCentroide = dist, Estado = EstadoPuntoEnPunta.Indet };
             }
             else
             {
-                return new IPuntaLinea.InfoPunto { DistanciaAlCentroide = dist, Estado = EstadoPuntoEnPunta.Normal };
+                return new InfoPunto { DistanciaAlCentroide = dist, Estado = EstadoPuntoEnPunta.Normal };
             }
         }
 

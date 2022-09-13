@@ -18,7 +18,7 @@ namespace QPACreator
         // para los boletos
         public string ConnectionStringVentasSUBE { get; set; }
 
-        public Dictionary<string, string> Repos { get; set; }
+        //public Dictionary<string, string> Repos { get; set; }
 
         //public static IConfigurationRoot GetIConfigurationRoot(string outputPath)
         //{

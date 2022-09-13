@@ -24,7 +24,7 @@ namespace Comun
             foreach (string line in File.ReadLines("2021-09-02.csv"))
             {
                 // parto la linea
-                string[] lineParts = line.Split(config.Separator);
+                string[] lineParts = line.Split(new string[] { config.Separator }, StringSplitOptions.None);
 
                 // leo ficha
                 int fichaX = int.Parse(lineParts[config.FichaPos]);

@@ -7,6 +7,11 @@ namespace Comun
     {
         public DateTime Fecha { get; set; }
 
+        public override string ToString()
+        {
+            return $"{base.ToString()} Fecha={Fecha}";
+        }
+
         public override bool Equals(object obj)
         {
             return Equals(obj as PuntoHistorico);
@@ -22,14 +27,20 @@ namespace Comun
                    Fecha == other.Fecha;
         }
 
+        //public override int GetHashCode()
+        //{
+        //    return HashCode.Combine(base.GetHashCode(), Alt, Lat, Lng, Fecha);
+        //}
+
         public override int GetHashCode()
         {
-            return HashCode.Combine(base.GetHashCode(), Alt, Lat, Lng, Fecha);
-        }
-
-        public override string ToString()
-        {
-            return $"{base.ToString()} Fecha={Fecha}";
+            int hashCode = 621656858;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + Alt.GetHashCode();
+            hashCode = hashCode * -1521134295 + Lat.GetHashCode();
+            hashCode = hashCode * -1521134295 + Lng.GetHashCode();
+            hashCode = hashCode * -1521134295 + Fecha.GetHashCode();
+            return hashCode;
         }
 
         public static bool operator ==(PuntoHistorico left, PuntoHistorico right)

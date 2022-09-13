@@ -19,8 +19,6 @@ namespace Comun
             return $"horiz_{IndexHorizontal:00000}_vert_{IndexVertical:00000}";
         }
 
-        
-
         public static Casillero Create(Topes2D topes2D, Punto puntoide, int granularidad)
         {
             // se puede precalcular
@@ -59,23 +57,6 @@ namespace Comun
             };
         }
 
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as Casillero);
-        }
-
-        public bool Equals(Casillero other)
-        {
-            return other != null &&
-                   IndexHorizontal == other.IndexHorizontal &&
-                   IndexVertical == other.IndexVertical;
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(IndexHorizontal, IndexVertical);
-        }
-
         public static HashSet<Casillero> CreateHashSet(Topes2D topes2D, List<Punto> puntos, int granularidad)
         {
             var ret = new HashSet<Casillero>();
@@ -85,16 +66,6 @@ namespace Comun
                 ret.Add(casillero);
             }
             return ret;
-        }
-
-        public static bool operator ==(Casillero left, Casillero right)
-        {
-            return EqualityComparer<Casillero>.Default.Equals(left, right);
-        }
-
-        public static bool operator !=(Casillero left, Casillero right)
-        {
-            return !(left == right);
         }
 
         public static bool SonCasillerosHermanos(Casillero cas1, Casillero cas2)
@@ -169,6 +140,63 @@ namespace Comun
             }
 
             return false;
+        }
+
+        //public override bool Equals(object obj)
+        //{
+        //    return Equals(obj as Casillero);
+        //}
+
+        //public bool Equals(Casillero other)
+        //{
+        //    return other != null &&
+        //           IndexHorizontal == other.IndexHorizontal &&
+        //           IndexVertical == other.IndexVertical;
+        //}
+
+        //public override int GetHashCode()
+        //{
+        //    return HashCode.Combine(IndexHorizontal, IndexVertical);
+        //}
+
+        //public static bool operator ==(Casillero left, Casillero right)
+        //{
+        //    return EqualityComparer<Casillero>.Default.Equals(left, right);
+        //}
+
+        //public static bool operator !=(Casillero left, Casillero right)
+        //{
+        //    return !(left == right);
+        //}
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as Casillero);
+        }
+
+        public bool Equals(Casillero other)
+        {
+            return other != null &&
+                   IndexHorizontal == other.IndexHorizontal &&
+                   IndexVertical == other.IndexVertical;
+        }
+
+        public override int GetHashCode()
+        {
+            int hashCode = 1738482504;
+            hashCode = hashCode * -1521134295 + IndexHorizontal.GetHashCode();
+            hashCode = hashCode * -1521134295 + IndexVertical.GetHashCode();
+            return hashCode;
+        }
+
+        public static bool operator ==(Casillero left, Casillero right)
+        {
+            return EqualityComparer<Casillero>.Default.Equals(left, right);
+        }
+
+        public static bool operator !=(Casillero left, Casillero right)
+        {
+            return !(left == right);
         }
     }
 }
