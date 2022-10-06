@@ -52,14 +52,19 @@ namespace QPApp
             DateTime desde = DateTime.Parse(sDesde);
             DateTime hasta = desde.AddDays(1);
             
-            // líneas
+            // líneas y sus representaciones
             string sLineas = ArgsHelper.SafeGetArgVal(misArgs, "lineas", string.Empty);
-            List<int> lineas = sLineas
-                .Split(',')
-                .Where(sLinX => EsNumeroEntero(sLinX))
-                .Select(sLinX => int.Parse(sLinX.Trim()))
-                .ToList()
+            List<int> lineasComoVienen = sLineas
+                .Split  (',')
+                .Where  (sLinX => EsNumeroEntero(sLinX))
+                .Select (sLinX => int.Parse(sLinX.Trim()))
+                .ToList ()
             ;
+            List<int> lineasOrdenadas = lineasComoVienen
+                .OrderBy(n => n)
+                .ToList ()
+            ;
+            string sLineasOrdenadas = string.Join('_', lineasOrdenadas.ToArray());
 
             // ficha en especial
             string sFicha = ArgsHelper.SafeGetArgVal(misArgs, "ficha", "0");
@@ -97,11 +102,11 @@ namespace QPApp
                 new string[] { "./Datos" }
             );
 
-            Filtro filtro = Filtro.CreateFrom("./Filtros", lineas);
+            Filtro filtro = Filtro.CreateFrom("./Filtros", lineasOrdenadas);
             
             var recorridosTeoricos = proveedorRecorridosTeoricos.Get(new QPAProvRecoParams()
             {
-                LineasPosibles = lineas.ToArray(),
+                LineasPosibles = lineasOrdenadas.ToArray(),
                 FechaVigencia  = desde
             })
                 .Where (reco => filtro.EsRecorridoPermitido(reco.Linea, reco.Bandera))
@@ -172,7 +177,7 @@ namespace QPApp
                 idReporte,
                 desde,
                 hasta,
-                lineas,
+                lineasOrdenadas,
                 tipoPuntaLinea,
                 tipoCreadorPartesHistoricas,
                 recorridosTeoricos,
@@ -228,7 +233,7 @@ namespace QPApp
                 contenido = lineasContenidoFiltrado;
             }
 
-            var nombreArchivoReporte = $"Reporte_{idReporte}_Desde_{desde:yyyyMMdd}_Hasta_{hasta:yyyyMMdd}";
+            var nombreArchivoReporte = $"Reporte_{idReporte}_Desde_{desde:yyyyMMdd}_Hasta_{hasta:yyyyMMdd}_Lineas_{sLineasOrdenadas}";
             var pathArchivoReporte = Path.Combine(dirReportes, nombreArchivoReporte);
 
             File.WriteAllText($"{pathArchivoReporte}.csv", string.Join(string.Empty, contenido));
