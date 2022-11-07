@@ -1,4 +1,4 @@
-﻿using ComunApis;
+﻿using ComunApiCoches;
 using ComunDriveUp;
 using ComunStreams;
 using Microsoft.AspNetCore.Http;
@@ -34,19 +34,21 @@ namespace ApiCochesDriveUp.Controllers
         [HttpGet]
         public IActionResult Get(string formato, string diasMenos, string filtro)
         {
+            var validador = new ValidadorComun();
+
             // formato => formatoSanitizado
-            var (formatoOk, formatoSanitizado) = ValidadorComun.ProcesarFormato(formato);
+            var (formatoOk, formatoSanitizado) = validador.ProcesarFormato(formato);
 
             if (!formatoOk)
             {
                 return BadRequest(
-                    MensajesDeErrorHelper.CrearMensajeError($"El parámetro \"formato\" debe ser alguno de estos valores: { ValidadorComun.GetFormatosPosibles() }") +
+                    MensajesDeErrorHelper.CrearMensajeError($"El parámetro \"formato\" debe ser alguno de estos valores: { validador.FormatosPosibles }") +
                     DameAyuda()
                 );
             }
 
             // diasMenos => nDiasMenos
-            var (diasMenosOk, nDiasMenos) = ValidadorComun.ProcesarDiasMenos(diasMenos);
+            var (diasMenosOk, nDiasMenos) = validador.ProcesarDiasMenos(diasMenos);
 
             if (!diasMenosOk)
             {

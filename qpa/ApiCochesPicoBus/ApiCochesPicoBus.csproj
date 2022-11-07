@@ -9,8 +9,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ComunApis\ComunApis.csproj" />
+    <ProjectReference Include="..\ComunApiCoches\ComunApiCoches.csproj" />
     <ProjectReference Include="..\ComunStreams\ComunStreams.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
 
 

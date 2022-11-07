@@ -1,4 +1,4 @@
-﻿using ComunApis;
+﻿using ComunApiCoches;
 using ComunStreams;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -31,34 +31,23 @@ namespace ApiCochesPicoBus.Controllers
         [HttpGet]
         public IActionResult Get(string formato, string diasMenos, string filtro)
         {
-            // verifico que exista el formato
-            var formatos = new List<string>()
-            {
-                "json",
-                "csv",
-                "csvnt",
-            };
+            var validador = new ValidadorComun();
 
-            // si no viene el formato asumo csv
-            if (string.IsNullOrEmpty(formato))
-            {
-                formato = "csv";
-            }
+            // formato => formatoSanitizado
+            var (formatoOk, formatoSanitizado) = validador.ProcesarFormato(formato);
 
-            // formateo el formato :P
-            formato = formato.Trim().ToLower();
-
-            // valido que exista el formato
-            if (!formatos.Contains(formato))
+            if (!formatoOk)
             {
                 return BadRequest(
-                    MensajesDeErrorHelper.CrearMensajeError($"El parámetro \"formato\" debe ser alguno de estos: {formatos}") +
+                    MensajesDeErrorHelper.CrearMensajeError($"El parámetro \"formato\" debe ser alguno de estos valores: { validador.FormatosPosibles }") +
                     DameAyuda()
                 );
             }
 
-            // valido que exista la cantidad de días menos
-            if (string.IsNullOrEmpty(diasMenos) || !StringEsNumeroEntero(diasMenos))
+            // diasMenos => nDiasMenos
+            var (diasMenosOk, nDiasMenos) = validador.ProcesarDiasMenos(diasMenos);
+
+            if (!diasMenosOk)
             {
                 return BadRequest(
                     MensajesDeErrorHelper.CrearMensajeError($"El parámetro diasMenos debe ser un número entero positivo pero era: {diasMenos}") +
@@ -66,15 +55,14 @@ namespace ApiCochesPicoBus.Controllers
                 );
             }
 
+            // calculo fechas desde hasta según los días menos
+            DateTime fechaDesde = DateTime.Now.AddDays(-nDiasMenos).Date;
+            DateTime fechaHasta = fechaDesde.AddDays(1);
+
             ///////////////////////////////////////////////////////////////////
             // trabajo principal
 
-            // calculo los días
-            int cantDiasMenos = int.Parse(diasMenos);
-            DateTime fechaDesde = DateTime.Now.AddDays(-cantDiasMenos).Date;
-            DateTime fechaHasta = fechaDesde.AddDays(1);
-
-            if (formato == "csv" || formato == "csvnt")
+            if (formatoSanitizado == "csv" || formatoSanitizado == "csvnt")
             {
                 // tomo los paths de los archivos según desde hasta
                 var paths = FilesHelper
@@ -89,7 +77,7 @@ namespace ApiCochesPicoBus.Controllers
                 Func<string, string> transformer = (s) =>
                 {
                     string ret = string.Empty;
-                    if (primeraVez && formato == "csv")
+                    if (primeraVez && formatoSanitizado == "csv")
                     {
                         // poner título acá
                         ret += acomodador.GetTitulo().Trim();

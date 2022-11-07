@@ -1,4 +1,4 @@
-﻿namespace ComunApis
+﻿namespace ComunApiCoches
 {
     public class MensajesDeErrorHelper
     {

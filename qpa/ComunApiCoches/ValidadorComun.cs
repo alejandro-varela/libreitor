@@ -3,28 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ApiCochesDriveUp.Controllers
+namespace ComunApiCoches
 {
     public class ValidadorComun
     {
+        List<string> _formatosPosibles = new List<string>() { "json", "csv", "csvnt" };
+
+        public List<string> FormatosPosibles
+        {
+            get { return _formatosPosibles; }
+            set { _formatosPosibles = value; }
+        }
+
         /////////////////////////////////////////////////////////////
         // Formato
 
-        public static (bool, string) ProcesarFormato(string formato)
+        public (bool, string) ProcesarFormato(string formato)
         {
             if (string.IsNullOrEmpty(formato))
             {
                 return (true, "csv");
             }
 
-            var formatosPosibles = GetFormatosPosibles();
-
             var formatoSanitizado = (formato ?? "")
                 .Trim()
                 .ToLower()
             ;
 
-            if (!formatosPosibles.Contains(formatoSanitizado))
+            if (!FormatosPosibles.Contains(formatoSanitizado))
             {
                 return (false, formato);
             }
@@ -35,7 +41,7 @@ namespace ApiCochesDriveUp.Controllers
         /////////////////////////////////////////////////////////////
         // DiasMenos
 
-        public static (bool, int) ProcesarDiasMenos(string diasMenos)
+        public (bool, int) ProcesarDiasMenos(string diasMenos)
         {
             var diasMenosSanitizado = (diasMenos ?? "")
                 .Trim()
@@ -54,16 +60,6 @@ namespace ApiCochesDriveUp.Controllers
 
         /////////////////////////////////////////////////////////////
         // Helpers
-
-        public static List<string> GetFormatosPosibles()
-        {
-            return new List<string>()
-            {
-                "json",
-                "csv",
-                "csvnt",
-            };
-        }
 
         public static bool CharEsDigito(char c)
         {

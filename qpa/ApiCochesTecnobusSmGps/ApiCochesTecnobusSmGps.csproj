@@ -5,11 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\ComunApis\ComunApis.csproj" />
+    <ProjectReference Include="..\ComunApiCoches\ComunApiCoches.csproj" />
     <ProjectReference Include="..\ComunStreams\ComunStreams.csproj" />
   </ItemGroup>
 
