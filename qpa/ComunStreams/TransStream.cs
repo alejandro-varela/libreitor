@@ -41,7 +41,7 @@ namespace ComunStreams
                         var sTransLine = _transformer(sLine);
                         if (!string.IsNullOrEmpty(sTransLine))
                         {
-                            _sobra.AddRange(Encoding.UTF8.GetBytes(_transformer(sLine)));
+                            _sobra.AddRange(Encoding.UTF8.GetBytes(sTransLine));
                             _sobra.AddRange(Encoding.UTF8.GetBytes(NewLine));
                         }
                     }
