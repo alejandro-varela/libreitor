@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -56,7 +57,10 @@ namespace ApiCochesTecnobusSmGps.Controllers
             // tengo que leer de tres lugares diferentes en vez de uno...
             // tengo que sumar los tres archivos y ordenarlos...
 
-            return Ok();
+            var pepedir = _apiOptions.BaseDirs[0];
+            var files = Directory.GetFiles(pepedir);
+
+            return Ok(files);
         }
 
         string DameAyuda()

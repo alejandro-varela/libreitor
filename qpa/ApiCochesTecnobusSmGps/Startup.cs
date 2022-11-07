@@ -26,6 +26,10 @@ namespace ApiCochesTecnobusSmGps
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            // configuración
+            ApiOptions opts = Configuration.GetSection("Configu").Get<ApiOptions>();
+            services.AddSingleton(opts);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

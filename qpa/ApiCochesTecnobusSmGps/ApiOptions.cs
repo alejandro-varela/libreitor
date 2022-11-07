@@ -1,7 +1,9 @@
-﻿namespace ApiCochesTecnobusSmGps
+﻿using System.Collections.Generic;
+
+namespace ApiCochesTecnobusSmGps
 {
     public class ApiOptions
     {
-        public string BaseDir { get; set; }
+        public List<string> BaseDirs { get; set; }
     }
 }
