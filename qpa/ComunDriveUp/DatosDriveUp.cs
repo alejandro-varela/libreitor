@@ -32,7 +32,7 @@ namespace ComunDriveUp
 		{
 			get
 			{
-				static bool IsNumeric(char c) => c >= '0' && c <= '9';
+				bool IsNumeric(char c) => c >= '0' && c <= '9';
 
 				if (Plate != null &&
 					Plate.Length >= 5 &&
