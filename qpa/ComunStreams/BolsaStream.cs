@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace ApiCochesDriveUp
+namespace ComunStreams
 {
     public class BolsaStream : Stream
     {
@@ -63,13 +63,16 @@ namespace ApiCochesDriveUp
                     return false;
                 }
 
-                using (FileStream fs = File.OpenRead(_archivos[_archivoIndex]))
+                if (System.IO.File.Exists(_archivos[_archivoIndex]))
                 {
-                    // adelanto el puntero del stream hasta lo que ya leí...
-                    fs.Seek(_archivoPtr, SeekOrigin.Begin);
+                    using (FileStream fs = File.OpenRead(_archivos[_archivoIndex]))
+                    {
+                        // adelanto el puntero del stream hasta lo que ya leí...
+                        fs.Seek(_archivoPtr, SeekOrigin.Begin);
 
-                    // trato de leer algo...
-                    _mainBuffLen = fs.Read(_mainBuff, 0, MAIN_BUFF_SIZE);
+                        // trato de leer algo...
+                        _mainBuffLen = fs.Read(_mainBuff, 0, MAIN_BUFF_SIZE);
+                    }
                 }
 
                 if (_mainBuffLen <= 0)

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace ApiCochesDriveUp
+namespace ComunStreams
 {
     public class TransStream : Stream
     {
-        StreamReader _streamReader;
-        Func<string, string> _transformer;
-        List<byte> _sobra = new List<byte>(128 * 1024);
+        StreamReader        _streamReader;
+        Func<string, string>_transformer;
+        List<byte>          _sobra = new List<byte>(128 * 1024);
 
         public string NewLine { get; set; } = "\n";
 
@@ -38,8 +38,12 @@ namespace ApiCochesDriveUp
                     }
                     else
                     {
-                        _sobra.AddRange(Encoding.UTF8.GetBytes(_transformer(sLine)));
-                        _sobra.AddRange(Encoding.UTF8.GetBytes(NewLine));
+                        var sTransLine = _transformer(sLine);
+                        if (!string.IsNullOrEmpty(sTransLine))
+                        {
+                            _sobra.AddRange(Encoding.UTF8.GetBytes(_transformer(sLine)));
+                            _sobra.AddRange(Encoding.UTF8.GetBytes(NewLine));
+                        }
                     }
                 }
             }

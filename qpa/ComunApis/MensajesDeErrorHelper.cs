@@ -1,4 +1,4 @@
-﻿namespace ApiCochesDriveUp
+﻿namespace ComunApis
 {
     public class MensajesDeErrorHelper
     {
