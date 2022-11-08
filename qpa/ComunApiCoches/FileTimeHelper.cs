@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace ApiCochesPicoBus
+namespace ComunApiCoches
 {
     public class FileTimeHelper
     {

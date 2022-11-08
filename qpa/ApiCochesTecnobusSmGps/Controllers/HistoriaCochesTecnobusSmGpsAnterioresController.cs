@@ -58,7 +58,7 @@ namespace ApiCochesTecnobusSmGps.Controllers
             // tengo que sumar los tres archivos y ordenarlos...
 
             var pepedir = _apiOptions.BaseDirs[0];
-            var files = Directory.GetFiles(pepedir);
+            var files = Directory.GetDirectories(pepedir);
 
             return Ok(files);
         }

@@ -1,4 +1,5 @@
-﻿using ComunDriveUp;
+﻿using ComunApiCoches;
+using ComunDriveUp;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -6,23 +7,8 @@ using System.IO;
 
 namespace ApiCochesDriveUp
 {
-    public class FilesHelper
+    public class FilesHelperForDriveup
     {
-        public static IEnumerable<string> GetPaths(string baseDir, DateTime desde, DateTime hasta)
-        {
-            int contadorHoras = 0;
-            while (true)
-            {
-                DateTime fechaActual = desde.AddHours(contadorHoras);
-                if (fechaActual >= hasta)
-                {
-                    break;
-                }
-                yield return FileTimeHelper.CreateFileNameByHour(baseDir, fechaActual);
-                contadorHoras++;
-            }
-        }
-
         public static IEnumerable<DatosDriveUp> GetDatos(string baseDir, DateTime desde, DateTime hasta)
         {
             int contadorHoras = 0;

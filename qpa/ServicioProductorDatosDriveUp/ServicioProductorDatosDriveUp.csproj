@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ComunApiCoches\ComunApiCoches.csproj" />
     <ProjectReference Include="..\ComunDriveUp\ComunDriveUp.csproj" />
   </ItemGroup>
 </Project>
