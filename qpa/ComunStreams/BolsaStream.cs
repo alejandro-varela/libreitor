@@ -112,7 +112,25 @@ namespace ComunStreams
         {
             if (!HayAlgoEnElMainBuffer())
             {
-                if (!RellenarElMainBuffer())
+                if (RellenarElMainBuffer())
+                {
+                    // BOM FEBBBF (UTF8)
+                    if (_mainBuff[0] == 0xEF &&
+                        _mainBuff[1] == 0xBB &&
+                        _mainBuff[2] == 0xBF)
+                    {
+                        _mainBuffPtr += 3;
+                    }
+                    
+                    // BOM EFFF
+                    if (
+                        _mainBuff[0] == 0xFE &&
+                        _mainBuff[1] == 0xFF)
+                    {
+                        _mainBuffPtr += 2;
+                    }
+                }
+                else
                 {
                     return 0;
                 }
