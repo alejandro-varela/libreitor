@@ -54,13 +54,35 @@ namespace ApiCochesTecnobusSmGps.Controllers
             DateTime fechaDesde = DateTime.Now.AddDays(-nDiasMenos).Date;
             DateTime fechaHasta = fechaDesde.AddDays(1);
 
-            // tengo que leer de tres lugares diferentes en vez de uno...
-            // tengo que sumar los tres archivos y ordenarlos...
+            // *** tengo que leer de tres lugares diferentes en vez de uno...
+            // *** tengo que sumar los tres archivos y ordenarlos...
 
-            var pepedir = _apiOptions.BaseDirs[0];
-            var files = Directory.GetDirectories(pepedir);
+            var archivosPorFecha = new Dictionary<DateTime, List<string>>();
+            foreach (var baseDirX in _apiOptions.BaseDirs)
+            {
+                var files = FilesHelper.GetPaths(baseDirX, fechaDesde, fechaHasta);
 
-            return Ok(files);
+                foreach (var fileX in files)
+                {
+                    var (okFileDateTime, fileDateTime) = FileTimeHelper.GetFileDameTime(fileX);
+
+                    if (okFileDateTime)
+                    {
+                        if (!archivosPorFecha.ContainsKey(fileDateTime))
+                        {
+                            archivosPorFecha.Add(
+                                fileDateTime, // la clave del diccionario es la fecha
+                                new List<string>() // el valor del diccionario es una lista de nombres de archivo
+                            );
+                        }
+
+                        // ingreso nombre de archivo con la fecha en la que pertenece
+                        archivosPorFecha[fileDateTime].Add(fileX);
+                    }
+                }
+            }
+
+            return Ok(archivosPorFecha.Keys);
         }
 
         string DameAyuda()
