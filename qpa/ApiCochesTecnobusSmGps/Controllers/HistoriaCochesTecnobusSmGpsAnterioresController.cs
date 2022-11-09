@@ -1,4 +1,5 @@
 ﻿using ComunApiCoches;
+using ComunStreams;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -82,7 +83,86 @@ namespace ApiCochesTecnobusSmGps.Controllers
                 }
             }
 
-            return Ok(archivosPorFecha.Keys);
+            // >>> básicamente tengo que mergear 3 bolsas
+            
+            // creo las bolsas
+            List<BolsaStream> bolsas = new List<BolsaStream>();
+            foreach (var baseDirX in _apiOptions.BaseDirs)
+            {
+                var files = FilesHelper.GetPaths(baseDirX, fechaDesde, fechaHasta);
+                var bolsa = new BolsaStream(files.ToList());
+                bolsas.Add(bolsa);
+            }
+
+            // creo los StreamReaders para cada bolsa
+            var textReaders = bolsas
+                .Select(b => (TextReader) new StreamReader(b))
+                .ToList()
+            ;
+
+            // creo el merge de bolsas
+            MergeTextReader<DateTime> mergeTextReader = new MergeTextReader<DateTime>(
+                textReaders,
+                SelectorOrdenDatetime
+            );
+
+            // aca debo convertir el MergeTextReader a un stream...
+            TransStream transStream = new TransStream(
+                mergeTextReader, 
+                FuncionTransformadora
+            );
+
+            //return Ok(archivosPorFecha.Keys);
+            var fName = $"tecnobussmg_{fechaDesde:yyyy_MM_dd}.csv";
+            return File(transStream, "text/csv", fName);
+        }
+
+        private string FuncionTransformadora(string sRenglon)
+        {
+            // 0000;1111111111111111;2222222222222222;3333333333333333333
+            // 4241;33.0381507873535;60.6574440002441;2022-11-09 05:00:03
+            var partes = sRenglon.Split(";", StringSplitOptions.RemoveEmptyEntries);
+
+            // ficha
+            var sFicha = partes[0];
+            
+            // lat
+            var sLat   = partes[1];
+            if (sLat == "0")
+            {
+                return null;
+            }
+            if (!sLat.StartsWith("-"))
+            {
+                sLat = "-" + sLat;
+            }
+            sLat = sLat.PadRight(9, '0').Substring(0, 8);
+
+            // lng
+            var sLng   = partes[2];
+            if (sLng == "0")
+            {
+                return null;
+            }
+            if (!sLng.StartsWith("-"))
+            {
+                sLng = "-" + sLng;
+            }
+            sLng = sLng.PadRight(9, '0').Substring(0, 8);
+
+            // date
+            var sDate  = partes[3];
+
+            var sNuevoRenglon = $"{sFicha};{sLat};{sLng};{sDate}";
+
+            return sNuevoRenglon;
+        }
+        private DateTime SelectorOrdenDatetime(string sRenglon)
+        {
+            // 0000;1111111111111111;2222222222222222;3333333333333333333
+            // 4241;33.0381507873535;60.6574440002441;2022-11-09 05:00:03
+            var partes = sRenglon.Split(";", StringSplitOptions.RemoveEmptyEntries);
+            return DateTime.Parse(partes[3]);
         }
 
         string DameAyuda()
