@@ -113,7 +113,7 @@ namespace ApiCochesTecnobusSmGps.Controllers
             );
 
             //return Ok(archivosPorFecha.Keys);
-            var fName = $"tecnobussmg_{fechaDesde:yyyy_MM_dd}.csv";
+            var fName = $"tecnobussmgps_{fechaDesde:yyyy_MM_dd}.csv";
             return File(transStream, "text/csv", fName);
         }
 
