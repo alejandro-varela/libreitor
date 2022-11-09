@@ -5,6 +5,13 @@ namespace ComunStreams
 {
     public class BolsaStream : Stream
     {
+        public enum BOMSkippingStrategy
+        { 
+            SkipAlways,
+            SkipMiddle,
+            DontSkip,
+        }
+
         List<string> _archivos;
         int _archivoIndex = 0;
         int _archivoPtr = 0;
@@ -13,6 +20,8 @@ namespace ComunStreams
         byte[] _mainBuff = new byte[MAIN_BUFF_SIZE];
         int _mainBuffLen = 0;
         int _mainBuffPtr = 0;
+
+        public BOMSkippingStrategy SkipBOM { get; set; } = BOMSkippingStrategy.SkipAlways;
 
         // main buffer
         // [0123456789] vacio sin iniciar, len = 0, ptr = 0
@@ -114,20 +123,24 @@ namespace ComunStreams
             {
                 if (RellenarElMainBuffer())
                 {
-                    // BOM FEBBBF (UTF8)
-                    if (_mainBuff[0] == 0xEF &&
-                        _mainBuff[1] == 0xBB &&
-                        _mainBuff[2] == 0xBF)
+                    if ((SkipBOM == BOMSkippingStrategy.SkipAlways) || 
+                        (SkipBOM == BOMSkippingStrategy.SkipMiddle && _archivoIndex > 0))
                     {
-                        _mainBuffPtr += 3;
-                    }
-                    
-                    // BOM EFFF
-                    if (
-                        _mainBuff[0] == 0xFE &&
-                        _mainBuff[1] == 0xFF)
-                    {
-                        _mainBuffPtr += 2;
+                        // BOM FEBBBF (UTF8)
+                        if (_mainBuff[0] == 0xEF &&
+                            _mainBuff[1] == 0xBB &&
+                            _mainBuff[2] == 0xBF)
+                        {
+                            _mainBuffPtr += 3;
+                        }
+
+                        // BOM EFFF
+                        if (
+                            _mainBuff[0] == 0xFE &&
+                            _mainBuff[1] == 0xFF)
+                        {
+                            _mainBuffPtr += 2;
+                        }
                     }
                 }
                 else
