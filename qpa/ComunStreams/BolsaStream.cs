@@ -126,7 +126,7 @@ namespace ComunStreams
                     if ((SkipBOM == BOMSkippingStrategy.SkipAlways) || 
                         (SkipBOM == BOMSkippingStrategy.SkipMiddle && _archivoIndex > 0))
                     {
-                        // BOM FEBBBF (UTF8)
+                        // BOM EFBBBF (UTF8)
                         if (_mainBuff[0] == 0xEF &&
                             _mainBuff[1] == 0xBB &&
                             _mainBuff[2] == 0xBF)
@@ -134,7 +134,7 @@ namespace ComunStreams
                             _mainBuffPtr += 3;
                         }
 
-                        // BOM EFFF
+                        // BOM FEFF
                         if (
                             _mainBuff[0] == 0xFE &&
                             _mainBuff[1] == 0xFF)
