@@ -7,7 +7,7 @@ namespace ComunStreams
 {
     public class TransStream : Stream
     {
-        StreamReader        _streamReader;
+        TextReader          _streamReader;
         Func<string, string>_transformer;
         List<byte>          _sobra = new List<byte>(128 * 1024);
 
@@ -18,7 +18,7 @@ namespace ComunStreams
             return s;
         }
 
-        public TransStream(StreamReader streamReader, Func<string, string> transformer)
+        public TransStream(TextReader streamReader, Func<string, string> transformer)
         {
             _streamReader = streamReader;
             _transformer = transformer ?? Identidad;

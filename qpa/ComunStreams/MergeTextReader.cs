@@ -6,7 +6,7 @@ using System.Text;
 
 namespace ComunStreams
 {
-    public class MergeTextReader : TextReader
+    public class MergeTextReader<MergeOrderType> : TextReader
     {
         class Lector
         { 
@@ -18,9 +18,12 @@ namespace ComunStreams
 
         List<Lector> _estructura = null;
 
-        public MergeTextReader(List<TextReader> textReaders)
+        Func<string, MergeOrderType> _selectorOrden = null;
+
+        public MergeTextReader(List<TextReader> textReaders, Func<string, MergeOrderType> selectorOrden)
         {
-            _estructura = textReaders
+            _selectorOrden = selectorOrden;
+            _estructura    = textReaders
                 .Select(tr => new Lector
                 {
                     TextReader  = tr,
@@ -43,7 +46,7 @@ namespace ComunStreams
 
             var lectorElegido = _estructura
                 .Where          (lectorX => lectorX.Valor != null)
-                .OrderBy        (lectorX => lectorX.Valor)
+                .OrderBy        (lectorX => _selectorOrden(lectorX.Valor))
                 .FirstOrDefault ()
             ;
 
