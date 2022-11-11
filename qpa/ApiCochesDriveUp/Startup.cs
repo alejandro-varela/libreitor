@@ -34,9 +34,9 @@ namespace ApiCochesDriveUp
             // swagger
             services.AddSwaggerGen();
 
-            // connection multiplexer de redis
-            var muxer = ConnectionMultiplexer.Connect("localhost");
-            services.AddSingleton<IConnectionMultiplexer>(muxer);
+            //// connection multiplexer de redis
+            //var muxer = ConnectionMultiplexer.Connect("localhost");
+            //services.AddSingleton<IConnectionMultiplexer>(muxer);
 
             // configuración
             ApiOptions opts = Configuration.GetSection("Configu").Get<ApiOptions>();
