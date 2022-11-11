@@ -8,6 +8,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security.Principal;
+using Microsoft.Win32.SafeHandles;
+using SimpleImpersonation;
 
 namespace ApiCochesTecnobusSmGps.Controllers
 {
@@ -58,63 +61,77 @@ namespace ApiCochesTecnobusSmGps.Controllers
             // *** tengo que leer de tres lugares diferentes en vez de uno...
             // *** tengo que sumar los tres archivos y ordenarlos...
 
-            var archivosPorFecha = new Dictionary<DateTime, List<string>>();
-            foreach (var baseDirX in _apiOptions.BaseDirs)
-            {
-                var files = FilesHelper.GetPaths(baseDirX, fechaDesde, fechaHasta);
+            //var archivosPorFecha = new Dictionary<DateTime, List<string>>();
+            //foreach (var baseDirX in _apiOptions.BaseDirs)
+            //{
+            //    var files = FilesHelper.GetPaths(baseDirX, fechaDesde, fechaHasta);
 
-                foreach (var fileX in files)
-                {
-                    var (okFileDateTime, fileDateTime) = FileTimeHelper.GetFileDameTime(fileX);
+            //    foreach (var fileX in files)
+            //    {
+            //        var (okFileDateTime, fileDateTime) = FileTimeHelper.GetFileDameTime(fileX);
 
-                    if (okFileDateTime)
-                    {
-                        if (!archivosPorFecha.ContainsKey(fileDateTime))
-                        {
-                            archivosPorFecha.Add(
-                                fileDateTime, // la clave del diccionario es la fecha
-                                new List<string>() // el valor del diccionario es una lista de nombres de archivo
-                            );
-                        }
+            //        if (okFileDateTime)
+            //        {
+            //            if (!archivosPorFecha.ContainsKey(fileDateTime))
+            //            {
+            //                archivosPorFecha.Add(
+            //                    fileDateTime, // la clave del diccionario es la fecha
+            //                    new List<string>() // el valor del diccionario es una lista de nombres de archivo
+            //                );
+            //            }
 
-                        // ingreso nombre de archivo con la fecha en la que pertenece
-                        archivosPorFecha[fileDateTime].Add(fileX);
-                    }
-                }
-            }
+            //            // ingreso nombre de archivo con la fecha en la que pertenece
+            //            archivosPorFecha[fileDateTime].Add(fileX);
+            //        }
+            //    }
+            //}
 
             // >>> básicamente tengo que mergear 3 bolsas
-            
-            // creo las bolsas
-            List<BolsaStream> bolsas = new List<BolsaStream>();
-            foreach (var baseDirX in _apiOptions.BaseDirs)
-            {
-                var files = FilesHelper.GetPaths(baseDirX, fechaDesde, fechaHasta);
-                var bolsa = new BolsaStream(files.ToList());
-                bolsas.Add(bolsa);
-            }
+            UserCredentials credentials = new UserCredentials(
+                    "rosariobus",
+                    "avarela",
+                    "P@zuz0&&"
+                );
+            // Interactive    anda 14.367 segs
+            // NewCredentials anda 14.211 segs
+            // Unlock         anda 17.314 segs
+            using SafeAccessTokenHandle userHandle = credentials.LogonUser(LogonType.Interactive);
 
-            // creo los StreamReaders para cada bolsa
-            var textReaders = bolsas
-                .Select(b => (TextReader) new StreamReader(b))
-                .ToList()
-            ;
+            return WindowsIdentity.RunImpersonated(userHandle, () => {
+                // creo las bolsas
+                List<BolsaStream> bolsas = new List<BolsaStream>();
+                foreach (var baseDirX in _apiOptions.BaseDirs)
+                {
+                    var files = FilesHelper
+                        .GetPaths(baseDirX, fechaDesde, fechaHasta)
+                        .Select  (fName => fName.Replace('/', '\\'))
+                        .ToList  ()
+                    ;
+                    var bolsa = new BolsaStream(files);
+                    bolsas.Add(bolsa);
+                }
 
-            // creo el merge de bolsas
-            MergeTextReader<DateTime> mergeTextReader = new MergeTextReader<DateTime>(
-                textReaders,
-                SelectorOrdenDatetime
-            );
+                // creo los StreamReaders para cada bolsa
+                var textReaders = bolsas
+                    .Select(b => (TextReader) new StreamReader(b))
+                    .ToList()
+                ;
 
-            // aca debo convertir el MergeTextReader a un stream...
-            TransStream transStream = new TransStream(
-                mergeTextReader, 
-                FuncionTransformadora
-            );
+                // creo el merge de bolsas
+                MergeTextReader<DateTime> mergeTextReader = new MergeTextReader<DateTime>(
+                    textReaders,
+                    SelectorOrdenDatetime
+                );
 
-            //return Ok(archivosPorFecha.Keys);
-            var fName = $"tecnobussmgps_{fechaDesde:yyyy_MM_dd}.csv";
-            return File(transStream, "text/csv", fName);
+                // aca debo convertir el MergeTextReader a un stream...
+                TransStream transStream = new TransStream(
+                    mergeTextReader, 
+                    FuncionTransformadora
+                );
+
+                var fName = $"tecnobussmgps_{fechaDesde:yyyy_MM_dd}.csv";
+                return File(transStream, "text/csv", fName);
+            });
         }
 
         private string FuncionTransformadora(string sRenglon)

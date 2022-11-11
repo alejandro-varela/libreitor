@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="SimpleImpersonation" Version="4.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ComunApiCoches\ComunApiCoches.csproj" />
     <ProjectReference Include="..\ComunStreams\ComunStreams.csproj" />
   </ItemGroup>
