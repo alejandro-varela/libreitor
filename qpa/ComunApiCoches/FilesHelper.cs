@@ -7,19 +7,43 @@ namespace ComunApiCoches
 {
     public class FilesHelper
     {
-        public static IEnumerable<string> GetPaths(string baseDir, DateTime desde, DateTime hasta)
+        public static IEnumerable<DateTime> GetDatetimes(DateTime desde, DateTime hasta)
         {
             int contadorHoras = 0;
+
             while (true)
             {
                 DateTime fechaActual = desde.AddHours(contadorHoras);
+
                 if (fechaActual >= hasta)
                 {
                     break;
                 }
-                yield return FileTimeHelper.CreateFileNameByHour(baseDir, fechaActual);
+
+                yield return fechaActual;
+
                 contadorHoras++;
             }
+        }
+
+        public static IEnumerable<string> GetPaths(string baseDir, DateTime desde, DateTime hasta)
+        {
+            foreach (var datetime in GetDatetimes(desde, hasta))
+            {
+                yield return FileTimeHelper.CreateFileNameByHour(baseDir, datetime);
+            }
+
+            //int contadorHoras = 0;
+            //while (true)
+            //{
+            //    DateTime fechaActual = desde.AddHours(contadorHoras);
+            //    if (fechaActual >= hasta)
+            //    {
+            //        break;
+            //    }
+            //    yield return FileTimeHelper.CreateFileNameByHour(baseDir, fechaActual);
+            //    contadorHoras++;
+            //}
         }
 
 
