@@ -14,8 +14,8 @@ namespace QPApp
 {
     public class Program
     {
-        static AutoResetEvent _areArchivoBajado = new AutoResetEvent(false); // es para señalizar que ya se bajó el archivo
-        static string _archivoBajando = string.Empty; // es para pasar la información del archivo que se está bajando
+        //static AutoResetEvent _areArchivoBajado = new AutoResetEvent(false); // es para señalizar que ya se bajó el archivo
+        //static string _archivoBajando = string.Empty; // es para pasar la información del archivo que se está bajando
 
         static async Task<int> Main(string[] args)
         {
@@ -143,6 +143,9 @@ namespace QPApp
                         break;
                     case "picobus":
                         remoteUri = new Uri("https://vm-coches:5003/HistoriaCochesPicoBusAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());
+                        break;
+                    case "tecnobussmgps":
+                        remoteUri = new Uri("https://vm-coches:5005/HistoriaCochesTecnobusSmGpsAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());
                         break;
                     default:
                         Console.WriteLine($"El modo '{modo}' no es válido");
