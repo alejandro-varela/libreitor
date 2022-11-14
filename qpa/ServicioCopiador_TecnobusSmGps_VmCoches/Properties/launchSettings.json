@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "ServicioCopiador_TecnobusSmGps_VmCoches": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
