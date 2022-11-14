@@ -1,3 +1,4 @@
+using ComunApiCoches;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -21,8 +22,14 @@ namespace ServicioCopiador_TecnobusSmGps_VmCoches
         {
             while (!stoppingToken.IsCancellationRequested)
             {
+                var (ok1, dtMasViejo) = FilesHelper.GetFechaArchivoMasViejo("\\\\sm-gps-1\\datosposicionamiento");
+                var (ok2, dtMasNuevo) = FilesHelper.GetFechaArchivoMasNuevo("\\\\sm-gps-1\\datosposicionamiento");
+
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(1000, stoppingToken);
+                _logger.LogInformation(dtMasViejo.ToString());
+                _logger.LogInformation(dtMasNuevo.ToString());
+
+                await Task.Delay(10000, stoppingToken);
             }
         }
     }
