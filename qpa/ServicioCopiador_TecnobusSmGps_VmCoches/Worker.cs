@@ -76,10 +76,16 @@ namespace ServicioCopiador_TecnobusSmGps_VmCoches
                                 Directory.CreateDirectory(esteDir);
                             }
 
-                            if (File.Exists(src) && File.Exists(dest) && !FileCmpHash(src, dest))
+                            if (File.Exists(src) && File.Exists(dest))
                             {
-                                // si existen los dos archivos pero son diferentes por dentro...
-                                await CopyFileAsyncWct(src, dest, stoppingToken, true);
+                                // comparo los dos archivos asyncronamente...
+                                bool archivosIguales = await FileCmpWct(src, dest, stoppingToken);
+
+                                if (!archivosIguales)
+                                {
+                                    // si son diferentes
+                                    await CopyFileAsyncWct(src, dest, stoppingToken, overwrite: true);
+                                }
                             }
                             else if (File.Exists(src) && !File.Exists(dest))
                             {
@@ -97,6 +103,45 @@ namespace ServicioCopiador_TecnobusSmGps_VmCoches
                 // cada 15 minutos
                 await Task.Delay(1000 * 60 * 15, stoppingToken);
             }
+        }
+
+        private async Task<bool> FileCmpWct(string sourceFileName, string destFileName, CancellationToken cancellationToken)
+        {
+            using Stream source     = File.OpenRead(sourceFileName);
+            using Stream destination= File.OpenRead(destFileName);
+
+            const int BUFFSIZE = 16384;
+            
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                byte[] buffSrc = new byte[BUFFSIZE];
+                byte[] buffDst = new byte[BUFFSIZE];
+
+                var leidosSrc = await source.ReadAsync(buffSrc, 0, BUFFSIZE, cancellationToken);
+                var leidosDst = await source.ReadAsync(buffDst, 0, BUFFSIZE, cancellationToken);
+
+                if (leidosDst != leidosSrc)
+                {
+                    return false;
+                }
+
+                if (leidosSrc <= 0)
+                {
+                    break;
+                }
+
+                int i = 0;
+                while (!cancellationToken.IsCancellationRequested && i < leidosSrc)
+                {
+                    if (buffSrc[i] != buffDst[i])
+                    {
+                        return false;
+                    }
+                    i++;
+                }
+            }
+
+            return true;
         }
 
         private async Task CopyFileAsyncWct(string sourceFileName, string destFileName, CancellationToken cancellationToken, bool overwrite = false)
