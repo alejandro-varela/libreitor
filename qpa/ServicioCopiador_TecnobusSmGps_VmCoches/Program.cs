@@ -1,10 +1,13 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ServicioCopiador_TecnobusSmGps_VmCoches
@@ -22,8 +25,23 @@ namespace ServicioCopiador_TecnobusSmGps_VmCoches
 
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
-            return Host
+            var loggerConfiguiration = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .WriteTo.Console()
+                .WriteTo.File(
+                    path: "log.txt",     // nombre original
+                    fileSizeLimitBytes: 1024 * 1024,   // tamaño maximo en bytes
+                    rollOnFileSizeLimit: true,          // rodar cuando llegue al límite de tamaño
+                    retainedFileCountLimit: 10,            // guardar x archivos
+                    encoding: Encoding.UTF8  // codificar en utf8
+                )
+            ;
+
+            var logger = loggerConfiguiration.CreateLogger();
+
+            var builder = Host
                 .CreateDefaultBuilder(args)
+                .UseSystemd()
                 .UseWindowsService()
                 .ConfigureServices((hostContext, services) =>
                 {
@@ -33,7 +51,15 @@ namespace ServicioCopiador_TecnobusSmGps_VmCoches
                     services.AddSingleton(opts);
                     // otros
                     services.AddHostedService<Worker>();
-                });
+                })
+                .ConfigureLogging((loggingBuilder) =>
+                {
+                    loggingBuilder.ClearProviders();
+                })
+                .UseSerilog(logger)
+            ;
+
+            return builder;
         }
     }
 }

@@ -13,5 +13,10 @@ namespace ServicioCopiador_TecnobusSmGps_VmCoches
     {
         public string Src { get; set; }
         public string Dest { get; set; }
+
+        public override string ToString()
+        {
+            return $"Src={Src} Dest={Dest}";
+        }
     }
 }

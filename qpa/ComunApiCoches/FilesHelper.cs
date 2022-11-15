@@ -80,10 +80,10 @@ namespace ComunApiCoches
                 return (false, DateTime.MinValue);
             }
 
-            var anio = int.Parse(sAnio.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries).Last().Substring(1, 4));
-            var mes  = int.Parse(sMes .Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries).Last().Substring(2, 2));
-            var dia  = int.Parse(sDia .Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries).Last().Substring(1, 2));
-            var hora = int.Parse(sHora.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries).Last().Substring(1, 2));
+            var anio = int.Parse(sAnio.Split(new char[] { '\\', '/' }, StringSplitOptions.RemoveEmptyEntries).Last().Substring(1, 4));
+            var mes  = int.Parse(sMes .Split(new char[] { '\\', '/' }, StringSplitOptions.RemoveEmptyEntries).Last().Substring(2, 2));
+            var dia  = int.Parse(sDia .Split(new char[] { '\\', '/' }, StringSplitOptions.RemoveEmptyEntries).Last().Substring(1, 2));
+            var hora = int.Parse(sHora.Split(new char[] { '\\', '/' }, StringSplitOptions.RemoveEmptyEntries).Last().Substring(1, 2));
 
             var dt = new DateTime(anio, mes, dia, hora, 0, 0);
 

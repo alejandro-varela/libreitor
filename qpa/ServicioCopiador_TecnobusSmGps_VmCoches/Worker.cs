@@ -26,29 +26,51 @@ namespace ServicioCopiador_TecnobusSmGps_VmCoches
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                _logger.LogInformation($"Worker trabajando {DateTimeOffset.Now}");
 
                 foreach (var baseDirX in _config.CopyDirs)
                 {
-                    if (!Directory.Exists(baseDirX.Src))
+                    _logger.LogInformation($"\t{baseDirX} {DateTimeOffset.Now}");
+
+                    var existeDirSrc = false;
+
+                    try
                     {
+                        existeDirSrc = Directory.Exists(baseDirX.Src);
+                    }
+                    catch (Exception exx)
+                    {
+                        _logger.LogError(exx, $"Error al tratar de listar {baseDirX.Src}");
                         break;
                     }
 
-                    var (ok, dtMasViejo) = FilesHelper.GetFechaArchivoMasViejo(baseDirX.Src);
-
-                    if (ok)
+                    if (!existeDirSrc)
                     {
-                        _logger.LogInformation(dtMasViejo.ToString());
+                        _logger.LogInformation($"\tEl directorio {baseDirX.Src} no existe");
+                        break;
+                    }
 
-                        var dtHasta  = DateTime.Now.Subtract(TimeSpan.FromMinutes(65));
-                        var srcPaths = FilesHelper.GetPaths(baseDirX.Src , dtMasViejo, dtHasta);
-                        var destPaths= FilesHelper.GetPaths(baseDirX.Dest, dtMasViejo, dtHasta);
+                    var (okDtMasViejo, dtMasViejo) = FilesHelper.GetFechaArchivoMasViejo(baseDirX.Src);
+
+                    if (okDtMasViejo)
+                    {
+                        _logger.LogInformation($"\tFecha archivo mas viejo: {dtMasViejo}");
+
+                        var dtHasta = DateTime.Now.Subtract(TimeSpan.FromMinutes(65));
+                        var srcPaths = FilesHelper
+                            .GetPaths(baseDirX.Src, dtMasViejo, dtHasta)
+                            .Select(p => p.Replace('/', '\\'))
+                        ;
+                        var destPaths = FilesHelper
+                            .GetPaths(baseDirX.Dest, dtMasViejo, dtHasta)
+                            .Select(p => p.Replace('/', '\\'))
+                        ;
                         var tupPaths = Enumerable.Zip(srcPaths, destPaths);
 
                         foreach (var (src, dest) in tupPaths)
                         {
                             var esteDir = Path.GetDirectoryName(dest);
+
                             if (!Directory.Exists(esteDir))
                             {
                                 Directory.CreateDirectory(esteDir);
@@ -57,20 +79,38 @@ namespace ServicioCopiador_TecnobusSmGps_VmCoches
                             if (File.Exists(src) && File.Exists(dest) && !FileCmpHash(src, dest))
                             {
                                 // si existen los dos archivos pero son diferentes por dentro...
-                                File.Copy(src, dest, true);
+                                await CopyFileAsyncWct(src, dest, stoppingToken, true);
                             }
                             else if (File.Exists(src) && !File.Exists(dest))
                             {
                                 // si el archivo solo existe en src...
-                                File.Copy(src, dest);
+                                await CopyFileAsyncWct(src, dest, stoppingToken);
                             }
                         }
+                    }
+                    else
+                    {
+                        _logger.LogError($"No pude determinar la fecha del archivo mas viejo de {baseDirX.Src}");
                     }
                 }
                 
                 // cada 15 minutos
                 await Task.Delay(1000 * 60 * 15, stoppingToken);
             }
+        }
+
+        private async Task CopyFileAsyncWct(string sourceFileName, string destFileName, CancellationToken cancellationToken, bool overwrite = false)
+        {
+            if (overwrite)
+            {
+                if (File.Exists(destFileName))
+                {
+                    File.Delete(destFileName);
+                }
+            }
+            using Stream source     = File.OpenRead (sourceFileName);
+            using Stream destination= File.Create   (destFileName);
+            await source.CopyToAsync(destination, 4096, cancellationToken);
         }
 
         private bool FileCmpHash(string src, string dest)
