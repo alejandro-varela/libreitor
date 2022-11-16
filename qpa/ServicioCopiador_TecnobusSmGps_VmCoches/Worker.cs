@@ -99,8 +99,9 @@ namespace ServicioCopiador_TecnobusSmGps_VmCoches
                         _logger.LogError($"No pude determinar la fecha del archivo mas viejo de {baseDirX.Src}");
                     }
                 }
-                
+
                 // cada 15 minutos
+                _logger.LogInformation("##################### Esperandooo #####################");
                 await Task.Delay(1000 * 60 * 15, stoppingToken);
             }
         }
@@ -110,15 +111,15 @@ namespace ServicioCopiador_TecnobusSmGps_VmCoches
             using Stream source     = File.OpenRead(sourceFileName);
             using Stream destination= File.OpenRead(destFileName);
 
-            const int BUFFSIZE = 16384;
+            const int BUFFSIZE = 1024;
             
             while (!cancellationToken.IsCancellationRequested)
             {
                 byte[] buffSrc = new byte[BUFFSIZE];
                 byte[] buffDst = new byte[BUFFSIZE];
 
-                var leidosSrc = await source.ReadAsync(buffSrc, 0, BUFFSIZE, cancellationToken);
-                var leidosDst = await source.ReadAsync(buffDst, 0, BUFFSIZE, cancellationToken);
+                var leidosSrc = await source     .ReadAsync(buffSrc, 0, BUFFSIZE, cancellationToken);
+                var leidosDst = await destination.ReadAsync(buffDst, 0, BUFFSIZE, cancellationToken);
 
                 if (leidosDst != leidosSrc)
                 {
@@ -155,7 +156,7 @@ namespace ServicioCopiador_TecnobusSmGps_VmCoches
             }
             using Stream source     = File.OpenRead (sourceFileName);
             using Stream destination= File.Create   (destFileName);
-            await source.CopyToAsync(destination, 4096, cancellationToken);
+            await source.CopyToAsync(destination, cancellationToken);
         }
 
         private bool FileCmpHash(string src, string dest)
