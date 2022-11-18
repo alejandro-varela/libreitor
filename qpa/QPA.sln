@@ -61,7 +61,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComunApiCoches", "ComunApiC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComunStreams.Testing", "ComunStreams.Testing\ComunStreams.Testing.csproj", "{E711265C-8BCC-4E7A-A9D2-53172949AAD5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServicioCopiador_TecnobusSmGps_VmCoches", "ServicioCopiador_TecnobusSmGps_VmCoches\ServicioCopiador_TecnobusSmGps_VmCoches.csproj", "{4BB161AF-54AF-4EEC-97F7-7C9F1AF87F23}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServicioCopiador_TecnobusSmGps_VmCoches", "ServicioCopiador_TecnobusSmGps_VmCoches\ServicioCopiador_TecnobusSmGps_VmCoches.csproj", "{4BB161AF-54AF-4EEC-97F7-7C9F1AF87F23}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Copiador_PuntosTecnobus_SmGps_VmCoches", "Copiador_PuntosTecnobus_SmGps_VmCoches\Copiador_PuntosTecnobus_SmGps_VmCoches.csproj", "{CF19B06E-B4CA-4827-A6AB-B1028FF85312}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -189,6 +191,10 @@ Global
 		{4BB161AF-54AF-4EEC-97F7-7C9F1AF87F23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4BB161AF-54AF-4EEC-97F7-7C9F1AF87F23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4BB161AF-54AF-4EEC-97F7-7C9F1AF87F23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF19B06E-B4CA-4827-A6AB-B1028FF85312}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF19B06E-B4CA-4827-A6AB-B1028FF85312}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF19B06E-B4CA-4827-A6AB-B1028FF85312}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF19B06E-B4CA-4827-A6AB-B1028FF85312}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

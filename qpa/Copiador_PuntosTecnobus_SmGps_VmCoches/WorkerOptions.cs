@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace ServicioCopiador_TecnobusSmGps_VmCoches
+namespace Copiador_PuntosTecnobus_SmGps_VmCoches
 {
     public class WorkerOptions
     {
