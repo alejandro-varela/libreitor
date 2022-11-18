@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Globalization;
 using LibQPA.ProveedoresTecnobus;
+using System.Net.Http;
+using System.Security.Authentication;
+using System.Net;
 
 namespace QPApp
 {
@@ -26,7 +29,7 @@ namespace QPApp
             //      - saber que podemos usar para cada necesidad
 
             // * password                       el password de la DB
-            // * modo (JsonSUBE|DriveUp|PicoBus)(de donde sacaré los datos y en que forma los procesaré)
+            // * modo (JsonSUBE|DriveUp|PicoBus|TecnobusSmGps) (de donde sacaré los datos y en que forma los procesaré)
             // * identificadorReporte           (una cadena para identificar univocamente a los reportes)
             // * desdeISO8601                   (la fecha desde en formato ISO8601)
             //   lineasPosiblesSeparadasPorComa default = "159,163"
@@ -152,14 +155,26 @@ namespace QPApp
                         return -1;
                 }
 
-                // bajar archivo...
-                Console.WriteLine($"Tratando de bajar archivo en modo '{modo}'");
-                var bajadorDeArchivo = new BajadorDeArchivo();
-                if (!bajadorDeArchivo.BajarArchivo(remoteUri, pathArchivoLocal))
+                // bujar archivo...
+                var handler = new HttpClientHandler()
                 {
-                    Console.WriteLine($"No pude bajar el archivo {bajadorDeArchivo.Error}");
-                    return -1;
-                }
+                    Proxy = new WebProxy("192.168.201.2:8080", true),
+                    SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls11 | SslProtocols.Tls
+                };
+                handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+                var httpClient = new HttpClient(handler);
+                var pepe = await httpClient.GetAsync(remoteUri);
+                var sres = await pepe.Content.ReadAsStringAsync();
+                File.WriteAllText(pathArchivoLocal, sres);
+
+                //// bajar archivo...
+                //Console.WriteLine($"Tratando de bajar archivo en modo '{modo}'");
+                //var bajadorDeArchivo = new BajadorDeArchivo();
+                //if (!bajadorDeArchivo.BajarArchivo(remoteUri, pathArchivoLocal))
+                //{
+                //    Console.WriteLine($"No pude bajar el archivo {bajadorDeArchivo.Error}");
+                //    return -1;
+                //}
             }
 
             Console.WriteLine("Tratando de construir información histórica");
@@ -283,6 +298,7 @@ namespace QPApp
                 posLat = 1;
                 posLng = 2;
                 posFec = 3;
+                lenMin = 6;
             }
 
             // modo picobus
@@ -296,6 +312,21 @@ namespace QPApp
                 posLat = 2;
                 posLng = 3;
                 posFec = 4;
+                lenMin = 6;
+            }
+
+            // modo tecnobussmgps
+            //
+            // Ficha; Lat     ; Lng     ; Fecha 
+            // 2853 ; -32.8488; -60.7249; 2022-11-17 00:00:00
+            //
+            if (modo == "tecnobussmgps")
+            {
+                posFic = 0;
+                posLat = 1;
+                posLng = 2;
+                posFec = 3;
+                lenMin = 4;
             }
 
             var ret = new Dictionary<int, List<PuntoHistorico>>();
