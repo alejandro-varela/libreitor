@@ -12,6 +12,7 @@ using LibQPA.ProveedoresTecnobus;
 using System.Net.Http;
 using System.Security.Authentication;
 using System.Net;
+using System.Data.SqlClient;
 
 namespace QPApp
 {
@@ -49,23 +50,23 @@ namespace QPApp
 
             // idReporte
             string idReporte = modo.ToLower(); //ArgsHelper.SafeGetArgVal(misArgs, "idReporte", modo);
-            
+
             // desde hasta
             string sDesde = ArgsHelper.SafeGetArgVal(misArgs, "desde", ahora.ToString("yyyy-MM-dd"));
             DateTime desde = DateTime.Parse(sDesde);
             DateTime hasta = desde.AddDays(1);
-            
+
             // líneas y sus representaciones
             string sLineas = ArgsHelper.SafeGetArgVal(misArgs, "lineas", string.Empty);
             List<int> lineasComoVienen = sLineas
-                .Split  (',')
-                .Where  (sLinX => EsNumeroEntero(sLinX))
-                .Select (sLinX => int.Parse(sLinX.Trim()))
-                .ToList ()
+                .Split(',')
+                .Where(sLinX => EsNumeroEntero(sLinX))
+                .Select(sLinX => int.Parse(sLinX.Trim()))
+                .ToList()
             ;
             List<int> lineasOrdenadas = lineasComoVienen
                 .OrderBy(n => n)
-                .ToList ()
+                .ToList()
             ;
             string sLineasOrdenadas = string.Join('_', lineasOrdenadas.ToArray());
 
@@ -76,7 +77,7 @@ namespace QPApp
             // tipo punta de línea
             string sTipoPuntaLinea = ArgsHelper.SafeGetArgVal(misArgs, "tipoPuntas", "PuntaLinea");
             Type tipoPuntaLinea = null;
-            if      (sTipoPuntaLinea == "PuntaLinea" ) { tipoPuntaLinea = typeof(PuntaLinea ); }
+            if (sTipoPuntaLinea == "PuntaLinea") { tipoPuntaLinea = typeof(PuntaLinea); }
             else if (sTipoPuntaLinea == "PuntaLinea2") { tipoPuntaLinea = typeof(PuntaLinea2); }
 
             // tipo creador partes históricas
@@ -106,13 +107,13 @@ namespace QPApp
             );
 
             Filtro filtro = Filtro.CreateFrom("./Filtros", lineasOrdenadas);
-            
+
             var recorridosTeoricos = proveedorRecorridosTeoricos.Get(new QPAProvRecoParams()
             {
                 LineasPosibles = lineasOrdenadas.ToArray(),
-                FechaVigencia  = desde
+                FechaVigencia = desde
             })
-                .Where (reco => filtro.EsRecorridoPermitido(reco.Linea, reco.Bandera))
+                .Where(reco => filtro.EsRecorridoPermitido(reco.Linea, reco.Bandera))
                 .Select(reco => SanitizarRecorrido(reco, granularidad))
                 .ToList()
             ;
@@ -123,7 +124,7 @@ namespace QPApp
             {
                 Directory.CreateDirectory(dirBajados);
             }
-            
+
             var nombreArchivoLocal = $"{modo.ToLower()}_{desde.Year:0000}_{desde.Month:00}_{desde.Day:00}.csv";
             var pathArchivoLocal = Path.Combine(dirBajados, nombreArchivoLocal).Replace('\\', '/');
 
@@ -183,6 +184,17 @@ namespace QPApp
             try
             {
                 puntosXIdentificador = GetPuntosPorIdentificador(pathArchivoLocal, modo, soloEstaFicha: ficha);
+
+                // acá intentaré dejar solo las fichas que sean de las líneas elegidas
+                if (ficha == 0 && lineasOrdenadas.All(LineaHabilitadaPrecalcularFichas))
+                {
+                    // averiguar las fichas de las líneas elegidas y ponerlas en un conjunto
+                    IEnumerable<int> fichasParaUsar = DameFichasDeLineas(password, lineasOrdenadas, desde, hasta);
+
+                    // filtrar el diccionario "puntosXIdentificador" con ese conjunto
+                    puntosXIdentificador = FiltrarFichas(puntosXIdentificador, fichasParaUsar);
+                }
+
                 Console.WriteLine("\tInformación histórica ok");
             }
             catch (Exception exx)
@@ -239,9 +251,9 @@ namespace QPApp
                 rpx.Create(reporteQPA.ListaAplanadaSubItems.Cast<object>(), formatter),
                 formatter
             );
-            
+
             IEnumerable<string> contenido = lineasContenido;
-            
+
             if (modo == "picobus")
             {
                 var lineasContenidoFiltrado = lineasContenido
@@ -257,6 +269,82 @@ namespace QPApp
             File.WriteAllText($"{pathArchivoReporte}.csv", string.Join(string.Empty, contenido));
 
             return 0;
+        }
+
+        static List<int> DameFichasDeLineas(string password, List<int> lineasOrdenadas, DateTime desde, DateTime hasta)
+        {
+            // conectarme a db-tecnobus...
+            string connectionString = 
+                "Data Source=192.168.201.10;Initial Catalog=logsTecnobus;User ID=sa;Password=" + 
+                password
+            ;
+            using SqlConnection connection = new SqlConnection(connectionString);
+            connection.Open();
+
+            // tomar las fichas que necesito
+            var lineasSeparadasPorComas = string.Join(",", lineasOrdenadas.ToArray());
+            var cmdText = @$"
+                SELECT DISTINCT cod_linea, nro_ficha
+                FROM log_gpsConCalculoAtraso
+                WHERE
+	                fechaHora >= '{desde.Day:00}/{desde.Month:00}/{desde.Year:0000}'
+	                AND
+	                fechaHora <  '{hasta.Day:00}/{hasta.Month:00}/{hasta.Year:0000}'
+	                AND
+	                cod_linea in ({lineasSeparadasPorComas})
+                ORDER BY cod_linea, nro_ficha
+            ";
+            using SqlCommand command = new SqlCommand(cmdText.Trim(), connection);
+            using SqlDataReader reader = command.ExecuteReader();
+            var fichas = new List<int>();
+            while (reader.Read())
+            {
+                var objFicha = reader["nro_ficha"];
+                if (objFicha != null)
+                {
+                    try {
+                        var ficha = Convert.ToInt32(objFicha);
+                        fichas.Add(ficha);
+                    } catch (Exception exx) {
+                        Console.WriteLine(exx);
+                    }
+                }
+            }
+
+            // devolverlas por aca...
+            return fichas;
+        }
+
+        static Dictionary<int, List<PuntoHistorico>> FiltrarFichas(
+            Dictionary<int, List<PuntoHistorico>> puntosXIdentificador, 
+            IEnumerable<int> fichasParaUsar
+        )
+        {
+            var ret = new Dictionary<int, List<PuntoHistorico>>();
+            var conjuntoFichasParaUsar = fichasParaUsar.ToHashSet();
+
+            foreach (var (k, v) in puntosXIdentificador)
+            {
+                if (conjuntoFichasParaUsar.Contains(k))
+                {
+                    ret.Add(k, v);
+                }
+            }
+
+            return ret;
+        }
+
+        static bool LineaHabilitadaPrecalcularFichas(int linea)
+        {
+            return linea switch
+            {
+                1  => true ,
+                21 => true ,
+                100=> true ,
+                101=> true ,
+                103=> true ,
+                _  => false,
+            };
         }
 
         static void QpaCreator_Aviso(object sender, Creator.AvisoEventArgs e)

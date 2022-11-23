@@ -19,9 +19,16 @@
     <Folder Include="Datos\0166\" />
     <Folder Include="Datos\0167\" />
     <Folder Include="Datos\0021\" />
+    <Folder Include="Datos\0001\" />
+    <Folder Include="Datos\0103\" />
+    <Folder Include="Datos\0100\" />
+    <Folder Include="Datos\0101\" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Datos\0001\verrec00001820220725000000.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Datos\0021\verrec00003820210817000000.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -29,6 +36,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Datos\0021\verrec00004020210904000000.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Datos\0100\verrec00004420220322000000.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Datos\0101\verrec00002020220328000000.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Datos\0103\verrec00004020220622000000.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Datos\0127\verrec00002120220204000000.zip">
