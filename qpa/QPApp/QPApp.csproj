@@ -26,6 +26,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Datos\0001\verrec00001820220725000000.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

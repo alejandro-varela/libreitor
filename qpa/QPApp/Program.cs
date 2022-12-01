@@ -13,13 +13,16 @@ using System.Net.Http;
 using System.Security.Authentication;
 using System.Net;
 using System.Data.SqlClient;
+using Newtonsoft.Json;
 
 namespace QPApp
 {
-    public class Program
+    public partial class Program
     {
         //static AutoResetEvent _areArchivoBajado = new AutoResetEvent(false); // es para señalizar que ya se bajó el archivo
         //static string _archivoBajando = string.Empty; // es para pasar la información del archivo que se está bajando
+
+        static bool _usarHttps = false;
 
         static async Task<int> Main(string[] args)
         {
@@ -140,30 +143,62 @@ namespace QPApp
                 Uri remoteUri = null;
 
                 // dependiendo del "modo" bajo de un lugar u otro
+                // vm-coches = 192.168.201.74
                 switch (modo.ToLower())
                 {
                     case "driveup":
-                        remoteUri = new Uri("https://vm-coches:5001/HistoriaCochesDriveUpAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());
+                        if (_usarHttps)
+                        {
+                            remoteUri = new Uri("https://192.168.201.74:5001/HistoriaCochesDriveUpAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());
+                        }
+                        else
+                        {
+                            remoteUri = new Uri("http://192.168.201.74:5000/HistoriaCochesDriveUpAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());
+                        }
                         break;
                     case "picobus":
-                        remoteUri = new Uri("https://vm-coches:5003/HistoriaCochesPicoBusAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());
+                        if (_usarHttps)
+                        {
+                            remoteUri = new Uri("https://192.168.201.74:5003/HistoriaCochesPicoBusAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());
+                        }
+                        else
+                        {
+                            remoteUri = new Uri("http://192.168.201.74:5002/HistoriaCochesPicoBusAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());
+                        }                            
                         break;
                     case "tecnobussmgps":
-                        remoteUri = new Uri("https://vm-coches:5005/HistoriaCochesTecnobusSmGpsAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());
+                        if (_usarHttps)
+                        {
+                            remoteUri = new Uri("https://192.168.201.74:5005/HistoriaCochesTecnobusSmGpsAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());
+                        }
+                        else
+                        {
+                            remoteUri = new Uri("http://192.168.201.74:5004/HistoriaCochesTecnobusSmGpsAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());
+                        }
                         break;
                     default:
                         Console.WriteLine($"El modo '{modo}' no es válido");
                         return -1;
                 }
 
-                // bujar archivo...
-                var handler = new HttpClientHandler()
+                // bajar archivo...
+                HttpClient httpClient = null;
+
+                if (_usarHttps)
                 {
-                    Proxy = new WebProxy("192.168.201.2:8080", true),
-                    SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls11 | SslProtocols.Tls
-                };
-                handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-                var httpClient = new HttpClient(handler);
+                    var handler = new HttpClientHandler()
+                    {
+                        Proxy = new WebProxy("192.168.201.2:8080", true),
+                        SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls11 | SslProtocols.Tls
+                    };
+                    handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+                    httpClient = new HttpClient(handler);
+                }
+                else
+                {
+                    httpClient = new HttpClient();
+                }
+
                 var pepe = await httpClient.GetAsync(remoteUri);
                 var sres = await pepe.Content.ReadAsStringAsync();
                 File.WriteAllText(pathArchivoLocal, sres);
@@ -189,10 +224,24 @@ namespace QPApp
                 if (ficha == 0 && lineasOrdenadas.All(LineaHabilitadaPrecalcularFichas))
                 {
                     // averiguar las fichas de las líneas elegidas y ponerlas en un conjunto
-                    IEnumerable<int> fichasParaUsar = DameFichasDeLineas(password, lineasOrdenadas, desde, hasta);
+                    //List<int> fichasParaUsar = DameFichasDeLineas_DB(password, lineasOrdenadas, desde, hasta);
+                    RetVal<List<int>> retValFichasXLinea = await DameFichasDeLineas_RedAsync(lineasOrdenadas, desde, hasta);
 
-                    // filtrar el diccionario "puntosXIdentificador" con ese conjunto
-                    puntosXIdentificador = FiltrarFichas(puntosXIdentificador, fichasParaUsar);
+                    if (retValFichasXLinea.IsOk)
+                    {
+                        // filtro el diccionario "puntosXIdentificador" con esas fichas
+                        puntosXIdentificador = FiltrarFichas(
+                            puntosXIdentificador,
+                            retValFichasXLinea.Value
+                        );
+                    }
+                    else
+                    {
+                        // aca, por alguna razon, el programa falló
+                        Console.WriteLine("\tNo se pudo filtrar información histórica");
+                        return 1;
+                    }
+
                 }
 
                 Console.WriteLine("\tInformación histórica ok");
@@ -271,7 +320,55 @@ namespace QPApp
             return 0;
         }
 
-        static List<int> DameFichasDeLineas(string password, List<int> lineasOrdenadas, DateTime desde, DateTime hasta)
+        class ParLineaFicha
+        {
+            public int Linea { get; set; }
+            public int Ficha { get; set; }
+        }
+
+        static async Task<RetVal<List<int>>> DameFichasDeLineas_RedAsync(
+            List<int> lineasOrdenadas, 
+            DateTime desde, 
+            DateTime hasta
+        )
+        {
+            try
+            {
+                var httpClient = new HttpClient();
+                var url = "http://192.168.201.74:5100/FichasXLinea?lineas=100&desde=2022-11-29&hasta=2022-11-30";
+                var response = await httpClient.GetAsync(url);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var listaParLineaFicha = JsonConvert.DeserializeObject<List<ParLineaFicha>>(json);
+                    var listaFichas = listaParLineaFicha
+                        .Select(par => par.Ficha)
+                        .ToList()
+                    ;
+                    return new RetVal<List<int>> { 
+                        Value = listaFichas 
+                    };
+                }
+                else
+                {
+                    return new RetVal<List<int>> { 
+                        IsOk = false, 
+                        ErrorMessage = $"Error {response.StatusCode}" 
+                    };
+                }
+            }
+            catch (Exception exx)
+            {
+                return new RetVal<List<int>> { 
+                    IsOk = false, 
+                    ErrorMessage = exx.Message, 
+                    ErrorException = exx 
+                };
+            }            
+        }
+
+        static List<int> DameFichasDeLineas_DB(string password, List<int> lineasOrdenadas, DateTime desde, DateTime hasta)
         {
             // conectarme a db-tecnobus...
             string connectionString = 
