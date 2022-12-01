@@ -1,7 +1,6 @@
 ﻿using Comun;
 using ComunSUBE;
 using LibQPA;
-using LibQPA.ProveedoresTecnobus;
 using LibQPA.ProveedoresVentas.DbSUBE;
 using System;
 using System.Collections.Generic;
@@ -283,9 +282,9 @@ namespace QPACreator
             ///////////////////////////////////////////////////////////////////
             // Venta de boletos
             ///////////////////////////////////////////////////////////////////
-            Dictionary<int, List<BoletoComun>> boletosXFicha;
+            //Dictionary<int, List<BoletoComun>> boletosXFicha;
 
-            string ARCHIVO_BOLETOS = $"Boletos__{identificador}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json";
+            //string ARCHIVO_BOLETOS = $"Boletos__{identificador}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json";
 
             //var proveedorVentaBoletosConfig = new ProveedorVentaBoletosDbSUBE.Configuracion
             //{
