@@ -14,6 +14,8 @@ using System.Security.Authentication;
 using System.Net;
 using System.Data.SqlClient;
 using Newtonsoft.Json;
+using ComunSUBE;
+using LibQPA.ProveedoresVentas.DbSUBE;
 
 namespace QPApp
 {
@@ -23,6 +25,7 @@ namespace QPApp
         //static string _archivoBajando = string.Empty; // es para pasar la información del archivo que se está bajando
 
         static bool _usarHttps = false;
+        static string _password = "";
 
         static async Task<int> Main(string[] args)
         {
@@ -46,7 +49,7 @@ namespace QPApp
             DateTime ahora = DateTime.Now;
 
             // password
-            string password = ArgsHelper.SafeGetArgVal(misArgs, "password", "");
+            _password = ArgsHelper.SafeGetArgVal(misArgs, "password", "");
 
             // modo
             string modo = ArgsHelper.SafeGetArgVal(misArgs, "modo", "DriveUp");
@@ -93,16 +96,6 @@ namespace QPApp
             // radio de las puntas de línea
             string sRadioPuntas = ArgsHelper.SafeGetArgVal(misArgs, "radioPuntas", "800");
             int radioPuntas = int.Parse(sRadioPuntas);
-
-            // creo el qpaCreator
-            var qpaCreator = new QPACreator.Creator(new CreatorConfiguration
-            {
-                ConnectionStringFichasXEmprIntSUBE = "Data Source=192.168.201.21;Initial Catalog=general;User ID=sa;Password=" + password,
-                ConnectionStringVentasSUBE = "Data Source=192.168.201.42;Initial Catalog=sube;User ID=sa;Password=" + password,
-                ConnectionStringPuntosSUBE = "Data Source=192.168.201.10;Initial Catalog=logsTecnobus;User ID=sa;Password=" + password,
-                ConnectionStringPuntosXBus = "Data Source=192.168.201.10;Initial Catalog=logsTecnobus;User ID=sa;Password=" + password,
-            });
-            qpaCreator.Aviso += QpaCreator_Aviso;
 
             // recorridos teóricos
             IQPAProveedorRecorridosTeoricos proveedorRecorridosTeoricos = new ProveedorVersionesTecnobus(
@@ -252,6 +245,18 @@ namespace QPApp
                 return 1;
             }
 
+            // creo el qpaCreator
+            // TODO: sacar la configuración
+            var qpaCreator = new QPACreator.Creator(new CreatorConfiguration());
+
+            qpaCreator.Aviso += QpaCreator_Aviso;
+
+            // empresa&interno X Ficha
+            Dictionary<int, (int, int)> empresaInternoSUBEXFichas = DameEmpresaInternoXFichas();
+
+            // proveedor de venta de boletos
+            ProveedorBoletosSUBE proveedorVentaBoletos2 = DameProveedorVentaBoletos(desde, hasta);
+
             var (resultadosQPA, reporteQPA) = qpaCreator.Calculate<int>(
                 idReporte,
                 desde,
@@ -262,6 +267,8 @@ namespace QPApp
                 recorridosTeoricos,
                 puntosXIdentificador,
                 ConstructorFichasInt,
+                empresaInternoSUBEXFichas,
+                proveedorVentaBoletos2,
                 granularidadMts: granularidad,
                 radioPuntasDeLineaMts: radioPuntas
             );
@@ -320,6 +327,36 @@ namespace QPApp
             return 0;
         }
 
+        private static Dictionary<int, (int, int)> DameEmpresaInternoXFichas()
+        {
+            DatosEmpIntFicha datosEmpIntFicha = new DatosEmpIntFicha(new DatosEmpIntFicha.Configuration
+            {
+                ConnectionString = "Data Source=192.168.201.21;Initial Catalog=general;User ID=sa;Password=" + _password
+            });
+
+            var ret = datosEmpIntFicha
+                .Get()
+                .ToDictionary(x => x.Value, x => x.Key)
+            ;
+
+            return ret;
+        }
+
+        private static ProveedorBoletosSUBE DameProveedorVentaBoletos(DateTime desde, DateTime hasta)
+        {
+            var proveedorVentaBoletosConfig2 = new ProveedorBoletosSUBE.Configuracion
+            {
+                CommandTimeout = 600,
+                ConnectionString = "Data Source=192.168.201.42;Initial Catalog=sube;User ID=sa;Password=" + _password,
+                FechaDesde = desde,
+                FechaHasta = hasta,
+            };
+
+            ProveedorBoletosSUBE proveedorVentaBoletos2 = new ProveedorBoletosSUBE(proveedorVentaBoletosConfig2);
+
+            return proveedorVentaBoletos2;
+        }
+
         class ParLineaFicha
         {
             public int Linea { get; set; }
@@ -368,6 +405,7 @@ namespace QPApp
             }            
         }
 
+        /*
         static List<int> DameFichasDeLineas_DB(string password, List<int> lineasOrdenadas, DateTime desde, DateTime hasta)
         {
             // conectarme a db-tecnobus...
@@ -411,6 +449,7 @@ namespace QPApp
             // devolverlas por aca...
             return fichas;
         }
+        */
 
         static Dictionary<int, List<PuntoHistorico>> FiltrarFichas(
             Dictionary<int, List<PuntoHistorico>> puntosXIdentificador, 

@@ -1,4 +1,6 @@
-﻿using Comun;
+﻿#define IMPUGNAR_PROVEEDOR_DATOS_EMP_INT_FICHA
+
+using Comun;
 using ComunSUBE;
 using LibQPA;
 using LibQPA.ProveedoresVentas.DbSUBE;
@@ -48,6 +50,8 @@ namespace QPACreator
             List<RecorridoLinBan> recorridosTeoricos,
             Dictionary<TIdent, List<PuntoHistorico>> puntosXIdentificador,
             ConstructorFichasDesdeResultados<TIdent> constructorFichasDesdeResultados,
+            Dictionary<int, (int, int)> empresaInternoSUBEXFichas,
+            ProveedorBoletosSUBE proveedorVentaBoletos2,
             int granularidadMts = 20,
             int radioPuntasDeLineaMts = 200
         )
@@ -71,6 +75,8 @@ namespace QPACreator
                 infohXIdentificador,
                 constructorFichasDesdeResultados,
                 tipoPuntaLinea,
+                empresaInternoSUBEXFichas,
+                proveedorVentaBoletos2,
                 granularidadMts,
                 radioPuntasDeLineaMts
             );
@@ -110,6 +116,8 @@ namespace QPACreator
             Dictionary<TIdent, InformacionHistorica> infohXIdentificador,
             ConstructorFichasDesdeResultados<TIdent> constructorFichas,
             Type tipoPuntaLinea,
+            Dictionary<int, (int, int)> empresaInternoSUBEXFichas,
+            ProveedorBoletosSUBE proveedorVentaBoletos2,
             int granularidadMts = 20,
             int radioPuntasDeLineaMts = 200
         )
@@ -164,7 +172,9 @@ namespace QPACreator
                 desde,
                 hasta,
                 resultadosQPA,
-                constructorFichas
+                constructorFichas,
+                empresaInternoSUBEXFichas,
+                proveedorVentaBoletos2
             );
 
             //// poner reporte en un archivo...
@@ -262,93 +272,16 @@ namespace QPACreator
         }
 
         public ReporteQPA<TIdent> GenerarReporteQPA<TIdent>(
-            string identificador,
-            DateTime desde,
-            DateTime hasta,
-            List<QPAResult<TIdent>> resultadosQPA,
-            ConstructorFichasDesdeResultados<TIdent> constructorFichas
+            string                                  identificador,
+            DateTime                                desde,
+            DateTime                                hasta,
+            List<QPAResult<TIdent>>                 resultadosQPA,
+            ConstructorFichasDesdeResultados<TIdent>constructorFichas,
+            Dictionary<int, (int, int)>             empresaInternoSUBEXFichas,
+            ProveedorBoletosSUBE                    proveedorVentaBoletos2
         )
         {
-            ///////////////////////////////////////////////////////////////////
-            // Datos Empresa-Interno / Ficha
-            ///////////////////////////////////////////////////////////////////
-            var datosEmpIntFicha = new ComunSUBE.DatosEmpIntFicha(new ComunSUBE.DatosEmpIntFicha.Configuration()
-            {
-                CommandTimeout = 600,
-                ConnectionString = Configu.ConnectionStringFichasXEmprIntSUBE,
-                MaxCacheSeconds = 15 * 60,
-            });
-
-            ///////////////////////////////////////////////////////////////////
-            // Venta de boletos
-            ///////////////////////////////////////////////////////////////////
-            //Dictionary<int, List<BoletoComun>> boletosXFicha;
-
-            //string ARCHIVO_BOLETOS = $"Boletos__{identificador}__desde_{desde:yyyyMMdd_HHmmss}__hasta_{hasta:yyyyMMdd_HHmmss}.json";
-
-            //var proveedorVentaBoletosConfig = new ProveedorVentaBoletosDbSUBE.Configuracion
-            //{
-            //    CommandTimeout = 600,
-            //    ConnectionString = Configu.ConnectionStringVentasSUBE,
-            //    DatosEmpIntFicha = datosEmpIntFicha,
-            //    FechaDesde = desde,
-            //    FechaHasta = hasta,
-            //};
-
-            var proveedorVentaBoletosConfig2 = new ProveedorBoletosSUBE.Configuracion
-            {
-                CommandTimeout = 600,
-                ConnectionString = Configu.ConnectionStringVentasSUBE,
-                FechaDesde = desde,
-                FechaHasta = hasta,
-            };
-
-            //ProveedorVentaBoletosDbSUBE proveedorVentaBoletos;
-
-            //if (File.Exists(ARCHIVO_BOLETOS))
-            //{
-            //    var json = File.ReadAllText(ARCHIVO_BOLETOS);
-            //    boletosXFicha = JsonConvert.DeserializeObject<Dictionary<int, List<BoletoComun>>>(json);
-            //    proveedorVentaBoletos = new ProveedorVentaBoletosDbSUBE(
-            //        proveedorVentaBoletosConfig,
-            //        boletosXFicha
-            //    );
-            //}
-            //else
-            //{
-            //    proveedorVentaBoletos = new ProveedorVentaBoletosDbSUBE(proveedorVentaBoletosConfig);
-            //    proveedorVentaBoletos.TieneBoletosEnIntervalo(0, DateTime.Now, DateTime.Now); // esto solo es para inicializar
-            //    boletosXFicha = proveedorVentaBoletos.BoletosXIdentificador;
-            //    File.WriteAllText(
-            //        ARCHIVO_BOLETOS,
-            //        JsonConvert.SerializeObject(boletosXFicha, Formatting.Indented)
-            //    );
-            //}
-
-            ProveedorBoletosSUBE proveedorVentaBoletos2 = new ProveedorBoletosSUBE(proveedorVentaBoletosConfig2);
-
             var resulFichas = constructorFichas(resultadosQPA);
-
-            Dictionary<int, (int, int)> empresaInternoSUBEXFichas = datosEmpIntFicha
-                .Get()
-                .ToDictionary(x => x.Value, x => x.Key)
-            ;
-
-            //var reporte = new CSVReport<string>()
-            //{
-            //    UsesHeader = true,
-            //    Separator = ';',
-            //    HeaderBuilder = (sep) => string.Join(sep, new[] { "empresaSUBE", "internoSUBE", "ficha", "linea", "bandera", "inicio", "fin", "cantbol", "cantbolopt" }),
-            //    ItemsBuilder = (sep) => CrearItemsCSV(
-            //        sep,
-            //        resultadosQPA,
-            //        resulFichas,
-            //        empresaInternoSUBEXFichas,
-            //        proveedorVentaBoletos
-            //    )
-            //};
-
-            //return reporte;
 
             var lstReporteQPAItems = CrearReporteQPAItems(
                 resultadosQPA,
@@ -416,12 +349,12 @@ namespace QPACreator
         }
 
         ReporteQPAItem<TIdent> CrearReporteQPAItem<TIdent>(
-    QPAResult<TIdent> qpaResult,
-    int ficha,
-    Dictionary<int, (int, int)> empresaInternoSUBEXFichas,
-    /*ProveedorVentaBoletosDbSUBE*/ ProveedorBoletosSUBE proveedorVentaBoletos,
-    FuncCasillerosXLinBan dameCasillerosXLinBan
-)
+            QPAResult<TIdent> qpaResult,
+            int ficha,
+            Dictionary<int, (int, int)> empresaInternoSUBEXFichas,
+            /*ProveedorVentaBoletosDbSUBE*/ ProveedorBoletosSUBE proveedorVentaBoletos,
+            FuncCasillerosXLinBan dameCasillerosXLinBan
+        )
         {
             if (ficha == -1)
             {

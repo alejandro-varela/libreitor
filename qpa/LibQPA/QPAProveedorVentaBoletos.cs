@@ -18,7 +18,7 @@ namespace LibQPA
                 {
                     if (_boletosXIdentificador == null)
                     {
-                        _boletosXIdentificador = LeerDB();
+                        _boletosXIdentificador = LeerOrigenDeDatos();
                     }
                 }
 
@@ -33,7 +33,7 @@ namespace LibQPA
             }
         }
 
-        public abstract Dictionary<IdType, List<BoletoComun>> LeerDB();
+        public abstract Dictionary<IdType, List<BoletoComun>> LeerOrigenDeDatos();
 
         /////////////////////////////////////////////////////////////
         // Métodos para usar el proveedor de manera segura         //

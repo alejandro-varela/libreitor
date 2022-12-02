@@ -35,7 +35,7 @@ namespace LibQPA.ProveedoresVentas.DbSUBE
             BoletosXIdentificador = boletosXIdentificador;
         }
 
-        public override Dictionary<int, List<BoletoComun>> LeerDB()
+        public override Dictionary<int, List<BoletoComun>> LeerOrigenDeDatos()
         {
             var ret = new Dictionary<int, List<BoletoComun>>();
 
