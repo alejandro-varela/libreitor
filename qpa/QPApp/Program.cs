@@ -157,7 +157,7 @@ namespace QPApp
                         else
                         {
                             remoteUri = new Uri("http://192.168.201.74:5002/HistoriaCochesPicoBusAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());
-                        }                            
+                        }
                         break;
                     case "tecnobussmgps":
                         if (_usarHttps)
@@ -207,6 +207,7 @@ namespace QPApp
             }
 
             Console.WriteLine("Tratando de construir información histórica");
+            
             Dictionary<int, List<PuntoHistorico>> puntosXIdentificador = null;
 
             try
@@ -245,17 +246,68 @@ namespace QPApp
                 return 1;
             }
 
+            // empresa&interno X Ficha
+            Console.WriteLine("Buscando empresa-interno SUBE x fichas");
+            Dictionary<int, (int, int)> empresaInternoSUBEXFichas = null;
+
+            try
+            {
+                RetVal<Dictionary<int, (int, int)>> retEmpresaInternoSUBEXFichas =
+                    await DameEmpresaInternoXFichasAsync();
+
+                if (retEmpresaInternoSUBEXFichas.IsOk)
+                {
+                    empresaInternoSUBEXFichas = retEmpresaInternoSUBEXFichas.Value;
+                }
+                else
+                {
+                    Console.WriteLine("No se pudo recuperar info de empresaInterno x ficha");
+                    return 1;
+                }
+            }
+            catch (Exception exx)
+            {
+                Console.WriteLine(exx);
+                return 1;
+            }
+
+            // proveedor de venta de boletos
+            // TODO!!!!
+            //    Crear un proveedor de RED
+            //    Forzar al proveedor a que se precargue
+            //
+            Console.WriteLine("Buscando boletos SUBE");
+
+            //ProveedorBoletosSUBE proveedorVentaBoletos2 =
+            //    DameProveedorVentaBoletos(desde, hasta);
+
+            var proveedorVentaBoletos2 = new ProveedorBoletosSUBERed();
+            
+            try
+            {
+                var retBoletosXIdentificador = 
+                    await DameBoletosPorIdentificador(fechaDesde: desde, fechaHasta: hasta);
+
+                if (retBoletosXIdentificador.IsOk)
+                {
+                    proveedorVentaBoletos2.BoletosXIdentificador = retBoletosXIdentificador.Value;
+                }
+                else
+                {
+                    Console.WriteLine("No se pudieron recuperar los boletos SUBE");
+                    return 1;
+                }
+            }
+            catch (Exception exx)
+            {
+                Console.WriteLine(exx);
+                return 1;
+            }
+
             // creo el qpaCreator
             // TODO: sacar la configuración
             var qpaCreator = new QPACreator.Creator(new CreatorConfiguration());
-
             qpaCreator.Aviso += QpaCreator_Aviso;
-
-            // empresa&interno X Ficha
-            Dictionary<int, (int, int)> empresaInternoSUBEXFichas = DameEmpresaInternoXFichas();
-
-            // proveedor de venta de boletos
-            ProveedorBoletosSUBE proveedorVentaBoletos2 = DameProveedorVentaBoletos(desde, hasta);
 
             var (resultadosQPA, reporteQPA) = qpaCreator.Calculate<int>(
                 idReporte,
@@ -327,19 +379,97 @@ namespace QPApp
             return 0;
         }
 
-        private static Dictionary<int, (int, int)> DameEmpresaInternoXFichas()
+        private static async Task<RetVal<Dictionary<ParEmpresaInterno, List<BoletoComun>>>> DameBoletosPorIdentificador(DateTime fechaDesde, DateTime fechaHasta)
         {
-            DatosEmpIntFicha datosEmpIntFicha = new DatosEmpIntFicha(new DatosEmpIntFicha.Configuration
+            var url = $"http://vm-coches:5006/BoletosXIdentSUBE_KvpList?desde={fechaDesde.Year:0000}-{fechaDesde.Month:00}-{fechaDesde.Day:00}";
+
+            var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync(url);
+            
+            if (response.StatusCode == HttpStatusCode.OK)
             {
-                ConnectionString = "Data Source=192.168.201.21;Initial Catalog=general;User ID=sa;Password=" + _password
-            });
+                var json = await response.Content.ReadAsStringAsync();
+                var obj = JsonConvert.DeserializeObject<List<KeyValuePair<ParEmpresaInterno, List<BoletoComun>>>>(json);
+                var val = obj.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                return new RetVal<Dictionary<ParEmpresaInterno, List<BoletoComun>>>
+                {
+                    IsOk = true,
+                    Value= val,
+                };
+            }
+            else
+            {
+                return new RetVal<Dictionary<ParEmpresaInterno, List<BoletoComun>>>
+                {
+                    IsOk = false,
+                };
+            }            
+        }
 
-            var ret = datosEmpIntFicha
-                .Get()
-                .ToDictionary(x => x.Value, x => x.Key)
-            ;
+        public class EmpresaInternoFicha
+        {
+            public int Empresa { get; set; }
+            public int Interno { get; set; }
+            public int Ficha   { get; set; }
+        }
 
-            return ret;
+        private static async Task<RetVal<Dictionary<int, (int, int)>>> DameEmpresaInternoXFichasAsync()
+        {
+            try
+            {
+                var httpClient = new HttpClient();
+                var url = "http://vm-coches:5008/EmpresaInternoFicha";
+                var response = await httpClient.GetAsync(url);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var lst = JsonConvert.DeserializeObject<List<EmpresaInternoFicha>>(json);
+                    var val = new Dictionary<int, (int, int)>();
+                    foreach (var eif in lst)
+                    {
+                        if (!val.ContainsKey(eif.Ficha))
+                        {
+                            val.Add(eif.Ficha, (eif.Empresa, eif.Interno));
+                        }
+                    }
+
+                    return new RetVal<Dictionary<int, (int, int)>>
+                    {
+                        Value = val
+                    };
+                }
+                else
+                {
+                    return new RetVal<Dictionary<int, (int, int)>>
+                    {
+                        IsOk = false,
+                        ErrorMessage = $"Error {response.StatusCode}"
+                    };
+                }
+
+            }
+            catch (Exception exx)
+            {
+                return new RetVal<Dictionary<int, (int, int)>>
+                {
+                    IsOk = false,
+                    ErrorMessage = exx.Message,
+                    ErrorException = exx
+                };
+            }
+
+            //DatosEmpIntFicha datosEmpIntFicha = new DatosEmpIntFicha(new DatosEmpIntFicha.Configuration
+            //{
+            //    ConnectionString = "Data Source=192.168.201.21;Initial Catalog=general;User ID=sa;Password=" + _password
+            //});
+
+            //var ret = datosEmpIntFicha
+            //    .Get()
+            //    .ToDictionary(x => x.Value, x => x.Key)
+            //;
+
+            //return ret;
         }
 
         private static ProveedorBoletosSUBE DameProveedorVentaBoletos(DateTime desde, DateTime hasta)
@@ -404,52 +534,6 @@ namespace QPApp
                 };
             }            
         }
-
-        /*
-        static List<int> DameFichasDeLineas_DB(string password, List<int> lineasOrdenadas, DateTime desde, DateTime hasta)
-        {
-            // conectarme a db-tecnobus...
-            string connectionString = 
-                "Data Source=192.168.201.10;Initial Catalog=logsTecnobus;User ID=sa;Password=" + 
-                password
-            ;
-            using SqlConnection connection = new SqlConnection(connectionString);
-            connection.Open();
-
-            // tomar las fichas que necesito
-            var lineasSeparadasPorComas = string.Join(",", lineasOrdenadas.ToArray());
-            var cmdText = @$"
-                SELECT DISTINCT cod_linea, nro_ficha
-                FROM log_gpsConCalculoAtraso
-                WHERE
-	                fechaHora >= '{desde.Day:00}/{desde.Month:00}/{desde.Year:0000}'
-	                AND
-	                fechaHora <  '{hasta.Day:00}/{hasta.Month:00}/{hasta.Year:0000}'
-	                AND
-	                cod_linea in ({lineasSeparadasPorComas})
-                ORDER BY cod_linea, nro_ficha
-            ";
-            using SqlCommand command = new SqlCommand(cmdText.Trim(), connection);
-            using SqlDataReader reader = command.ExecuteReader();
-            var fichas = new List<int>();
-            while (reader.Read())
-            {
-                var objFicha = reader["nro_ficha"];
-                if (objFicha != null)
-                {
-                    try {
-                        var ficha = Convert.ToInt32(objFicha);
-                        fichas.Add(ficha);
-                    } catch (Exception exx) {
-                        Console.WriteLine(exx);
-                    }
-                }
-            }
-
-            // devolverlas por aca...
-            return fichas;
-        }
-        */
 
         static Dictionary<int, List<PuntoHistorico>> FiltrarFichas(
             Dictionary<int, List<PuntoHistorico>> puntosXIdentificador, 

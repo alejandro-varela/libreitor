@@ -51,7 +51,7 @@ namespace QPACreator
             Dictionary<TIdent, List<PuntoHistorico>> puntosXIdentificador,
             ConstructorFichasDesdeResultados<TIdent> constructorFichasDesdeResultados,
             Dictionary<int, (int, int)> empresaInternoSUBEXFichas,
-            ProveedorBoletosSUBE proveedorVentaBoletos2,
+            QPAProveedorVentaBoletos<ParEmpresaInterno> proveedorVentaBoletos2,
             int granularidadMts = 20,
             int radioPuntasDeLineaMts = 200
         )
@@ -117,7 +117,7 @@ namespace QPACreator
             ConstructorFichasDesdeResultados<TIdent> constructorFichas,
             Type tipoPuntaLinea,
             Dictionary<int, (int, int)> empresaInternoSUBEXFichas,
-            ProveedorBoletosSUBE proveedorVentaBoletos2,
+            QPAProveedorVentaBoletos<ParEmpresaInterno> proveedorVentaBoletos2,
             int granularidadMts = 20,
             int radioPuntasDeLineaMts = 200
         )
@@ -278,7 +278,7 @@ namespace QPACreator
             List<QPAResult<TIdent>>                 resultadosQPA,
             ConstructorFichasDesdeResultados<TIdent>constructorFichas,
             Dictionary<int, (int, int)>             empresaInternoSUBEXFichas,
-            ProveedorBoletosSUBE                    proveedorVentaBoletos2
+            QPAProveedorVentaBoletos<ParEmpresaInterno> proveedorVentaBoletos2
         )
         {
             var resulFichas = constructorFichas(resultadosQPA);
@@ -302,7 +302,7 @@ namespace QPACreator
             List<QPAResult<TIdent>> resultadosSUBE,
             List<int> fichasSUBE,
             Dictionary<int, (int, int)> empresaInternoSUBEXFichas,
-            /*ProveedorVentaBoletosDbSUBE*/ ProveedorBoletosSUBE proveedorVentaBoletos
+            /*ProveedorVentaBoletosDbSUBE*/ QPAProveedorVentaBoletos<ParEmpresaInterno> proveedorVentaBoletos
         )
         {
             var count = 0;
@@ -352,7 +352,7 @@ namespace QPACreator
             QPAResult<TIdent> qpaResult,
             int ficha,
             Dictionary<int, (int, int)> empresaInternoSUBEXFichas,
-            /*ProveedorVentaBoletosDbSUBE*/ ProveedorBoletosSUBE proveedorVentaBoletos,
+            /*ProveedorVentaBoletosDbSUBE*/ QPAProveedorVentaBoletos<ParEmpresaInterno> proveedorVentaBoletos,
             FuncCasillerosXLinBan dameCasillerosXLinBan
         )
         {
