@@ -381,7 +381,8 @@ namespace QPApp
 
         private static async Task<RetVal<Dictionary<ParEmpresaInterno, List<BoletoComun>>>> DameBoletosPorIdentificador(DateTime fechaDesde, DateTime fechaHasta)
         {
-            var url = $"http://vm-coches:5006/BoletosXIdentSUBE_KvpList?desde={fechaDesde.Year:0000}-{fechaDesde.Month:00}-{fechaDesde.Day:00}";
+            // vm-coches = 192.168.201.74
+            var url = $"http://192.168.201.74:5006/BoletosXIdentSUBE_KvpList?desde={fechaDesde.Year:0000}-{fechaDesde.Month:00}-{fechaDesde.Day:00}";
 
             var httpClient = new HttpClient();
             var response = await httpClient.GetAsync(url);
@@ -418,7 +419,7 @@ namespace QPApp
             try
             {
                 var httpClient = new HttpClient();
-                var url = "http://vm-coches:5008/EmpresaInternoFicha";
+                var url = "http://192.168.201.74:5008/EmpresaInternoFicha";
                 var response = await httpClient.GetAsync(url);
 
                 if (response.StatusCode == HttpStatusCode.OK)
