@@ -142,11 +142,11 @@ namespace QPApp
                     case "driveup":
                         if (_usarHttps)
                         {
-                            remoteUri = new Uri("https://192.168.201.74:5001/HistoriaCochesDriveUpAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());
+                            remoteUri = new Uri("https://192.168.201.74:5001/HistoriaCochesDriveUpAnteriores?diasMenos=" + diasMenos.ToString());
                         }
                         else
                         {
-                            remoteUri = new Uri("http://192.168.201.74:5000/HistoriaCochesDriveUpAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());
+                            remoteUri = new Uri("http://192.168.201.74:5000/HistoriaCochesDriveupAnteriores?diasMenos=" + diasMenos.ToString());
                         }
                         break;
                     case "picobus":
@@ -191,6 +191,8 @@ namespace QPApp
                 {
                     httpClient = new HttpClient();
                 }
+
+                httpClient.Timeout = TimeSpan.FromMinutes(10);
 
                 var pepe = await httpClient.GetAsync(remoteUri);
                 var sres = await pepe.Content.ReadAsStringAsync();

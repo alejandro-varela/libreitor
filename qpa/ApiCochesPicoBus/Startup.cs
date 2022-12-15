@@ -49,7 +49,7 @@ namespace ApiCochesPicoBus
             // compresión de la respuesta
             app.UseResponseCompression();
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 

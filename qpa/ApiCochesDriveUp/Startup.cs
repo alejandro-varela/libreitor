@@ -53,7 +53,7 @@ namespace ApiCochesDriveUp
 
             app.UseResponseCompression();
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
