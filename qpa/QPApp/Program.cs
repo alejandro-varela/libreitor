@@ -6,36 +6,28 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Threading;
 using System.Globalization;
 using LibQPA.ProveedoresTecnobus;
 using System.Net.Http;
 using System.Security.Authentication;
 using System.Net;
-using System.Data.SqlClient;
 using Newtonsoft.Json;
 using ComunSUBE;
-using LibQPA.ProveedoresVentas.DbSUBE;
+using System.Text;
 
 namespace QPApp
 {
     public partial class Program
     {
-        //static AutoResetEvent _areArchivoBajado = new AutoResetEvent(false); // es para señalizar que ya se bajó el archivo
-        //static string _archivoBajando = string.Empty; // es para pasar la información del archivo que se está bajando
-
         static bool _usarHttps = false;
-        static string _password = "";
 
         static async Task<int> Main(string[] args)
         {
             // 1) ojin con el repositorio de los recorridos: pueden estar un poco viejitos
-            //      - por ahora corregido...
             // 2) se debe hacer un árbol QPA para
             //      - saber que parte depende de que parte
             //      - saber que podemos usar para cada necesidad
 
-            // * password                       el password de la DB
             // * modo (JsonSUBE|DriveUp|PicoBus|TecnobusSmGps) (de donde sacaré los datos y en que forma los procesaré)
             // * identificadorReporte           (una cadena para identificar univocamente a los reportes)
             // * desdeISO8601                   (la fecha desde en formato ISO8601)
@@ -45,17 +37,15 @@ namespace QPApp
             //   granularidadMts                default = 20
             //   radioPuntasDeLineaMts          default = 800
 
+            #region Parsing de Argumentos
             Dictionary<string, string> misArgs = ArgsHelper.CreateDictionary(args);
             DateTime ahora = DateTime.Now;
-
-            // password
-            _password = ArgsHelper.SafeGetArgVal(misArgs, "password", "");
 
             // modo
             string modo = ArgsHelper.SafeGetArgVal(misArgs, "modo", "DriveUp");
 
             // idReporte
-            string idReporte = modo.ToLower(); //ArgsHelper.SafeGetArgVal(misArgs, "idReporte", modo);
+            string idReporte = modo.ToLower();
 
             // desde hasta
             string sDesde = ArgsHelper.SafeGetArgVal(misArgs, "desde", ahora.ToString("yyyy-MM-dd"));
@@ -74,8 +64,7 @@ namespace QPApp
                 .OrderBy(n => n)
                 .ToList()
             ;
-            string sLineasOrdenadas = string.Join('_', lineasOrdenadas.ToArray());
-
+            
             // ficha en especial
             string sFicha = ArgsHelper.SafeGetArgVal(misArgs, "ficha", "0");
             int ficha = int.Parse(sFicha);
@@ -96,174 +85,98 @@ namespace QPApp
             // radio de las puntas de línea
             string sRadioPuntas = ArgsHelper.SafeGetArgVal(misArgs, "radioPuntas", "800");
             int radioPuntas = int.Parse(sRadioPuntas);
+            #endregion
 
-            // recorridos teóricos
-            IQPAProveedorRecorridosTeoricos proveedorRecorridosTeoricos = new ProveedorVersionesTecnobus(
-                new string[] { "./Datos" }
+            #region Nombre del Reporte / Directorio de salida
+            var dirReportes = "./Reportes";
+            if (!Directory.Exists(dirReportes))
+            {
+                Directory.CreateDirectory(dirReportes);
+            }
+
+            var nombreArchivoReporteSinExtension = GetNombreArchivoReporteSinExtension(
+                idReporte,
+                desde,
+                hasta,
+                tipoPuntaLinea,
+                radioPuntas,
+                granularidad,
+                lineasOrdenadas,
+                ficha
             );
 
-            Filtro filtro = Filtro.CreateFrom("./Filtros", lineasOrdenadas);
+            var pathArchivoReporteSinExtension = Path.Combine(dirReportes, nombreArchivoReporteSinExtension);
 
-            var recorridosTeoricos = proveedorRecorridosTeoricos.Get(new QPAProvRecoParams()
+            if (File.Exists($"{pathArchivoReporteSinExtension}.csv"))
             {
-                LineasPosibles = lineasOrdenadas.ToArray(),
-                FechaVigencia = desde
-            })
-                .Where(reco => filtro.EsRecorridoPermitido(reco.Linea, reco.Bandera))
-                .Select(reco => SanitizarRecorrido(reco, granularidad))
-                .ToList()
-            ;
-
-            // creo el directorio de bajada si no existe...
-            var dirBajados = "./Bajados/";
-            if (!Directory.Exists(dirBajados))
-            {
-                Directory.CreateDirectory(dirBajados);
+                Console.WriteLine("El reporte ya fue creado");
+                return 0;
             }
+            #endregion
 
-            var nombreArchivoLocal = $"{modo.ToLower()}_{desde.Year:0000}_{desde.Month:00}_{desde.Day:00}.csv";
-            var pathArchivoLocal = Path.Combine(dirBajados, nombreArchivoLocal).Replace('\\', '/');
-
-            if (File.Exists(pathArchivoLocal))
+            #region Recuperación de Recorridos Teóricos
+            Console.WriteLine("Buscando Recorridos Teóricos");
+            List<RecorridoLinBan> recorridosTeoricos = null;
+            try
             {
-                // ya existe el archivo
-                Console.WriteLine($"El archivo {pathArchivoLocal} existe en modo '{modo}'");
-            }
-            else
-            {
-                // bajo el nuevo archivo
-                int diasMenos = Convert.ToInt32((DateTime.Now.Date.Subtract(desde.Date)).TotalDays);
-                Uri remoteUri = null;
+                RetVal<List<RecorridoLinBan>> retvalRecorridosTeoricos =
+                    await DameRecorridosTeoricos(desde, lineasOrdenadas, granularidad);
 
-                // dependiendo del "modo" bajo de un lugar u otro
-                // vm-coches = 192.168.201.74
-                switch (modo.ToLower())
+                if (retvalRecorridosTeoricos.IsOk)
                 {
-                    case "driveup":
-                        if (_usarHttps)
-                        {
-                            remoteUri = new Uri("https://192.168.201.74:5001/HistoriaCochesDriveUpAnteriores?diasMenos=" + diasMenos.ToString());
-                        }
-                        else
-                        {
-                            remoteUri = new Uri("http://192.168.201.74:5000/HistoriaCochesDriveupAnteriores?diasMenos=" + diasMenos.ToString());
-                        }
-                        break;
-                    case "picobus":
-                        if (_usarHttps)
-                        {
-                            remoteUri = new Uri("https://192.168.201.74:5003/HistoriaCochesPicoBusAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());
-                        }
-                        else
-                        {
-                            remoteUri = new Uri("http://192.168.201.74:5002/HistoriaCochesPicoBusAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());
-                        }
-                        break;
-                    case "tecnobussmgps":
-                        if (_usarHttps)
-                        {
-                            remoteUri = new Uri("https://192.168.201.74:5005/HistoriaCochesTecnobusSmGpsAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());
-                        }
-                        else
-                        {
-                            remoteUri = new Uri("http://192.168.201.74:5004/HistoriaCochesTecnobusSmGpsAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());
-                        }
-                        break;
-                    default:
-                        Console.WriteLine($"El modo '{modo}' no es válido");
-                        return -1;
-                }
-
-                // bajar archivo...
-                HttpClient httpClient = null;
-
-                if (_usarHttps)
-                {
-                    var handler = new HttpClientHandler()
-                    {
-                        Proxy = new WebProxy("192.168.201.2:8080", true),
-                        SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls11 | SslProtocols.Tls
-                    };
-                    handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-                    httpClient = new HttpClient(handler);
+                    recorridosTeoricos = retvalRecorridosTeoricos.Value;
                 }
                 else
                 {
-                    httpClient = new HttpClient();
+                    Console.WriteLine(retvalRecorridosTeoricos.ErrorMessage);
+                    return 1;
                 }
-
-                httpClient.Timeout = TimeSpan.FromMinutes(10);
-
-                var pepe = await httpClient.GetAsync(remoteUri);
-                var sres = await pepe.Content.ReadAsStringAsync();
-                File.WriteAllText(pathArchivoLocal, sres);
-
-                //// bajar archivo...
-                //Console.WriteLine($"Tratando de bajar archivo en modo '{modo}'");
-                //var bajadorDeArchivo = new BajadorDeArchivo();
-                //if (!bajadorDeArchivo.BajarArchivo(remoteUri, pathArchivoLocal))
-                //{
-                //    Console.WriteLine($"No pude bajar el archivo {bajadorDeArchivo.Error}");
-                //    return -1;
-                //}
             }
+            catch (Exception exx)
+            {
+                Console.WriteLine(exx.Message);
+                return 1;
+            }
+            #endregion
 
-            Console.WriteLine("Tratando de construir información histórica");
-            
+            #region Recuperación de Puntos Históricos
+            Console.WriteLine("Buscando Puntos Históricos");
             Dictionary<int, List<PuntoHistorico>> puntosXIdentificador = null;
-
             try
             {
-                puntosXIdentificador = GetPuntosPorIdentificador(pathArchivoLocal, modo, soloEstaFicha: ficha);
-
-                // acá intentaré dejar solo las fichas que sean de las líneas elegidas
-                if (ficha == 0 && lineasOrdenadas.All(LineaHabilitadaPrecalcularFichas))
+                RetVal<Dictionary<int, List<PuntoHistorico>>> retvalPuntosHistoricos =
+                    await DamePuntosHistoricosAsync(modo, desde, hasta, lineasOrdenadas, ficha);
+                if (retvalPuntosHistoricos.IsOk)
                 {
-                    // averiguar las fichas de las líneas elegidas y ponerlas en un conjunto
-                    //List<int> fichasParaUsar = DameFichasDeLineas_DB(password, lineasOrdenadas, desde, hasta);
-                    RetVal<List<int>> retValFichasXLinea = await DameFichasDeLineas_RedAsync(lineasOrdenadas, desde, hasta);
-
-                    if (retValFichasXLinea.IsOk)
-                    {
-                        // filtro el diccionario "puntosXIdentificador" con esas fichas
-                        puntosXIdentificador = FiltrarFichas(
-                            puntosXIdentificador,
-                            retValFichasXLinea.Value
-                        );
-                    }
-                    else
-                    {
-                        // aca, por alguna razon, el programa falló
-                        Console.WriteLine("\tNo se pudo filtrar información histórica");
-                        return 1;
-                    }
-
+                    puntosXIdentificador = retvalPuntosHistoricos.Value;
                 }
-
-                Console.WriteLine("\tInformación histórica ok");
+                else
+                {
+                    Console.WriteLine(retvalPuntosHistoricos.ErrorMessage);
+                    return 1;
+                }
             }
             catch (Exception exx)
             {
                 Console.WriteLine(exx);
                 return 1;
             }
+            #endregion
 
-            // empresa&interno X Ficha
+            #region Recuperación de Empresa-Interno X Ficha
             Console.WriteLine("Buscando empresa-interno SUBE x fichas");
             Dictionary<int, (int, int)> empresaInternoSUBEXFichas = null;
-
             try
             {
                 RetVal<Dictionary<int, (int, int)>> retEmpresaInternoSUBEXFichas =
                     await DameEmpresaInternoXFichasAsync();
-
                 if (retEmpresaInternoSUBEXFichas.IsOk)
                 {
                     empresaInternoSUBEXFichas = retEmpresaInternoSUBEXFichas.Value;
                 }
                 else
                 {
-                    Console.WriteLine("No se pudo recuperar info de empresaInterno x ficha");
+                    Console.WriteLine(retEmpresaInternoSUBEXFichas.ErrorMessage);
                     return 1;
                 }
             }
@@ -272,31 +185,26 @@ namespace QPApp
                 Console.WriteLine(exx);
                 return 1;
             }
+            #endregion
 
-            // proveedor de venta de boletos
-            // TODO!!!!
-            //    Crear un proveedor de RED
-            //    Forzar al proveedor a que se precargue
-            //
+            #region Recuperación de boletos SUBE y creación de Proveedor de venta de boletos
             Console.WriteLine("Buscando boletos SUBE");
-
-            //ProveedorBoletosSUBE proveedorVentaBoletos2 =
-            //    DameProveedorVentaBoletos(desde, hasta);
-
-            var proveedorVentaBoletos2 = new ProveedorBoletosSUBERed();
-            
+            ProveedorBoletosSUBERed proveedorVentaBoletos2 = null;
             try
             {
-                var retBoletosXIdentificador = 
+                var retBoletosXIdentificador =
                     await DameBoletosPorIdentificador(fechaDesde: desde, fechaHasta: hasta);
 
                 if (retBoletosXIdentificador.IsOk)
                 {
-                    proveedorVentaBoletos2.BoletosXIdentificador = retBoletosXIdentificador.Value;
+                    proveedorVentaBoletos2 = new ProveedorBoletosSUBERed
+                    {
+                        BoletosXIdentificador = retBoletosXIdentificador.Value
+                    };
                 }
                 else
                 {
-                    Console.WriteLine("No se pudieron recuperar los boletos SUBE");
+                    Console.WriteLine(retBoletosXIdentificador.ErrorMessage);
                     return 1;
                 }
             }
@@ -305,12 +213,11 @@ namespace QPApp
                 Console.WriteLine(exx);
                 return 1;
             }
+            #endregion
 
             // creo el qpaCreator
-            // TODO: sacar la configuración
             var qpaCreator = new QPACreator.Creator(new CreatorConfiguration());
             qpaCreator.Aviso += QpaCreator_Aviso;
-
             var (resultadosQPA, reporteQPA) = qpaCreator.Calculate<int>(
                 idReporte,
                 desde,
@@ -329,12 +236,6 @@ namespace QPApp
 
             /////////////////////////////////////////////////////////
             // Creación del reporte 
-
-            var dirReportes = "./Reportes";
-            if (!Directory.Exists(dirReportes))
-            {
-                Directory.CreateDirectory(dirReportes);
-            }
 
             Reporte rpx = new Reporte();
             var aux = new ReporteQPASubItem<string>();
@@ -373,12 +274,249 @@ namespace QPApp
                 contenido = lineasContenidoFiltrado;
             }
 
-            var nombreArchivoReporte = $"Reporte_{idReporte}_Desde_{desde:yyyyMMdd}_Hasta_{hasta:yyyyMMdd}_Lineas_{sLineasOrdenadas}";
-            var pathArchivoReporte = Path.Combine(dirReportes, nombreArchivoReporte);
-
-            File.WriteAllText($"{pathArchivoReporte}.csv", string.Join(string.Empty, contenido));
+            File.WriteAllText(
+                $"{pathArchivoReporteSinExtension}.csv", 
+                string.Join(string.Empty, contenido)
+            );
 
             return 0;
+        }
+
+        private static string GetNombreArchivoReporteSinExtension(
+            string          idReporte, 
+            DateTime        desde, 
+            DateTime        hasta, 
+            Type            tipoPuntaLinea,
+            int             radioPuntas,
+            int             granularidad,
+            IEnumerable<int>lineas,
+            int             ficha
+        )
+        {
+            StringBuilder sbNombre = new StringBuilder();
+            const string SEPARADOR_VARIABLES = "__";
+            const string SEPARADOR_ARGUMENTO = "_";
+            
+            sbNombre.Append("DH");
+            sbNombre.Append(SEPARADOR_ARGUMENTO);
+            sbNombre.Append(desde.ToString("yyyy-MM-ddTHHmmss"));
+            sbNombre.Append(SEPARADOR_ARGUMENTO);
+            sbNombre.Append(hasta.ToString("yyyy-MM-ddTHHmmss"));
+
+            sbNombre.Append(SEPARADOR_VARIABLES);
+
+            sbNombre.Append("ALG");
+            sbNombre.Append(SEPARADOR_ARGUMENTO);
+            sbNombre.Append(tipoPuntaLinea.Name);
+            sbNombre.Append(SEPARADOR_ARGUMENTO);
+            sbNombre.Append($"R{radioPuntas}");
+            sbNombre.Append(SEPARADOR_ARGUMENTO);
+            sbNombre.Append($"G{granularidad}");
+
+            sbNombre.Append(SEPARADOR_VARIABLES);
+
+            sbNombre.Append("LIN");
+            sbNombre.Append(SEPARADOR_ARGUMENTO);
+            sbNombre.Append(string.Join(SEPARADOR_ARGUMENTO, lineas.OrderBy(l => l).ToArray()));
+
+            sbNombre.Append(SEPARADOR_VARIABLES);
+
+            sbNombre.Append("MODO");
+            sbNombre.Append(SEPARADOR_ARGUMENTO);
+            sbNombre.Append(idReporte);
+
+            if (ficha > 0)
+            {
+                sbNombre.Append(SEPARADOR_VARIABLES);
+
+                sbNombre.Append("FICHA");
+                sbNombre.Append(SEPARADOR_ARGUMENTO);
+                sbNombre.Append(ficha);
+            }
+
+            var nombre = sbNombre.ToString();
+
+            return nombre;
+
+            //return $"Reporte_{idReporte}_Desde_{desde:yyyyMMdd}_Hasta_{hasta:yyyyMMdd}_Lineas_{sLineasOrdenadas}";
+        }
+
+        private async static Task<RetVal<List<RecorridoLinBan>>> DameRecorridosTeoricos(
+            DateTime    desde,
+            List<int>   lineasOrdenadas,
+            int         granularidad
+        )
+        {
+            try
+            {
+                IQPAProveedorRecorridosTeoricos proveedorRecorridosTeoricos =
+                    new ProveedorVersionesTecnobus(new string[] { "./Datos" });
+
+                Filtro filtro = Filtro.CreateFrom("./Filtros", lineasOrdenadas);
+
+                var recorridosTeoricos = proveedorRecorridosTeoricos.Get(new QPAProvRecoParams()
+                {
+                    LineasPosibles = lineasOrdenadas.ToArray(),
+                    FechaVigencia = desde
+                })
+                    .Where(reco => filtro.EsRecorridoPermitido(reco.Linea, reco.Bandera))
+                    .Select(reco => SanitizarRecorrido(reco, granularidad))
+                    .ToList()
+                ;
+
+                return new RetVal<List<RecorridoLinBan>>
+                {
+                    IsOk = true,
+                    Value = recorridosTeoricos,
+                };
+            }
+            catch (Exception exx)
+            {
+                return new RetVal<List<RecorridoLinBan>>
+                {
+                    IsOk = false,
+                    ErrorMessage = exx.Message,
+                    ErrorException = exx,
+                };
+            }
+        }
+
+        private static async Task<RetVal<Dictionary<int, List<PuntoHistorico>>>> DamePuntosHistoricosAsync(
+            string modo, 
+            DateTime    desde, 
+            DateTime    hasta,
+            List<int>   lineasOrdenadas,
+            int         ficha
+        )
+        {
+            // creo el directorio de bajada si no existe...
+            var dirBajados = "./Bajados/";
+            if (!Directory.Exists(dirBajados))
+            {
+                Directory.CreateDirectory(dirBajados);
+            }
+
+            var nombreArchivoLocal = $"{modo.ToLower()}_{desde.Year:0000}_{desde.Month:00}_{desde.Day:00}.csv";
+            var pathArchivoLocal = Path.Combine(dirBajados, nombreArchivoLocal).Replace('\\', '/');
+
+            if (File.Exists(pathArchivoLocal))
+            {
+                // ya existe el archivo
+                Console.WriteLine($"El archivo {pathArchivoLocal} existe en modo '{modo}'");
+            }
+            else
+            {
+                // bajo el nuevo archivo
+                int diasMenos = Convert.ToInt32((DateTime.Now.Date.Subtract(desde.Date)).TotalDays);
+                Uri remoteUri = null;
+
+                // dependiendo del "modo" bajo de un lugar u otro
+                // vm-coches = 192.168.201.74
+                switch (modo.ToLower())
+                {
+                    case "driveup":
+                        remoteUri = _usarHttps ?
+                            new Uri("https://192.168.201.74:5001/HistoriaCochesDriveUpAnteriores?diasMenos=" + diasMenos.ToString()) :
+                            new Uri("http://192.168.201.74:5000/HistoriaCochesDriveupAnteriores?diasMenos=" + diasMenos.ToString());
+                        break;
+                    case "picobus":
+                        remoteUri = _usarHttps?
+                            new Uri("https://192.168.201.74:5003/HistoriaCochesPicoBusAnteriores?formato=csv&diasMenos=" + diasMenos.ToString()):
+                            new Uri("http://192.168.201.74:5002/HistoriaCochesPicoBusAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());                        
+                        break;
+                    case "tecnobussmgps":
+                        remoteUri = _usarHttps ?
+                            new Uri("https://192.168.201.74:5005/HistoriaCochesTecnobusSmGpsAnteriores?formato=csv&diasMenos=" + diasMenos.ToString()):
+                            new Uri("http://192.168.201.74:5004/HistoriaCochesTecnobusSmGpsAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());
+                        break;
+                    default:
+                        var errMsg = $"El modo '{modo}' no es válido";
+                        return new RetVal<Dictionary<int, List<PuntoHistorico>>>
+                        {
+                             ErrorMessage = errMsg,
+                             IsOk = false,
+                        };
+                }
+
+                // bajar archivo...
+                HttpClient httpClient = null;
+
+                if (_usarHttps)
+                {
+                    var handler = new HttpClientHandler()
+                    {
+                        Proxy = new WebProxy("192.168.201.2:8080", true),
+                        SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls11 | SslProtocols.Tls
+                    };
+                    handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+                    httpClient = new HttpClient(handler);
+                }
+                else
+                {
+                    httpClient = new HttpClient();
+                }
+
+                httpClient.Timeout = TimeSpan.FromMinutes(10);
+
+                var pepe = await httpClient.GetAsync(remoteUri);
+                var sres = await pepe.Content.ReadAsStringAsync();
+                File.WriteAllText(pathArchivoLocal, sres);
+            }
+
+            Console.WriteLine("Tratando de construir información histórica");
+
+            Dictionary<int, List<PuntoHistorico>> puntosXIdentificador = null;
+
+            try
+            {
+                puntosXIdentificador = GetPuntosPorIdentificador(pathArchivoLocal, modo, soloEstaFicha: ficha);
+
+                // acá intentaré dejar solo las fichas que sean de las líneas elegidas
+                if (ficha == 0 && lineasOrdenadas.All(LineaHabilitadaPrecalcularFichas))
+                {
+                    // averiguar las fichas de las líneas elegidas y ponerlas en un conjunto
+                    //List<int> fichasParaUsar = DameFichasDeLineas_DB(password, lineasOrdenadas, desde, hasta);
+                    RetVal<List<int>> retValFichasXLinea = await DameFichasDeLineas_RedAsync(lineasOrdenadas, desde, hasta);
+
+                    if (retValFichasXLinea.IsOk)
+                    {
+                        // filtro el diccionario "puntosXIdentificador" con esas fichas
+                        puntosXIdentificador = FiltrarFichas(
+                            puntosXIdentificador,
+                            retValFichasXLinea.Value
+                        );
+                    }
+                    else
+                    {
+                        // aca, por alguna razón, el programa falló
+                        var errMsg = "\tNo se pudo filtrar información histórica";
+                        return new RetVal<Dictionary<int, List<PuntoHistorico>>>
+                        {
+                            ErrorMessage = errMsg,
+                            IsOk = false,
+                        };
+                    }
+
+                }
+
+                Console.WriteLine("\tInformación histórica ok");
+
+                return new RetVal<Dictionary<int, List<PuntoHistorico>>>
+                {
+                    IsOk = true,
+                    Value = puntosXIdentificador,
+                };
+            }
+            catch (Exception exx)
+            {
+                return new RetVal<Dictionary<int, List<PuntoHistorico>>>
+                {
+                    ErrorMessage = exx.Message,
+                    ErrorException = exx,
+                    IsOk = false,
+                };
+            }
+
         }
 
         private static async Task<RetVal<Dictionary<ParEmpresaInterno, List<BoletoComun>>>> DameBoletosPorIdentificador(DateTime fechaDesde, DateTime fechaHasta)
@@ -461,33 +599,6 @@ namespace QPApp
                     ErrorException = exx
                 };
             }
-
-            //DatosEmpIntFicha datosEmpIntFicha = new DatosEmpIntFicha(new DatosEmpIntFicha.Configuration
-            //{
-            //    ConnectionString = "Data Source=192.168.201.21;Initial Catalog=general;User ID=sa;Password=" + _password
-            //});
-
-            //var ret = datosEmpIntFicha
-            //    .Get()
-            //    .ToDictionary(x => x.Value, x => x.Key)
-            //;
-
-            //return ret;
-        }
-
-        private static ProveedorBoletosSUBE DameProveedorVentaBoletos(DateTime desde, DateTime hasta)
-        {
-            var proveedorVentaBoletosConfig2 = new ProveedorBoletosSUBE.Configuracion
-            {
-                CommandTimeout = 600,
-                ConnectionString = "Data Source=192.168.201.42;Initial Catalog=sube;User ID=sa;Password=" + _password,
-                FechaDesde = desde,
-                FechaHasta = hasta,
-            };
-
-            ProveedorBoletosSUBE proveedorVentaBoletos2 = new ProveedorBoletosSUBE(proveedorVentaBoletosConfig2);
-
-            return proveedorVentaBoletos2;
         }
 
         class ParLineaFicha
