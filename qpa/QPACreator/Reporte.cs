@@ -78,7 +78,7 @@ namespace QPACreator
 
         public string Render(CSVItem item, CSVFormatter formatter)
         {
-            return string.Join(formatter.Separator, item.FormattedCells);
+            return string.Join(formatter.Separator.ToString(), item.FormattedCells);
         }
     }
 

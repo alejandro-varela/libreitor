@@ -36,18 +36,23 @@ namespace ComunSUBE
 
 			var consulta = ConsultaFichasBuilder();
 
-			using var conn = new SqlConnection(Config.ConnectionString);
-			conn.Open();
-			using var cmd = new SqlCommand(consulta, conn);
-			cmd.CommandTimeout = Config.CommandTimeout;
-			using var reader = cmd.ExecuteReader();
-
-			while (reader.Read())
+			using (var conn = new SqlConnection(Config.ConnectionString))
 			{
-				int empresa = Convert.ToInt32(reader["empresa"] ?? 0);
-				int interno = Convert.ToInt32(reader["interno"] ?? 0);
-				int ficha   = Convert.ToInt32(reader["ficha"  ] ?? 0);
-				ret.Add((empresa, interno), ficha);
+				conn.Open();
+				using (var cmd = new SqlCommand(consulta, conn))
+				{
+					cmd.CommandTimeout = Config.CommandTimeout;
+					using (var reader = cmd.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							int empresa = Convert.ToInt32(reader["empresa"] ?? 0);
+							int interno = Convert.ToInt32(reader["interno"] ?? 0);
+							int ficha = Convert.ToInt32(reader["ficha"] ?? 0);
+							ret.Add((empresa, interno), ficha);
+						}
+					}
+				}
 			}
 
 			return ret;

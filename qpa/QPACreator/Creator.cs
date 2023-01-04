@@ -137,18 +137,18 @@ namespace QPACreator
             Avisar($"Usando tipo de punta: {tipoPuntaLinea.Name}");
             if (tipoPuntaLinea == typeof(PuntaLinea))
             {
-                creadorPuntasNombradas = recorridosTeoricos =>
+                creadorPuntasNombradas = recosTeoricos =>
                     PuntasDeLinea
-                        .GetPuntasNombradas(recorridosTeoricos, radioPuntasDeLineaMts)
+                        .GetPuntasNombradas(recosTeoricos, radioPuntasDeLineaMts)
                         .Select(pulin => (IPuntaLinea)pulin)
                         .ToList()
                     ;
             }
             else if (tipoPuntaLinea == typeof(PuntaLinea2))
             {
-                creadorPuntasNombradas = recorridosTeoricos =>
+                creadorPuntasNombradas = recosTeoricos =>
                     PuntasDeLinea2
-                        .GetPuntasNombradas(recorridosTeoricos, radioPuntasDeLineaMts, radioPuntasDeLineaMts * 2)
+                        .GetPuntasNombradas(recosTeoricos, radioPuntasDeLineaMts, radioPuntasDeLineaMts * 2)
                         .Select(pulin => (IPuntaLinea)pulin)
                         .ToList()
                     ;
@@ -197,7 +197,10 @@ namespace QPACreator
             int granularidadMts = 20
         )
         {
-            identificador ??= string.Empty;
+            if (identificador == null)
+            {
+                identificador = string.Empty;
+            }
 
             #region Recorridos teóricos
 

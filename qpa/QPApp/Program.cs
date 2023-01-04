@@ -1,56 +1,103 @@
 ﻿using Comun;
+using ComunSUBE;
 using LibQPA;
+using LibQPA.ProveedoresTecnobus;
+using Newtonsoft.Json;
 using QPACreator;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Globalization;
-using LibQPA.ProveedoresTecnobus;
-using System.Net.Http;
-using System.Security.Authentication;
 using System.Net;
-using Newtonsoft.Json;
-using ComunSUBE;
+using System.Net.Http;
+using System.Reflection;
+using System.Security.Authentication;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace QPApp
 {
     public partial class Program
     {
         static bool _usarHttps = false;
+        public static string DirReportes { get; private set; }
+        public static string DirBajados { get; private set; }
+        public static string DirDatos { get; private set; }
+        public static string DirFiltros { get; private set; }
 
         static async Task<int> Main(string[] args)
         {
-            // 1) ojin con el repositorio de los recorridos: pueden estar un poco viejitos
-            // 2) se debe hacer un árbol QPA para
-            //      - saber que parte depende de que parte
-            //      - saber que podemos usar para cada necesidad
+            // TODO: HOY
+            //      -poner el QPApp + cron con 3 días anteriores (para que lleguen los boletos)
+            //      -hacer la api para escribir resultados del QPA en algun lado...
+            //
+            // TODO: >>>> tiene que hacer una GUID para crear los directorios de bajada <<<<
+            //       >>>> para que los los archivos se bajen sin interferir             <<<<
+            // 
+            //
+            // TODO: poner una configuración como la gente
 
-            // * modo (JsonSUBE|DriveUp|PicoBus|TecnobusSmGps) (de donde sacaré los datos y en que forma los procesaré)
-            // * identificadorReporte           (una cadena para identificar univocamente a los reportes)
-            // * desdeISO8601                   (la fecha desde en formato ISO8601)
-            //   lineasPosiblesSeparadasPorComa default = "159,163"
-            //   tipoPuntaLinea                 default = typeof(PuntaLinea)
-            //   tipoCreadorPartesHistoricas    default = typeof(CreadorPartesHistoricasIdentidad)
-            //   granularidadMts                default = 20
-            //   radioPuntasDeLineaMts          default = 800
+            #region Directorio de trabajo
+            // Obtengo directorio en donde se encuentra el programa ejecutable
+            string assemblyDir = Path.GetDirectoryName(Assembly
+                .GetExecutingAssembly()
+                .GetModules()[0]
+                .FullyQualifiedName
+            );
+            // Seteo working dir a este directorio
+            Directory.SetCurrentDirectory(assemblyDir);
+            #endregion
 
             #region Parsing de Argumentos
             Dictionary<string, string> misArgs = ArgsHelper.CreateDictionary(args);
             DateTime ahora = DateTime.Now;
 
             // modo
-            string modo = ArgsHelper.SafeGetArgVal(misArgs, "modo", "DriveUp");
-
-            // idReporte
-            string idReporte = modo.ToLower();
+            string modo = ArgsHelper.SafeGetArgVal(misArgs, "modo", "DriveUp").ToLower();
 
             // desde hasta
             string sDesde = ArgsHelper.SafeGetArgVal(misArgs, "desde", ahora.ToString("yyyy-MM-dd"));
             DateTime desde = DateTime.Parse(sDesde);
             DateTime hasta = desde.AddDays(1);
+
+            // dir bajados
+            {
+                string defaultBajados = Path.Combine(assemblyDir, "Bajados");
+                DirBajados = ArgsHelper.SafeGetArgVal(misArgs, "dirBajados", defaultBajados);
+            }
+
+            // dir datos
+            {
+                string defaultDatos = Path.Combine(assemblyDir, "Datos");
+                DirDatos = ArgsHelper.SafeGetArgVal(misArgs, "dirDatos", defaultDatos);
+            }
+
+            // dir filtros 
+            {
+                string defaultFiltros = Path.Combine(assemblyDir, "Filtros");
+                DirFiltros = ArgsHelper.SafeGetArgVal(misArgs, "dirFiltros", defaultFiltros);
+            }
+
+            // dir reportes
+            {
+                string defaultReportes = Path.Combine(assemblyDir, "Reportes");
+                DirReportes = ArgsHelper.SafeGetArgVal(misArgs, "dirReportes", defaultReportes);
+            }
+
+            // env por defecto QPA_OUT_FILE_NAME
+            string QPA_OUT_FILE_NAME = ArgsHelper.SafeGetArgVal(misArgs, "envQpaOutFileName", "QPA_OUT_FILE_NAME");
+
+            // ficha en especial
+            string sFicha = ArgsHelper.SafeGetArgVal(misArgs, "ficha", "0");
+            int ficha = int.Parse(sFicha);
+
+            // granularidad en metros
+            string sGranularidad = ArgsHelper.SafeGetArgVal(misArgs, "granularidad", "20");
+            int granularidad = int.Parse(sGranularidad);
+
+            // idReporte
+            string idReporte = modo.ToLower();
 
             // líneas y sus representaciones
             string sLineas = ArgsHelper.SafeGetArgVal(misArgs, "lineas", string.Empty);
@@ -64,35 +111,50 @@ namespace QPApp
                 .OrderBy(n => n)
                 .ToList()
             ;
-            
-            // ficha en especial
-            string sFicha = ArgsHelper.SafeGetArgVal(misArgs, "ficha", "0");
-            int ficha = int.Parse(sFicha);
 
-            // tipo punta de línea
-            string sTipoPuntaLinea = ArgsHelper.SafeGetArgVal(misArgs, "tipoPuntas", "PuntaLinea");
-            Type tipoPuntaLinea = null;
-            if (sTipoPuntaLinea == "PuntaLinea") { tipoPuntaLinea = typeof(PuntaLinea); }
-            else if (sTipoPuntaLinea == "PuntaLinea2") { tipoPuntaLinea = typeof(PuntaLinea2); }
-
-            // tipo creador partes históricas
-            Type tipoCreadorPartesHistoricas = typeof(CreadorPartesHistoricasIdentidad);
-
-            // granularidad en metros
-            string sGranularidad = ArgsHelper.SafeGetArgVal(misArgs, "granularidad", "20");
-            int granularidad = int.Parse(sGranularidad);
+            // omitir boletos
+            string sOmitirBoletos = ArgsHelper.SafeGetArgVal(misArgs, "omitirBoletos", "false");
+            bool omitirBoletos = bool.Parse(sOmitirBoletos);
 
             // radio de las puntas de línea
             string sRadioPuntas = ArgsHelper.SafeGetArgVal(misArgs, "radioPuntas", "800");
             int radioPuntas = int.Parse(sRadioPuntas);
+
+            // solo nombre archivo
+            string sSoloNombreArchivo = ArgsHelper.SafeGetArgVal(misArgs, "soloNombreArchivo", "false").ToLower();
+            bool.TryParse(sSoloNombreArchivo, out bool soloNombreArchivo);
+
+            // tipo creador partes históricas
+            Type tipoCreadorPartesHistoricas = typeof(CreadorPartesHistoricasIdentidad);
+
+            // tipo punta de línea
+            string sTipoPuntaLinea = ArgsHelper.SafeGetArgVal(misArgs, "tipoPuntas", "PuntaLinea");
+            Type tipoPuntaLinea;
+
+            switch (sTipoPuntaLinea.ToLower())
+            {
+                case "puntalinea":
+                    tipoPuntaLinea = typeof(PuntaLinea);
+                    break;
+                case "puntalinea2":
+                    tipoPuntaLinea = typeof(PuntaLinea2);
+                    break;
+                default:
+                    tipoPuntaLinea = typeof(PuntaLinea);
+                    break;
+            }
             #endregion
 
-            #region Nombre del Reporte / Directorio de salida
-            var dirReportes = "./Reportes";
-            if (!Directory.Exists(dirReportes))
+            #region Compruebo si los parámetros son válidos
+            if (lineasComoVienen.Count == 0)
             {
-                Directory.CreateDirectory(dirReportes);
+                Console.WriteLine("Error: debe especificar al menos un código de línea");
+                MostrarUso();
+                return 1;
             }
+            #endregion
+
+            #region Nombre del Reporte | Creación Directorio de salida | Compruebo si reporte ya generado
 
             var nombreArchivoReporteSinExtension = GetNombreArchivoReporteSinExtension(
                 idReporte,
@@ -102,19 +164,36 @@ namespace QPApp
                 radioPuntas,
                 granularidad,
                 lineasOrdenadas,
-                ficha
+                ficha,
+                omitirBoletos
             );
 
-            var pathArchivoReporteSinExtension = Path.Combine(dirReportes, nombreArchivoReporteSinExtension);
+            var pathArchivoReporteSinExtension = Path.Combine(DirReportes, nombreArchivoReporteSinExtension);
+            var pathArchivoReporteConExtension = $"{pathArchivoReporteSinExtension}.csv";
 
-            if (File.Exists($"{pathArchivoReporteSinExtension}.csv"))
+            if (soloNombreArchivo)
+            {
+                // esto a STDOUT asi como viene
+                // no poner adentro de loggers ni nada por el estilo
+                Console.WriteLine(pathArchivoReporteConExtension);
+                return 0;
+            }
+
+            if (!Directory.Exists(DirReportes))
+            {
+                Directory.CreateDirectory(DirReportes);
+            }
+
+            if (File.Exists(pathArchivoReporteConExtension))
             {
                 Console.WriteLine("El reporte ya fue creado");
                 return 0;
             }
+
             #endregion
 
-            #region Recuperación de Recorridos Teóricos
+            // TODO: acá tendríamos que hacer que baje los recorridos mas actualizados para la fecha "desde"
+            #region Recuperación de Puntos Teóricos (Recorridos)
             Console.WriteLine("Buscando Recorridos Teóricos");
             List<RecorridoLinBan> recorridosTeoricos = null;
             try
@@ -122,15 +201,13 @@ namespace QPApp
                 RetVal<List<RecorridoLinBan>> retvalRecorridosTeoricos =
                     await DameRecorridosTeoricos(desde, lineasOrdenadas, granularidad);
 
-                if (retvalRecorridosTeoricos.IsOk)
-                {
-                    recorridosTeoricos = retvalRecorridosTeoricos.Value;
-                }
-                else
+                if (!retvalRecorridosTeoricos.IsOk)
                 {
                     Console.WriteLine(retvalRecorridosTeoricos.ErrorMessage);
-                    return 1;
+                    return 1;    
                 }
+                
+                recorridosTeoricos = retvalRecorridosTeoricos.Value;
             }
             catch (Exception exx)
             {
@@ -139,22 +216,28 @@ namespace QPApp
             }
             #endregion
 
-            #region Recuperación de Puntos Históricos
+            // TODO: acá tendríamos que poner las URLs en una configuración y pasarlas de manera externa
+            #region Recuperación de Puntos Históricos (GPS)
             Console.WriteLine("Buscando Puntos Históricos");
             Dictionary<int, List<PuntoHistorico>> puntosXIdentificador = null;
             try
             {
+                // creo el directorio de bajada si no existe...
+                if (!Directory.Exists(DirBajados))
+                {
+                    Directory.CreateDirectory(DirBajados);
+                }
+
                 RetVal<Dictionary<int, List<PuntoHistorico>>> retvalPuntosHistoricos =
                     await DamePuntosHistoricosAsync(modo, desde, hasta, lineasOrdenadas, ficha);
-                if (retvalPuntosHistoricos.IsOk)
-                {
-                    puntosXIdentificador = retvalPuntosHistoricos.Value;
-                }
-                else
+                
+                if (!retvalPuntosHistoricos.IsOk)
                 {
                     Console.WriteLine(retvalPuntosHistoricos.ErrorMessage);
-                    return 1;
+                    return 1;    
                 }
+                
+                puntosXIdentificador = retvalPuntosHistoricos.Value;
             }
             catch (Exception exx)
             {
@@ -170,15 +253,14 @@ namespace QPApp
             {
                 RetVal<Dictionary<int, (int, int)>> retEmpresaInternoSUBEXFichas =
                     await DameEmpresaInternoXFichasAsync();
-                if (retEmpresaInternoSUBEXFichas.IsOk)
-                {
-                    empresaInternoSUBEXFichas = retEmpresaInternoSUBEXFichas.Value;
-                }
-                else
+
+                if (!retEmpresaInternoSUBEXFichas.IsOk)
                 {
                     Console.WriteLine(retEmpresaInternoSUBEXFichas.ErrorMessage);
                     return 1;
                 }
+
+                empresaInternoSUBEXFichas = retEmpresaInternoSUBEXFichas.Value;
             }
             catch (Exception exx)
             {
@@ -187,31 +269,41 @@ namespace QPApp
             }
             #endregion
 
-            #region Recuperación de boletos SUBE y creación de Proveedor de venta de boletos
-            Console.WriteLine("Buscando boletos SUBE");
+            #region Recuperación de Boletos SUBE | Creación de Proveedor de venta de boletos
             ProveedorBoletosSUBERed proveedorVentaBoletos2 = null;
-            try
-            {
-                var retBoletosXIdentificador =
-                    await DameBoletosPorIdentificador(fechaDesde: desde, fechaHasta: hasta);
 
-                if (retBoletosXIdentificador.IsOk)
+            if (omitirBoletos)
+            {
+                proveedorVentaBoletos2 = new ProveedorBoletosSUBERed()
                 {
+                    BoletosXIdentificador = new Dictionary<ParEmpresaInterno, List<BoletoComun>>()
+                };
+            }
+            else
+            {
+                Console.WriteLine("Buscando boletos SUBE");
+                
+                try
+                {
+                    var retBoletosXIdentificador =
+                        await DameBoletosPorIdentificador(fechaDesde: desde, fechaHasta: hasta);
+
+                    if (!retBoletosXIdentificador.IsOk)
+                    {
+                        Console.WriteLine(retBoletosXIdentificador.ErrorMessage);
+                        return 1;
+                    }
+
                     proveedorVentaBoletos2 = new ProveedorBoletosSUBERed
                     {
                         BoletosXIdentificador = retBoletosXIdentificador.Value
                     };
                 }
-                else
+                catch (Exception exx)
                 {
-                    Console.WriteLine(retBoletosXIdentificador.ErrorMessage);
+                    Console.WriteLine(exx);
                     return 1;
                 }
-            }
-            catch (Exception exx)
-            {
-                Console.WriteLine(exx);
-                return 1;
             }
             #endregion
 
@@ -275,11 +367,27 @@ namespace QPApp
             }
 
             File.WriteAllText(
-                $"{pathArchivoReporteSinExtension}.csv", 
+                pathArchivoReporteConExtension, 
                 string.Join(string.Empty, contenido)
             );
 
+            Environment.SetEnvironmentVariable(QPA_OUT_FILE_NAME, pathArchivoReporteConExtension);
             return 0;
+        }
+
+        private static void MostrarUso()
+        {
+            Console.WriteLine();
+            Console.WriteLine("+-------+");
+            Console.WriteLine("| QPApp |");
+            Console.WriteLine("+-------+");
+            Console.WriteLine();
+            Console.WriteLine("Uso: ");
+            Console.WriteLine("    QPApp [Parámetros]");
+            Console.WriteLine();
+            Console.WriteLine("Ej de uso: ");
+            Console.WriteLine("    QPApp modo=driveup desde=2022-12-28 lineas=159,163 password=**** tipoPuntas=PuntaLinea radioPuntas=500");
+            Console.WriteLine();
         }
 
         private static string GetNombreArchivoReporteSinExtension(
@@ -290,9 +398,12 @@ namespace QPApp
             int             radioPuntas,
             int             granularidad,
             IEnumerable<int>lineas,
-            int             ficha
+            int             ficha,
+            bool omitirBoletos
         )
         {
+            // Antes tenía este formato: $"Reporte_{idReporte}_Desde_{desde:yyyyMMdd}_Hasta_{hasta:yyyyMMdd}_Lineas_{sLineasOrdenadas}";
+
             StringBuilder sbNombre = new StringBuilder();
             const string SEPARADOR_VARIABLES = "__";
             const string SEPARADOR_ARGUMENTO = "_";
@@ -325,6 +436,13 @@ namespace QPApp
             sbNombre.Append(SEPARADOR_ARGUMENTO);
             sbNombre.Append(idReporte);
 
+            if (omitirBoletos)
+            {
+                sbNombre.Append(SEPARADOR_VARIABLES);
+
+                sbNombre.Append("SINBOLS");
+            }
+
             if (ficha > 0)
             {
                 sbNombre.Append(SEPARADOR_VARIABLES);
@@ -337,8 +455,6 @@ namespace QPApp
             var nombre = sbNombre.ToString();
 
             return nombre;
-
-            //return $"Reporte_{idReporte}_Desde_{desde:yyyyMMdd}_Hasta_{hasta:yyyyMMdd}_Lineas_{sLineasOrdenadas}";
         }
 
         private async static Task<RetVal<List<RecorridoLinBan>>> DameRecorridosTeoricos(
@@ -350,9 +466,9 @@ namespace QPApp
             try
             {
                 IQPAProveedorRecorridosTeoricos proveedorRecorridosTeoricos =
-                    new ProveedorVersionesTecnobus(new string[] { "./Datos" });
+                    new ProveedorVersionesTecnobus(new string[] { DirDatos });
 
-                Filtro filtro = Filtro.CreateFrom("./Filtros", lineasOrdenadas);
+                Filtro filtro = Filtro.CreateFrom(DirFiltros, lineasOrdenadas);
 
                 var recorridosTeoricos = proveedorRecorridosTeoricos.Get(new QPAProvRecoParams()
                 {
@@ -389,15 +505,8 @@ namespace QPApp
             int         ficha
         )
         {
-            // creo el directorio de bajada si no existe...
-            var dirBajados = "./Bajados/";
-            if (!Directory.Exists(dirBajados))
-            {
-                Directory.CreateDirectory(dirBajados);
-            }
-
             var nombreArchivoLocal = $"{modo.ToLower()}_{desde.Year:0000}_{desde.Month:00}_{desde.Day:00}.csv";
-            var pathArchivoLocal = Path.Combine(dirBajados, nombreArchivoLocal).Replace('\\', '/');
+            var pathArchivoLocal = Path.Combine(DirBajados, nombreArchivoLocal).Replace('\\', '/');
 
             if (File.Exists(pathArchivoLocal))
             {
@@ -646,7 +755,7 @@ namespace QPApp
                     ErrorMessage = exx.Message, 
                     ErrorException = exx 
                 };
-            }            
+            }
         }
 
         static Dictionary<int, List<PuntoHistorico>> FiltrarFichas(
@@ -655,30 +764,40 @@ namespace QPApp
         )
         {
             var ret = new Dictionary<int, List<PuntoHistorico>>();
-            var conjuntoFichasParaUsar = fichasParaUsar.ToHashSet();
+            var conjuntoFichasParaUsar = ConvertirAHashSet<int>(fichasParaUsar);
 
-            foreach (var (k, v) in puntosXIdentificador)
+            foreach (var kvp in puntosXIdentificador)
             {
-                if (conjuntoFichasParaUsar.Contains(k))
+                if (conjuntoFichasParaUsar.Contains(kvp.Key))
                 {
-                    ret.Add(k, v);
+                    ret.Add(kvp.Key, kvp.Value);
                 }
             }
 
             return ret;
         }
 
+        static HashSet<T> ConvertirAHashSet<T>(IEnumerable<T> elems)
+        {
+            var ret = new HashSet<T>();
+            foreach (T elemX in elems)
+            {
+                ret.Add(elemX);
+            }
+            return ret;
+        }
+
         static bool LineaHabilitadaPrecalcularFichas(int linea)
         {
-            return linea switch
+            switch (linea)
             {
-                1  => true ,
-                21 => true ,
-                100=> true ,
-                101=> true ,
-                103=> true ,
-                _  => false,
-            };
+                case 1: return true;
+                case 21: return true;
+                case 100: return true;
+                case 101: return true;
+                case 103: return true;
+                default: return false;
+            }
         }
 
         static void QpaCreator_Aviso(object sender, Creator.AvisoEventArgs e)
@@ -861,7 +980,7 @@ namespace QPApp
                     //167;3081;POS
                     foreach (string renglon in File.ReadLines(pathFiltro).Skip(1))
                     {
-                        var partes = renglon.Split(";");
+                        var partes = renglon.Split(new char[] { ';' });
                         var linea = int.Parse(partes[0]);
                         var bandera = int.Parse(partes[1]);
                         var ok = partes[2].ToUpper() == "COM";

@@ -75,30 +75,35 @@ namespace LibQPA.ProveedoresTecnobus
         {
             var ret = new List<RecorridoLinBan>();
 
-            using FileStream zipStream = File.OpenRead(pathZippedVerRec);
-            using ZipArchive zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read);
-
-            foreach (ZipArchiveEntry entry in zipArchive.Entries)
+            using (FileStream zipStream = File.OpenRead(pathZippedVerRec))
             {
-                if (entry.Name.StartsWith("r"))
+                using (ZipArchive zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read))
                 {
-                    // 0123456789012
-                    // rLLLLBBBB.txt
-                    int linea = int.Parse(entry.Name.Substring(1, 4));
-                    int bandera = int.Parse(entry.Name.Substring(5, 4));
-
-                    using Stream entryStream = entry.Open();
-                    var puntosRecorrido = RecorridosParser.ReadFile(entryStream);
-
-                    var recoLinBan = new RecorridoLinBan
+                    foreach (ZipArchiveEntry entry in zipArchive.Entries)
                     {
-                        Linea = linea,
-                        Bandera = bandera,
-                        Puntos = puntosRecorrido,
-                    };
+                        if (entry.Name.StartsWith("r"))
+                        {
+                            // 0123456789012
+                            // rLLLLBBBB.txt
+                            int linea = int.Parse(entry.Name.Substring(1, 4));
+                            int bandera = int.Parse(entry.Name.Substring(5, 4));
 
-                    //yield return recoLinBan;
-                    ret.Add(recoLinBan);
+                            using (Stream entryStream = entry.Open())
+                            {
+                                var puntosRecorrido = RecorridosParser.ReadFile(entryStream);
+
+                                var recoLinBan = new RecorridoLinBan
+                                {
+                                    Linea = linea,
+                                    Bandera = bandera,
+                                    Puntos = puntosRecorrido,
+                                };
+
+                                //yield return recoLinBan;
+                                ret.Add(recoLinBan);
+                            }
+                        }
+                    }
                 }
             }
 

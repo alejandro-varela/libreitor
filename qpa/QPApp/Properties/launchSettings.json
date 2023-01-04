@@ -2,7 +2,7 @@
   "profiles": {
     "QPApp": {
       "commandName": "Project",
-      "commandLineArgs": "modo=tecnobussmgps desde=2022-11-22 lineas=21 password=Bondi.amarillo tipoPuntas=PuntaLinea radioPuntas=200 granularidad=20 ficha=3342"
+      "commandLineArgs": "lineas=159,163 desde=2023-01-01 granularidad=20 radioPuntas=500"
     }
   }
 }

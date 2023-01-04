@@ -67,8 +67,9 @@ namespace LibQPA
 
                     // Hora de salida
                     var grupoideSale = caminoHistorico.Grupoides[uni.IndexInicialGrupoide];
-                    var horaSalida = (grupoideSale.GetDescansos().Count > 0) ?
-                        grupoideSale.GetDescansos()[^1].FinDescanso :
+                    var descansos = grupoideSale.GetDescansos();
+                    var horaSalida = (descansos.Count > 0) ?
+                        descansos[descansos.Count-1].FinDescanso :
                         grupoideSale.GetPuntoMasCentral().PuntoAsociado.Fecha
                     ;
 
@@ -225,11 +226,17 @@ namespace LibQPA
                 .ToList()
             ;
 
-            grupoidesElegidos = grupoidesElegidos
-                .Skip(1)
-                .SkipLast(1)
-                .ToList()
-            ;
+            //grupoidesElegidos = grupoidesElegidos
+            //    .Skip(1)
+            //    .SkipLast(1)
+            //    .ToList()
+            //;
+
+            if (grupoidesElegidos.Count >= 2)
+            {
+                grupoidesElegidos.RemoveAt(0);
+                grupoidesElegidos.RemoveAt(grupoidesElegidos.Count - 1);
+            }
 
             var puntosAplanados = grupoidesElegidos
                 .SelectMany

@@ -59,7 +59,12 @@ namespace QPApp
                     }
                 }
 
-                File.Move(pathArchivoTemporal, pathArchivoLocal, true);
+                if (File.Exists(pathArchivoLocal))
+                {
+                    File.Delete(pathArchivoLocal);
+                }
+
+                File.Move(pathArchivoTemporal, pathArchivoLocal);
 
                 //for (int i = 0; i < 50; i++)
                 //{

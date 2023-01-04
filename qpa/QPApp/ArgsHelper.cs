@@ -26,7 +26,7 @@ namespace QPApp
 
             foreach (var argX in args)
             {
-                if (argX.Contains(sep))
+                if (argX.Contains(sep.ToString()))
                 {
                     var partes = argX.Split(sep);
 
