@@ -29,15 +29,10 @@ namespace QPApp
 
         static async Task<int> Main(string[] args)
         {
-            // TODO: HOY
-            //      -poner el QPApp + cron con 3 días anteriores (para que lleguen los boletos)
-            //      -hacer la api para escribir resultados del QPA en algun lado...
-            //
-            // TODO: >>>> tiene que hacer una GUID para crear los directorios de bajada <<<<
-            //       >>>> para que los los archivos se bajen sin interferir             <<<<
-            // 
-            //
+            // TODO: informarle al uploader de cuantos días es el reporte generado (3 dias en este caso)
+            // TODO: meter todo en una base de datos
             // TODO: poner una configuración como la gente
+            // TODO: hacer que qpapp tome las versiones de recorridos mas nuevas
 
             #region Directorio de trabajo
             // Obtengo directorio en donde se encuentra el programa ejecutable
