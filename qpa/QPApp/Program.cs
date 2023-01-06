@@ -1,4 +1,5 @@
 ﻿using Comun;
+using ComunQPApp;
 using ComunSUBE;
 using LibQPA;
 using LibQPA.ProveedoresTecnobus;
@@ -84,9 +85,6 @@ namespace QPApp
                 string defaultReportes = Path.Combine(assemblyDir, "Reportes");
                 DirReportes = ArgsHelper.SafeGetArgVal(misArgs, "dirReportes", defaultReportes);
             }
-
-            // env por defecto QPA_OUT_FILE_NAME
-            string QPA_OUT_FILE_NAME = ArgsHelper.SafeGetArgVal(misArgs, "envQpaOutFileName", "QPA_OUT_FILE_NAME");
 
             // ficha en especial
             string sFicha = ArgsHelper.SafeGetArgVal(misArgs, "ficha", "0");
@@ -204,9 +202,9 @@ namespace QPApp
                 if (!retvalRecorridosTeoricos.IsOk)
                 {
                     Console.WriteLine(retvalRecorridosTeoricos.ErrorMessage);
-                    return 1;    
+                    return 1;
                 }
-                
+
                 recorridosTeoricos = retvalRecorridosTeoricos.Value;
             }
             catch (Exception exx)
@@ -230,13 +228,13 @@ namespace QPApp
 
                 RetVal<Dictionary<int, List<PuntoHistorico>>> retvalPuntosHistoricos =
                     await DamePuntosHistoricosAsync(modo, desde, hasta, lineasOrdenadas, ficha);
-                
+
                 if (!retvalPuntosHistoricos.IsOk)
                 {
                     Console.WriteLine(retvalPuntosHistoricos.ErrorMessage);
-                    return 1;    
+                    return 1;
                 }
-                
+
                 puntosXIdentificador = retvalPuntosHistoricos.Value;
             }
             catch (Exception exx)
@@ -282,7 +280,7 @@ namespace QPApp
             else
             {
                 Console.WriteLine("Buscando boletos SUBE");
-                
+
                 try
                 {
                     var retBoletosXIdentificador =
@@ -310,6 +308,7 @@ namespace QPApp
             // creo el qpaCreator
             var qpaCreator = new QPACreator.Creator(new CreatorConfiguration());
             qpaCreator.Aviso += QpaCreator_Aviso;
+
             var (resultadosQPA, reporteQPA) = qpaCreator.Calculate<int>(
                 idReporte,
                 desde,
@@ -326,9 +325,15 @@ namespace QPApp
                 radioPuntasDeLineaMts: radioPuntas
             );
 
-            /////////////////////////////////////////////////////////
-            // Creación del reporte 
+            #region Creación archivo reporte
+            CrearArchivoReporteCSV(modo, pathArchivoReporteConExtension, reporteQPA);
+            #endregion
 
+            return 0;
+        }
+
+        private static void CrearArchivoReporteCSV(string modo, string pathArchivoReporteConExtension, ReporteQPA<int> reporteQPA)
+        {
             Reporte rpx = new Reporte();
             var aux = new ReporteQPASubItem<string>();
             CSVFormatter formatter = new CSVFormatter
@@ -367,12 +372,9 @@ namespace QPApp
             }
 
             File.WriteAllText(
-                pathArchivoReporteConExtension, 
+                pathArchivoReporteConExtension,
                 string.Join(string.Empty, contenido)
             );
-
-            Environment.SetEnvironmentVariable(QPA_OUT_FILE_NAME, pathArchivoReporteConExtension);
-            return 0;
         }
 
         private static void MostrarUso()

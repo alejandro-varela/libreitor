@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ComunQPApp\ComunQPApp.csproj" />
     <ProjectReference Include="..\Comun\Comun.csproj" />
     <ProjectReference Include="..\LibQPA\LibQPA.csproj" />
     <ProjectReference Include="..\QPACreator\QPACreator.csproj" />

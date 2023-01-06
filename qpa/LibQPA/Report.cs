@@ -33,6 +33,8 @@ namespace LibQPA
 
     public class ReporteQPA<TIdent>
     {
+        public int Version { get; set; } = 0;
+
         public List<ReporteQPAItem<TIdent>> Items { get; set; }
 
         public List<ReporteQPASubItem<TIdent>> ListaAplanadaSubItems
@@ -70,30 +72,30 @@ namespace LibQPA
     }
 
     // Lo voy a borrar en el futuro
-    public class CSVReport<ItemType> : Report<ItemType>
-    {
-        public delegate string                HeaderBuilderFunc (char separator);
-        public delegate IEnumerable<ItemType> ItemsBuilderFunc  (char separator);
+    //public class CSVReport<ItemType> : Report<ItemType>
+    //{
+    //    public delegate string                HeaderBuilderFunc (char separator);
+    //    public delegate IEnumerable<ItemType> ItemsBuilderFunc  (char separator);
 
-        public string               Header          { get; set; }
-        public bool                 UsesHeader      { get; set; }
-        public char                 Separator       { get; set; }
-        public HeaderBuilderFunc    HeaderBuilder   { get; set; }
-        public ItemsBuilderFunc     ItemsBuilder    { get; set; }
+    //    public string               Header          { get; set; }
+    //    public bool                 UsesHeader      { get; set; }
+    //    public char                 Separator       { get; set; }
+    //    public HeaderBuilderFunc    HeaderBuilder   { get; set; }
+    //    public ItemsBuilderFunc     ItemsBuilder    { get; set; }
 
-        public override string ToString()
-        {
-            if (UsesHeader)
-            {
-                Header = HeaderBuilder(Separator);
-            }
+    //    public override string ToString()
+    //    {
+    //        if (UsesHeader)
+    //        {
+    //            Header = HeaderBuilder(Separator);
+    //        }
 
-            Items = ItemsBuilder(Separator)
-                .ToList()
-            ;
+    //        Items = ItemsBuilder(Separator)
+    //            .ToList()
+    //        ;
 
-            return base.ToString();
-        }
-    }
+    //        return base.ToString();
+    //    }
+    //}
 
 }

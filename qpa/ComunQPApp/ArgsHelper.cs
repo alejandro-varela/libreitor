@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace QPApp
+namespace ComunQPApp
 {
     public class ArgsHelper
     {

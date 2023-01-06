@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "QPAppUploaderHttp": {
+      "commandName": "Project",
+      "commandLineArgs": "local=c:\\pepe.txt remote=pepe.txt"
+    }
+  }
+}
