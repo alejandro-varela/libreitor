@@ -22,10 +22,10 @@ namespace QPAppUploaderHttp
             DateTime ahora = DateTime.Now;
 
             // Local
-            string localFileName = ArgsHelper.SafeGetArgVal(misArgs, "local", "").ToLower();
+            string localFileName = ArgsHelper.SafeGetArgVal(misArgs, "local", "");
 
             // Remote
-            var remoteFileName = ArgsHelper.SafeGetArgVal(misArgs, "remote", Path.GetFileName(localFileName)).ToLower();
+            var remoteFileName = ArgsHelper.SafeGetArgVal(misArgs, "remote", Path.GetFileName(localFileName));
 
             #endregion
 
@@ -42,7 +42,7 @@ namespace QPAppUploaderHttp
             // Me fijo si existe el archivo local
             if (!File.Exists(localFileName))
             {
-                Usage();
+                Console.WriteLine($"No existe el archivo local {localFileName}");
                 return 1;
             }
 
@@ -57,18 +57,22 @@ namespace QPAppUploaderHttp
             bool hashLocalIgualAHashRemoto = false;
 
             {
-                var strRequestUri = "http://192.168.201.74:5010/ExisteReporte?rfname=" + remoteFileName;
+                var strRequestUri = "http://192.168.201.74:5010/ExisteReporte?fileName=" + remoteFileName;
                 var strRequestUriEscapada = Uri.EscapeUriString(strRequestUri);
                 var httpClient = new HttpClient();
                 var response = await httpClient.GetAsync(strRequestUriEscapada);
 
                 if (!response.IsSuccessStatusCode)
                 {
+                    Console.WriteLine($"ExisteReporte: { response.StatusCode }");
+                    Console.WriteLine(await response.Content.ReadAsStringAsync());
                     return 1;
                 }
 
                 var json = await response.Content.ReadAsStringAsync();
                 var resp = JsonConvert.DeserializeObject<RespuestaExisteReporte>(json);
+
+                Console.WriteLine(json);
 
                 if (resp.Existe)
                 {
@@ -83,8 +87,12 @@ namespace QPAppUploaderHttp
                 !hashLocalIgualAHashRemoto  // Si el hash no es el mismo...
             ;
 
+            Console.WriteLine($"Existe archivo remoto {existeArchivoRemoto}");
+            Console.WriteLine($"Hashes iguales        {hashLocalIgualAHashRemoto}");
+
             if (!subirArchivo)
             {
+                Console.WriteLine($"No hace falta subir el archivo porque ya existe");
                 return 0;
             }
 
@@ -105,12 +113,14 @@ namespace QPAppUploaderHttp
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    var jsonete = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"SubirReporte: { response.StatusCode }");
+                    Console.WriteLine(await response.Content.ReadAsStringAsync());
                     return 1;
                 }
             }
 
             // loguear que el archivo se ha subido ok
+            Console.WriteLine("Reporte subido OK");
             return 0;
         }
 

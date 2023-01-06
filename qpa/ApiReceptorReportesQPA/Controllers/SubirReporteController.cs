@@ -75,5 +75,6 @@ namespace ApiReceptorReportesQPA.Controllers
     {
         public bool Error { get; set; }
         public string MsgError { get; set; }
+
     }
 }

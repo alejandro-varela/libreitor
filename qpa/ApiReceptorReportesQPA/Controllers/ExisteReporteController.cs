@@ -26,19 +26,19 @@ namespace ApiReceptorReportesQPA.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get(string rfname)
+        public IActionResult Get(string fileName)
         {
-            var path = Path.Combine(_apiOptions.ReportesBaseDir, rfname);
+            var path = Path.Combine(_apiOptions.ReportesBaseDir, fileName);
             var existe = System.IO.File.Exists(path);
 
             if (existe)
             {
                 var buff = System.IO.File.ReadAllBytes(path);
-                return Ok(new RespuestaExisteReporte { Existe = true, FName = rfname, Sha1 = Hashes.GetSHA1String(buff) });
+                return Ok(new RespuestaExisteReporte { Existe = true, FName = path, Sha1 = Hashes.GetSHA1String(buff) });
             }
             else
             {
-                return Ok(new RespuestaExisteReporte { Existe = false, FName = rfname });
+                return Ok(new RespuestaExisteReporte { Existe = false, FName = path });
             }
 
         }
