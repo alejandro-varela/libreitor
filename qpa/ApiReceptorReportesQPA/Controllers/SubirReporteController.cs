@@ -32,6 +32,8 @@ namespace ApiReceptorReportesQPA.Controllers
             var dirBase = _apiOptions.ReportesBaseDir;
             var newFile = System.IO.Path.Combine(dirBase, fileInformation.Name);
 
+            CrearDirectorioSiNoExiste(System.IO.Path.GetDirectoryName(newFile));
+
             try
             {
                 using (var wstream = System.IO.File.Create(newFile))
@@ -60,6 +62,14 @@ namespace ApiReceptorReportesQPA.Controllers
                     Error = true,
                     MsgError = exx.Message,
                 });
+            }
+        }
+
+        private static void CrearDirectorioSiNoExiste(string dir)
+        {
+            if (!System.IO.Directory.Exists(dir))
+            {
+                System.IO.Directory.CreateDirectory(dir);
             }
         }
     }

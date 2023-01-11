@@ -126,7 +126,18 @@ namespace QPAppUploaderHttp
 
         static void Usage()
         {
-            //
+            Console.WriteLine("QPAppUploaderHtpp ");
+            Console.WriteLine();
+            Console.WriteLine("    Uso: ");
+            Console.WriteLine("        QPAppUploaderHtpp local=NombreArchivoLocal [remote=NombreArchivoRemoto]");
+            Console.WriteLine();
+            Console.WriteLine("    Ejemplos: ");
+            Console.WriteLine("        QPAppUploaderHtpp local=/home/juana/arch.txt remote=archivo1234.txt");
+            Console.WriteLine("        QPAppUploaderHtpp local=/home/juana/arch.txt");
+            Console.WriteLine();
+            Console.WriteLine("    Notas: ");
+            Console.WriteLine("        Si remote no es especificado el nombre del archivo se saca de local, ");
+            Console.WriteLine("        sin los directorios de ruta ");
         }
     }
 
