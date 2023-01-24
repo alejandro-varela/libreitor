@@ -122,9 +122,11 @@ namespace QPACreator
             int radioPuntasDeLineaMts = 200
         )
         {
-            if (hasta.Subtract(desde).TotalDays > 1)
+            var cantDias = hasta.Subtract(desde).TotalDays;
+            
+            if (cantDias > 2)
             {
-                throw new Exception("demasiados dias para el cálculo");
+                throw new Exception("demasiados días para el cálculo");
             }
 
             if (hasta <= desde)

@@ -67,16 +67,17 @@ namespace LibQPA
 
                     // Hora de salida
                     var grupoideSale = caminoHistorico.Grupoides[uni.IndexInicialGrupoide];
-                    var descansos = grupoideSale.GetDescansos();
-                    var horaSalida = (descansos.Count > 0) ?
-                        descansos[descansos.Count-1].FinDescanso :
+                    var descansosSale = grupoideSale.GetDescansos();
+                    var horaSalida = (descansosSale.Count > 0) ?
+                        descansosSale[descansosSale.Count-1].FinDescanso :
                         grupoideSale.GetPuntoMasCentral().PuntoAsociado.Fecha
                     ;
 
                     // Hora de llegada
                     var grupoideLlega = caminoHistorico.Grupoides[uni.IndexFinalGrupoide];
-                    var horaLlegada = (grupoideLlega.GetDescansos().Count > 0) ?
-                        grupoideLlega.GetDescansos()[0].InicioDescanso :
+                    var descansosLlega = grupoideLlega.GetDescansos();
+                    var horaLlegada = (descansosLlega.Count > 0) ?
+                        descansosLlega[0].InicioDescanso :
                         grupoideLlega.GetPuntoMasCentral().PuntoAsociado.Fecha
                     ;
 

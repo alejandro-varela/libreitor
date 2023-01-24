@@ -52,10 +52,16 @@ namespace QPApp
             // modo
             string modo = ArgsHelper.SafeGetArgVal(misArgs, "modo", "DriveUp").ToLower();
 
-            // desde hasta
+            // desde
             string sDesde = ArgsHelper.SafeGetArgVal(misArgs, "desde", ahora.ToString("yyyy-MM-dd"));
             DateTime desde = DateTime.Parse(sDesde);
-            DateTime hasta = desde.AddDays(1);
+
+            // hasta
+            string sHasta = ArgsHelper.SafeGetArgVal(misArgs, "hasta", desde.AddDays(1).ToString("yyyy-MM-dd"));
+            DateTime hasta = DateTime.Parse(sHasta);
+
+            // duración
+            var duracion = hasta - desde;
 
             // dir bajados
             {
@@ -212,7 +218,7 @@ namespace QPApp
             // TODO: acá tendríamos que poner las URLs en una configuración y pasarlas de manera externa
             #region Recuperación de Puntos Históricos (GPS)
             Console.WriteLine("Buscando Puntos Históricos");
-            Dictionary<int, List<PuntoHistorico>> puntosXIdentificador = null;
+            var puntosXIdentificador = new Dictionary<int, List<PuntoHistorico>>();
             try
             {
                 // creo el directorio de bajada si no existe...
@@ -221,16 +227,24 @@ namespace QPApp
                     Directory.CreateDirectory(DirBajados);
                 }
 
-                RetVal<Dictionary<int, List<PuntoHistorico>>> retvalPuntosHistoricos =
-                    await DamePuntosHistoricosAsync(modo, desde, hasta, lineasOrdenadas, ficha);
-
-                if (!retvalPuntosHistoricos.IsOk)
+                // calculo cuantos días he de bajar...
+                foreach (var (desdeX, hastaX) in DateTimeHelper.GetFromToDayPairs(desde, hasta))
                 {
-                    Console.WriteLine(retvalPuntosHistoricos.ErrorMessage);
-                    return 1;
-                }
+                    RetVal<Dictionary<int, List<PuntoHistorico>>> retvalPuntosHistoricos =
+                        await DamePuntosHistoricosAsync(modo, desdeX, hastaX, lineasOrdenadas, ficha);
 
-                puntosXIdentificador = retvalPuntosHistoricos.Value;
+                    if (!retvalPuntosHistoricos.IsOk)
+                    {
+                        Console.WriteLine(retvalPuntosHistoricos.ErrorMessage);
+                        return 1;
+                    }
+
+                    AcumularEnDiccionarioPuntos(
+                        puntosXIdentificador, 
+                        retvalPuntosHistoricos.Value,
+                        ph => ph.Fecha >= desde && ph.Fecha < hasta
+                    );
+                }
             }
             catch (Exception exx)
             {
@@ -325,6 +339,34 @@ namespace QPApp
             #endregion
 
             return 0;
+        }
+
+        private static void AcumularEnDiccionarioPuntos(
+            Dictionary<int, List<PuntoHistorico>> diccionarioAcumulador, 
+            Dictionary<int, List<PuntoHistorico>> diccionarioAgregando,
+            Predicate<PuntoHistorico> esPuntoHistoricoValido
+        )
+        {
+            if (diccionarioAgregando == null)
+            {
+                return;
+            }
+
+            foreach (var parIdPuntos in diccionarioAgregando)
+            {
+                if (!diccionarioAcumulador.ContainsKey(parIdPuntos.Key))
+                {
+                    diccionarioAcumulador.Add(parIdPuntos.Key, new List<PuntoHistorico>());
+                }
+
+                foreach (PuntoHistorico phX in parIdPuntos.Value)
+                {
+                    if (esPuntoHistoricoValido(phX))
+                    {
+                        diccionarioAcumulador[parIdPuntos.Key].Add(phX);
+                    }
+                }
+            }
         }
 
         private static void CrearArchivoReporteCSV(string modo, string pathArchivoReporteConExtension, ReporteQPA<int> reporteQPA)

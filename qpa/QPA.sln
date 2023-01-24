@@ -73,7 +73,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QPAppUploaderHttp", "QPAppU
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComunQPApp", "ComunQPApp\ComunQPApp.csproj", "{B97B110C-697A-4804-8879-20B48DA540F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiReceptorReportesQPA", "ApiReceptorReportesQPA\ApiReceptorReportesQPA.csproj", "{53178AC7-3C85-44C5-9B81-3F39DC2883F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiReceptorReportesQPA", "ApiReceptorReportesQPA\ApiReceptorReportesQPA.csproj", "{53178AC7-3C85-44C5-9B81-3F39DC2883F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VHR", "VHR\VHR.csproj", "{97822C9C-7588-4AC8-A341-BF5A2713C2B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -225,6 +227,10 @@ Global
 		{53178AC7-3C85-44C5-9B81-3F39DC2883F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53178AC7-3C85-44C5-9B81-3F39DC2883F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53178AC7-3C85-44C5-9B81-3F39DC2883F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97822C9C-7588-4AC8-A341-BF5A2713C2B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97822C9C-7588-4AC8-A341-BF5A2713C2B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97822C9C-7588-4AC8-A341-BF5A2713C2B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97822C9C-7588-4AC8-A341-BF5A2713C2B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
