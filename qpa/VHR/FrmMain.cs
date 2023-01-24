@@ -15,10 +15,13 @@ using Newtonsoft.Json;
 // alpha masking
 // https://stackoverflow.com/questions/3654220/alpha-masking-in-c-sharp-system-drawing
 
-// (segun sep 1) 10 ago driveup https://vm-coches:5001/HistoriaCochesDriveupAnteriores?diasMenos=22&formato=csv 
-// (segun sep 1) 31 ago picobus https://vm-coches:5003/HistoriaCochesPicobusAnteriores?diasMenos=1&formato=csv
+// bajar puntos históricos
+// por nombre: http://vm-coches:5000/HistoriaCochesDriveupAnteriores?diasMenos=1&formato=csv
+// por ip    : http://192.168.201.74:5000/HistoriaCochesDriveupAnteriores?diasMenos=1&formato=csv
 
-// f 4334 22 ago 
+// hacer lupa geométrica, una lupa con tamaño variable que al pasar por arriba del mapa resalte la vista de tiempo con las partes en donde estan esos puntos
+
+// f 4334 22 ago
 // f 3152 25 ago (mejorar algoritmo de actividad)
 // f 3666 25 ago
 

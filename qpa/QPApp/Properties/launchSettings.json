@@ -2,7 +2,7 @@
   "profiles": {
     "QPApp": {
       "commandName": "Project",
-      "commandLineArgs": "lineas=159,163 desde=2023-01-19 hasta=2023-01-20T06:00  granularidad=20 radioPuntas=500 ficha=4130"
+      "commandLineArgs": "lineas=159,163 desde=2023-01-18 hasta=2023-01-19T06:00  granularidad=20 radioPuntas=500 ficha=3849"
     }
   }
 }
