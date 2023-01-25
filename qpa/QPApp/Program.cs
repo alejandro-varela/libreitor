@@ -57,7 +57,7 @@ namespace QPApp
             DateTime desde = DateTime.Parse(sDesde);
 
             // hasta
-            string sHasta = ArgsHelper.SafeGetArgVal(misArgs, "hasta", desde.AddDays(1).ToString("yyyy-MM-dd"));
+            string sHasta = ArgsHelper.SafeGetArgVal(misArgs, "hasta", desde.AddHours(6 + 24).ToString("yyyy-MM-dd"));
             DateTime hasta = DateTime.Parse(sHasta);
 
             // duración
