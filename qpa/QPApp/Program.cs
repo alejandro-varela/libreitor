@@ -334,8 +334,47 @@ namespace QPApp
                 radioPuntasDeLineaMts: radioPuntas
             );
 
+            #region Filtrado del Reporte permitiendo medias vueltas trasnochadas SIN las que empiezen el día siguiente
+
+            var reporteQPAFiltrado = new ReporteQPA<int>();
+            reporteQPAFiltrado.Items = new List<ReporteQPAItem<int>>();
+            reporteQPAFiltrado.Version = reporteQPA.Version;
+
+            Console.WriteLine($"Fecha desde: {desde}");
+            foreach (var itemX in reporteQPA.Items)
+            {
+                var itemFiltrado = new ReporteQPAItem<int>();
+                itemFiltrado.Items = new List<ReporteQPASubItem<int>>();
+                itemFiltrado.Resultado = itemX.Resultado;
+
+                foreach (var subItemX in itemX.Items)
+                {
+                    if (subItemX.Inicio.Date == desde.Date)
+                    {
+                        itemFiltrado.Items.Add(subItemX);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Filtrando: Ficha {subItemX.Ficha} Inicio {subItemX.Inicio} Fin {subItemX.Fin}");
+                    }
+                }
+
+                if (itemFiltrado.Items.Count > 0)
+                {
+                    reporteQPAFiltrado.Items.Add(itemFiltrado);
+                }
+            }
+
+            int fxx = 0;
+
+            #endregion
+
             #region Creación archivo reporte
-            CrearArchivoReporteCSV(modo, pathArchivoReporteConExtension, reporteQPA);
+            CrearArchivoReporteCSV(
+                modo, 
+                pathArchivoReporteConExtension, 
+                reporteQPAFiltrado
+            );
             #endregion
 
             return 0;
