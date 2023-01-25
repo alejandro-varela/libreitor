@@ -53,11 +53,11 @@ namespace QPApp
             string modo = ArgsHelper.SafeGetArgVal(misArgs, "modo", "DriveUp").ToLower();
 
             // desde
-            string sDesde = ArgsHelper.SafeGetArgVal(misArgs, "desde", ahora.ToString("yyyy-MM-dd"));
+            string sDesde = ArgsHelper.SafeGetArgVal(misArgs, "desde", ahora.ToString("yyyy-MM-ddTHH:mm:ss"));
             DateTime desde = DateTime.Parse(sDesde);
 
             // hasta
-            string sHasta = ArgsHelper.SafeGetArgVal(misArgs, "hasta", desde.AddHours(6 + 24).ToString("yyyy-MM-dd"));
+            string sHasta = ArgsHelper.SafeGetArgVal(misArgs, "hasta", desde.AddHours(6 + 24).ToString("yyyy-MM-ddTHH:mm:ss"));
             DateTime hasta = DateTime.Parse(sHasta);
 
             // duración
