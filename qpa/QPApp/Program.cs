@@ -29,8 +29,7 @@ namespace QPApp
 
         static async Task<int> Main(string[] args)
         {
-            // TODO: informarle al uploader de cuantos días es el reporte generado (3 dias en este caso)
-            // TODO: meter todo en una base de datos
+            // TODO: hacer un programa que tenga un filesystemwatcher para lo de las versiones...
             // TODO: poner una configuración como la gente
             // TODO: hacer que qpapp tome las versiones de recorridos mas nuevas
 
@@ -336,16 +335,20 @@ namespace QPApp
 
             #region Filtrado del Reporte permitiendo medias vueltas trasnochadas SIN las que empiezen el día siguiente
 
-            var reporteQPAFiltrado = new ReporteQPA<int>();
-            reporteQPAFiltrado.Items = new List<ReporteQPAItem<int>>();
-            reporteQPAFiltrado.Version = reporteQPA.Version;
+            var reporteQPAFiltrado = new ReporteQPA<int>
+            {
+                Items   = new List<ReporteQPAItem<int>>(),
+                Version = reporteQPA.Version
+            };
 
             Console.WriteLine($"Fecha desde: {desde}");
             foreach (var itemX in reporteQPA.Items)
             {
-                var itemFiltrado = new ReporteQPAItem<int>();
-                itemFiltrado.Items = new List<ReporteQPASubItem<int>>();
-                itemFiltrado.Resultado = itemX.Resultado;
+                var itemFiltrado = new ReporteQPAItem<int>
+                {
+                    Items     = new List<ReporteQPASubItem<int>>(),
+                    Resultado = itemX.Resultado
+                };
 
                 foreach (var subItemX in itemX.Items)
                 {
@@ -544,7 +547,7 @@ namespace QPApp
             try
             {
                 IQPAProveedorRecorridosTeoricos proveedorRecorridosTeoricos =
-                    new ProveedorVersionesTecnobus(new string[] { DirDatos });
+                    new ProveedorVersionesTecnobus(DirDatos);
 
                 Filtro filtro = Filtro.CreateFrom(DirFiltros, lineasOrdenadas);
 

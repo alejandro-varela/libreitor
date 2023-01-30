@@ -9,19 +9,16 @@ namespace LibQPA.ProveedoresTecnobus
 {
     public class ProveedorVersionesTecnobus : IQPAProveedorRecorridosTeoricos
     {
-        public string[] DirRepos    { get; set; }
-        public bool     RepoRandom  { get; set; }
+        public string DirRepoLocal { get; set; }
 
-        public ProveedorVersionesTecnobus(string[] dirRepos, bool repoRandom = false)
+        public ProveedorVersionesTecnobus(string dirRepoLocal)
         {
-            DirRepos    = dirRepos;
-            RepoRandom  = repoRandom;
+            DirRepoLocal = dirRepoLocal;
         }
 
-        public IEnumerable<RecorridoLinBan> Get(QPAProvRecoParams @params)
+        public IEnumerable<RecorridoLinBan> Get(QPAProvRecoParams getParams)
         {
-            int index = 0; // TODO: hacer random si se pide en RepoRandom...
-            return LeerRecorridos(DirRepos[index], @params.LineasPosibles, @params.FechaVigencia);
+            return LeerRecorridos(DirRepoLocal, getParams.LineasPosibles, getParams.FechaVigencia);
         }
 
         public static List<RecorridoLinBan> LeerRecorridos(string dir, int[] codLineas, DateTime vigenteEn)

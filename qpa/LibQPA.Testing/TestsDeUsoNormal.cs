@@ -61,11 +61,11 @@ namespace LibQPA.Testing
         [TestMethod]
         public void FuncionaProveedorVersionesHoy()
         {
-            var proveedor  = new ProveedorVersionesTecnobus(dirRepos: DameMockRepos());
+            var proveedor = new ProveedorVersionesTecnobus(dirRepoLocal: DameMockRepos()[0]);
             var recorridos = proveedor.Get(new QPAProvRecoParams()
             {
                 LineasPosibles = new int[] { 159 },
-                FechaVigencia  = DateTime.Today,
+                FechaVigencia = DateTime.Today,
             });
 
             Assert.IsTrue(recorridos.Any(), "No hay recorridos");
@@ -645,7 +645,7 @@ namespace LibQPA.Testing
                 desde,
                 hasta,
                 lineasPosibles              : lineasPosiblesSeparadasPorComa.Split(',').Select(s => int.Parse(s)).ToArray(),
-                proveedorRecorridosTeoricos : new ProveedorVersionesTecnobus(dirRepos: DameMockRepos()), // los recorridos teóricos
+                proveedorRecorridosTeoricos : new ProveedorVersionesTecnobus(dirRepoLocal: DameMockRepos()[0]), // los recorridos teóricos
                 infohXIdentificador,
                 creadorPuntasNombradas,
                 granularidadMts

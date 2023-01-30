@@ -144,9 +144,7 @@ namespace VHR
             resources.GetString("cmbLargoSubRango.Items23"),
             resources.GetString("cmbLargoSubRango.Items24"),
             resources.GetString("cmbLargoSubRango.Items25"),
-            resources.GetString("cmbLargoSubRango.Items26"),
-            resources.GetString("cmbLargoSubRango.Items27"),
-            resources.GetString("cmbLargoSubRango.Items28")});
+            resources.GetString("cmbLargoSubRango.Items26")});
             this.cmbLargoSubRango.Name = "cmbLargoSubRango";
             this.cmbLargoSubRango.SelectedIndexChanged += new System.EventHandler(this.CmbLargoSubRango_SelectedIndexChanged);
             // 

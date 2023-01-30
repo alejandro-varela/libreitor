@@ -184,58 +184,52 @@
     <value>10</value>
   </data>
   <data name="cmbLargoSubRango.Items11" xml:space="preserve">
-    <value>11</value>
-  </data>
-  <data name="cmbLargoSubRango.Items12" xml:space="preserve">
-    <value>12</value>
-  </data>
-  <data name="cmbLargoSubRango.Items13" xml:space="preserve">
-    <value>13</value>
-  </data>
-  <data name="cmbLargoSubRango.Items14" xml:space="preserve">
-    <value>14</value>
-  </data>
-  <data name="cmbLargoSubRango.Items15" xml:space="preserve">
     <value>15</value>
   </data>
-  <data name="cmbLargoSubRango.Items16" xml:space="preserve">
-    <value>16</value>
-  </data>
-  <data name="cmbLargoSubRango.Items17" xml:space="preserve">
-    <value>17</value>
-  </data>
-  <data name="cmbLargoSubRango.Items18" xml:space="preserve">
-    <value>18</value>
-  </data>
-  <data name="cmbLargoSubRango.Items19" xml:space="preserve">
-    <value>19</value>
-  </data>
-  <data name="cmbLargoSubRango.Items20" xml:space="preserve">
+  <data name="cmbLargoSubRango.Items12" xml:space="preserve">
     <value>20</value>
   </data>
-  <data name="cmbLargoSubRango.Items21" xml:space="preserve">
+  <data name="cmbLargoSubRango.Items13" xml:space="preserve">
     <value>25</value>
   </data>
-  <data name="cmbLargoSubRango.Items22" xml:space="preserve">
+  <data name="cmbLargoSubRango.Items14" xml:space="preserve">
     <value>30</value>
   </data>
-  <data name="cmbLargoSubRango.Items23" xml:space="preserve">
+  <data name="cmbLargoSubRango.Items15" xml:space="preserve">
     <value>35</value>
   </data>
-  <data name="cmbLargoSubRango.Items24" xml:space="preserve">
+  <data name="cmbLargoSubRango.Items16" xml:space="preserve">
     <value>40</value>
   </data>
-  <data name="cmbLargoSubRango.Items25" xml:space="preserve">
+  <data name="cmbLargoSubRango.Items17" xml:space="preserve">
     <value>45</value>
   </data>
-  <data name="cmbLargoSubRango.Items26" xml:space="preserve">
+  <data name="cmbLargoSubRango.Items18" xml:space="preserve">
     <value>50</value>
   </data>
-  <data name="cmbLargoSubRango.Items27" xml:space="preserve">
+  <data name="cmbLargoSubRango.Items19" xml:space="preserve">
     <value>55</value>
   </data>
-  <data name="cmbLargoSubRango.Items28" xml:space="preserve">
+  <data name="cmbLargoSubRango.Items20" xml:space="preserve">
     <value>60</value>
+  </data>
+  <data name="cmbLargoSubRango.Items21" xml:space="preserve">
+    <value>90</value>
+  </data>
+  <data name="cmbLargoSubRango.Items22" xml:space="preserve">
+    <value>120</value>
+  </data>
+  <data name="cmbLargoSubRango.Items23" xml:space="preserve">
+    <value>150</value>
+  </data>
+  <data name="cmbLargoSubRango.Items24" xml:space="preserve">
+    <value>180</value>
+  </data>
+  <data name="cmbLargoSubRango.Items25" xml:space="preserve">
+    <value>210</value>
+  </data>
+  <data name="cmbLargoSubRango.Items26" xml:space="preserve">
+    <value>240</value>
   </data>
   <data name="cmbLargoSubRango.Location" type="System.Drawing.Point, System.Drawing">
     <value>643, 54</value>
