@@ -163,7 +163,9 @@ namespace QPApp
             var nombreArchivoReporteSinExtension = GetNombreArchivoReporteSinExtension(
                 idReporte,
                 desde,
+                cotaDesde,
                 hasta,
+                cotaHasta,
                 tipoPuntaLinea,
                 radioPuntas,
                 granularidad,
@@ -490,8 +492,10 @@ namespace QPApp
 
         private static string GetNombreArchivoReporteSinExtension(
             string          idReporte, 
-            DateTime        desde, 
-            DateTime        hasta, 
+            DateTime        desde,
+            int             cotaDesde,
+            DateTime        hasta,
+            int             cotaHasta,
             Type            tipoPuntaLinea,
             int             radioPuntas,
             int             granularidad,
@@ -533,6 +537,16 @@ namespace QPApp
             sbNombre.Append("MODO");
             sbNombre.Append(SEPARADOR_ARGUMENTO);
             sbNombre.Append(idReporte);
+
+            sbNombre.Append(SEPARADOR_VARIABLES);
+
+            sbNombre.Append("CDH");
+            sbNombre.Append(SEPARADOR_ARGUMENTO);
+            var cotaDesdeDescr = (cotaDesde >= 0 ? "A" : "S") + Math.Abs(cotaDesde);
+            sbNombre.Append(cotaDesdeDescr);
+            sbNombre.Append(SEPARADOR_ARGUMENTO);
+            var cotaHastaDescr = (cotaHasta >= 0 ? "A" : "S") + Math.Abs(cotaHasta);
+            sbNombre.Append(cotaHastaDescr);
 
             if (omitirBoletos)
             {

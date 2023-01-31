@@ -2,7 +2,7 @@
   "profiles": {
     "QPApp": {
       "commandName": "Project",
-      "commandLineArgs": "lineas=159,163 desde=2023-01-06  granularidad=20 radioPuntas=500 cotaDesde=-3 cotaHasta=3"
+      "commandLineArgs": "lineas=159,163 desde=2023-01-25  granularidad=20 radioPuntas=500 cotaDesde=-3 cotaHasta=3"
     }
   }
 }
