@@ -54,10 +54,16 @@ namespace QPApp
             // desde
             string sDesde = ArgsHelper.SafeGetArgVal(misArgs, "desde", ahora.ToString("yyyy-MM-ddTHH:mm:ss"));
             DateTime desde = DateTime.Parse(sDesde);
-
+            string sCotaDesde = ArgsHelper.SafeGetArgVal(misArgs, "cotaDesde", "0");
+            int cotaDesde = int.Parse(sCotaDesde);
+            var desdeConCota = desde.AddHours(cotaDesde);
+            
             // hasta
-            string sHasta = ArgsHelper.SafeGetArgVal(misArgs, "hasta", desde.AddHours(6 + 24).ToString("yyyy-MM-ddTHH:mm:ss"));
+            string sHasta = ArgsHelper.SafeGetArgVal(misArgs, "hasta", desde.AddHours(24).ToString("yyyy-MM-ddTHH:mm:ss"));
             DateTime hasta = DateTime.Parse(sHasta);
+            string sCotaHasta = ArgsHelper.SafeGetArgVal(misArgs, "cotaHasta", "0");
+            int cotaHasta = int.Parse(sCotaHasta);
+            var hastaConCota = hasta.AddHours(cotaHasta);
 
             // duración
             var duracion = hasta - desde;
@@ -227,7 +233,7 @@ namespace QPApp
                 }
 
                 // calculo cuantos días he de bajar...
-                foreach (var (desdeX, hastaX) in DateTimeHelper.GetFromToDayPairs(desde, hasta))
+                foreach (var (desdeX, hastaX) in DateTimeHelper.GetFromToDayPairs(desdeConCota, hastaConCota))
                 {
                     RetVal<Dictionary<int, List<PuntoHistorico>>> retvalPuntosHistoricos =
                         await DamePuntosHistoricosAsync(modo, desdeX, hastaX, lineasOrdenadas, ficha);
@@ -238,10 +244,10 @@ namespace QPApp
                         return 1;
                     }
 
-                    AcumularEnDiccionarioPuntos(
+                    AcumularDiccionarioEnDiccionario<int, PuntoHistorico>(
                         puntosXIdentificador, 
                         retvalPuntosHistoricos.Value,
-                        ph => ph.Fecha >= desde && ph.Fecha < hasta
+                        ph => ph.Fecha >= desdeConCota && ph.Fecha < hastaConCota
                     );
                 }
             }
@@ -277,7 +283,6 @@ namespace QPApp
 
             #region Recuperación de Boletos SUBE | Creación de Proveedor de venta de boletos
             ProveedorBoletosSUBERed proveedorVentaBoletos2 = null;
-
             if (omitirBoletos)
             {
                 proveedorVentaBoletos2 = new ProveedorBoletosSUBERed()
@@ -288,21 +293,33 @@ namespace QPApp
             else
             {
                 Console.WriteLine("Buscando boletos SUBE");
-
+                var boletosXIdentificador = new Dictionary<ParEmpresaInterno, List<BoletoComun>>();
                 try
                 {
-                    var retBoletosXIdentificador =
-                        await DameBoletosPorIdentificador(fechaDesde: desde, fechaHasta: hasta);
-
-                    if (!retBoletosXIdentificador.IsOk)
+                    // calculo cuantos días he de bajar...
+                    foreach (var (desdeX, hastaX) in DateTimeHelper.GetFromToDayPairs(desdeConCota, hastaConCota))
                     {
-                        Console.WriteLine(retBoletosXIdentificador.ErrorMessage);
-                        return 1;
+                        var retValBoletosXIdentificador = await DameBoletosPorIdentificador(
+                            fechaDesde: desdeX,
+                            fechaHasta: hastaX
+                        );
+
+                        if (!retValBoletosXIdentificador.IsOk)
+                        {
+                            Console.WriteLine(retValBoletosXIdentificador.ErrorMessage);
+                            return 1;
+                        }
+
+                        AcumularDiccionarioEnDiccionario<ParEmpresaInterno, BoletoComun>(
+                            boletosXIdentificador,
+                            retValBoletosXIdentificador.Value,
+                            bol => bol.FechaCancelacion >= desdeConCota && bol.FechaCancelacion < hastaConCota
+                        );
                     }
 
                     proveedorVentaBoletos2 = new ProveedorBoletosSUBERed
                     {
-                        BoletosXIdentificador = retBoletosXIdentificador.Value
+                        BoletosXIdentificador = boletosXIdentificador
                     };
                 }
                 catch (Exception exx)
@@ -333,7 +350,7 @@ namespace QPApp
                 radioPuntasDeLineaMts: radioPuntas
             );
 
-            #region Filtrado del Reporte permitiendo medias vueltas trasnochadas SIN las que empiezen el día siguiente
+            #region Filtrado del Reporte permitiendo medias vueltas trasnochadas SIN las que empiezen el día anterior ni el siguiente
 
             var reporteQPAFiltrado = new ReporteQPA<int>
             {
@@ -383,10 +400,10 @@ namespace QPApp
             return 0;
         }
 
-        private static void AcumularEnDiccionarioPuntos(
-            Dictionary<int, List<PuntoHistorico>> diccionarioAcumulador, 
-            Dictionary<int, List<PuntoHistorico>> diccionarioAgregando,
-            Predicate<PuntoHistorico> esPuntoHistoricoValido
+        private static void AcumularDiccionarioEnDiccionario<K, V>(
+            Dictionary<K, List<V>> diccionarioAcumulador,
+            Dictionary<K, List<V>> diccionarioAgregando,
+            Predicate<V> esValorValido
         )
         {
             if (diccionarioAgregando == null)
@@ -394,18 +411,18 @@ namespace QPApp
                 return;
             }
 
-            foreach (var parIdPuntos in diccionarioAgregando)
+            foreach (var keyValuePair in diccionarioAgregando)
             {
-                if (!diccionarioAcumulador.ContainsKey(parIdPuntos.Key))
+                if (!diccionarioAcumulador.ContainsKey(keyValuePair.Key))
                 {
-                    diccionarioAcumulador.Add(parIdPuntos.Key, new List<PuntoHistorico>());
+                    diccionarioAcumulador.Add(keyValuePair.Key, new List<V>());
                 }
 
-                foreach (PuntoHistorico phX in parIdPuntos.Value)
+                foreach (V valor in keyValuePair.Value)
                 {
-                    if (esPuntoHistoricoValido(phX))
+                    if (esValorValido(valor))
                     {
-                        diccionarioAcumulador[parIdPuntos.Key].Add(phX);
+                        diccionarioAcumulador[keyValuePair.Key].Add(valor);
                     }
                 }
             }
@@ -709,7 +726,10 @@ namespace QPApp
 
         }
 
-        private static async Task<RetVal<Dictionary<ParEmpresaInterno, List<BoletoComun>>>> DameBoletosPorIdentificador(DateTime fechaDesde, DateTime fechaHasta)
+        private static async Task<RetVal<Dictionary<ParEmpresaInterno, List<BoletoComun>>>> DameBoletosPorIdentificador(
+            DateTime fechaDesde, 
+            DateTime fechaHasta
+        )
         {
             // vm-coches = 192.168.201.74
             var url = $"http://192.168.201.74:5006/BoletosXIdentSUBE_KvpList?desde={fechaDesde.Year:0000}-{fechaDesde.Month:00}-{fechaDesde.Day:00}";
