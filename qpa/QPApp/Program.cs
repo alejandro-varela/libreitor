@@ -54,16 +54,16 @@ namespace QPApp
             // desde
             string sDesde = ArgsHelper.SafeGetArgVal(misArgs, "desde", ahora.ToString("yyyy-MM-ddTHH:mm:ss"));
             DateTime desde = DateTime.Parse(sDesde);
-            string sCotaDesde = ArgsHelper.SafeGetArgVal(misArgs, "cotaDesde", "0");
-            int cotaDesde = int.Parse(sCotaDesde);
-            var desdeConCota = desde.AddHours(cotaDesde);
+            string sCotaDesde = ArgsHelper.SafeGetArgVal(misArgs, "cotaDesde", "0s");
+            int segsCotaDesde = ParsearCotaASegundos(sCotaDesde);
+            var desdeConCota = desde.AddSeconds(segsCotaDesde);
             
             // hasta
             string sHasta = ArgsHelper.SafeGetArgVal(misArgs, "hasta", desde.AddHours(24).ToString("yyyy-MM-ddTHH:mm:ss"));
             DateTime hasta = DateTime.Parse(sHasta);
-            string sCotaHasta = ArgsHelper.SafeGetArgVal(misArgs, "cotaHasta", "0");
-            int cotaHasta = int.Parse(sCotaHasta);
-            var hastaConCota = hasta.AddHours(cotaHasta);
+            string sCotaHasta = ArgsHelper.SafeGetArgVal(misArgs, "cotaHasta", "0s");
+            int segsCotaHasta = ParsearCotaASegundos(sCotaHasta);
+            var hastaConCota = hasta.AddSeconds(segsCotaHasta);
 
             // duración
             var duracion = hasta - desde;
@@ -163,9 +163,9 @@ namespace QPApp
             var nombreArchivoReporteSinExtension = GetNombreArchivoReporteSinExtension(
                 idReporte,
                 desde,
-                cotaDesde,
+                segsCotaDesde,
                 hasta,
-                cotaHasta,
+                segsCotaHasta,
                 tipoPuntaLinea,
                 radioPuntas,
                 granularidad,
@@ -402,6 +402,53 @@ namespace QPApp
             return 0;
         }
 
+        private static int ParsearCotaASegundos(string sRepresentacionCota)
+        {
+            int signo = 1;
+
+            if (sRepresentacionCota.StartsWith("-"))
+            {
+                signo = -1;
+            }
+
+            int acum = 0;
+            int totalSegsAcum = 0;
+
+            foreach (char c in sRepresentacionCota)
+            {
+                if (c >= '0' && c <= '9')
+                {
+                    acum = (acum * 10) + (c - '0');
+                }
+                else if (c == '-' || c == '+')
+                {
+                    continue;
+                }
+                else if (c == 'd' || c == 'D')
+                {
+                    totalSegsAcum += (acum * 86400);
+                    acum = 0;
+                }
+                else if (c == 'h' || c == 'H')
+                {
+                    totalSegsAcum += (acum * 3600);
+                    acum = 0;
+                }
+                else if (c == 'm' || c == 'M')
+                {
+                    totalSegsAcum += (acum * 60);
+                    acum = 0;
+                }
+                else if (c == 's' || c == 'S')
+                {
+                    totalSegsAcum += acum;
+                    acum = 0;
+                }
+            }
+
+            return totalSegsAcum * signo;
+        }
+
         private static void AcumularDiccionarioEnDiccionario<K, V>(
             Dictionary<K, List<V>> diccionarioAcumulador,
             Dictionary<K, List<V>> diccionarioAgregando,
@@ -493,15 +540,15 @@ namespace QPApp
         private static string GetNombreArchivoReporteSinExtension(
             string          idReporte, 
             DateTime        desde,
-            int             cotaDesde,
+            int             segsCotaDesde,
             DateTime        hasta,
-            int             cotaHasta,
+            int             segsCotaHasta,
             Type            tipoPuntaLinea,
             int             radioPuntas,
             int             granularidad,
             IEnumerable<int>lineas,
             int             ficha,
-            bool omitirBoletos
+            bool            omitirBoletos
         )
         {
             // Antes tenía este formato: $"Reporte_{idReporte}_Desde_{desde:yyyyMMdd}_Hasta_{hasta:yyyyMMdd}_Lineas_{sLineasOrdenadas}";
@@ -542,10 +589,10 @@ namespace QPApp
 
             sbNombre.Append("CDH");
             sbNombre.Append(SEPARADOR_ARGUMENTO);
-            var cotaDesdeDescr = (cotaDesde >= 0 ? "A" : "S") + Math.Abs(cotaDesde);
+            var cotaDesdeDescr = (segsCotaDesde >= 0 ? "A" : "S") + SegundosADescripcionDHMS(Math.Abs(segsCotaDesde));
             sbNombre.Append(cotaDesdeDescr);
             sbNombre.Append(SEPARADOR_ARGUMENTO);
-            var cotaHastaDescr = (cotaHasta >= 0 ? "A" : "S") + Math.Abs(cotaHasta);
+            var cotaHastaDescr = (segsCotaHasta >= 0 ? "A" : "S") + SegundosADescripcionDHMS(Math.Abs(segsCotaHasta));
             sbNombre.Append(cotaHastaDescr);
 
             if (omitirBoletos)
@@ -567,6 +614,43 @@ namespace QPApp
             var nombre = sbNombre.ToString();
 
             return nombre;
+        }
+
+        private static string SegundosADescripcionDHMS(int segundosTotales)
+        {
+            var sbRet = new StringBuilder();
+            
+            int dias = Math.DivRem(segundosTotales, 86400, out int segundosSinDias);
+            
+            if (dias > 0)
+            {
+                sbRet.Append($"{dias}d");
+            }
+
+            int horas = Math.DivRem(segundosSinDias, 3600, out int segundosSinDiasNiHoras);
+
+            if (horas > 0)
+            {
+                sbRet.Append($"{horas}h");
+            }
+
+            int minutos = Math.DivRem(segundosSinDiasNiHoras, 60, out int segundosSinDiasNiHorasNiMinutos);
+
+            if (minutos > 0)
+            {
+                sbRet.Append($"{minutos}m");
+            }
+
+            if (segundosSinDiasNiHorasNiMinutos > 0)
+            {
+                sbRet.Append($"{segundosSinDiasNiHorasNiMinutos}s");
+            }
+            else if (segundosSinDiasNiHorasNiMinutos >= 0 && sbRet.ToString().Length == 0)
+            {
+                sbRet.Append($"{segundosSinDiasNiHorasNiMinutos}s");
+            }
+
+            return sbRet.ToString();
         }
 
         private async static Task<RetVal<List<RecorridoLinBan>>> DameRecorridosTeoricos(
