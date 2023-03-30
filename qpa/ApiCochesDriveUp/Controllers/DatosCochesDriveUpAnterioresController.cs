@@ -13,6 +13,7 @@ using System.Text;
 
 namespace ApiCochesDriveUp.Controllers
 {
+    // ej ayer  http://vm-coches:5000/DatosCochesDriveupAnteriores?diasMenos=1&formato=csv
     // ej ayer https://vm-coches:5001/DatosCochesDriveupAnteriores?diasMenos=1&formato=csv
 
     [Route("[controller]")]
@@ -118,17 +119,24 @@ namespace ApiCochesDriveUp.Controllers
         {
             return new Dictionary<string, object>
             {
-                { "Ficha"       , x.Ficha       },
-                { "Lat"         , x.Lat         },
-                { "Lng"         , x.Lng         },
+                { "Ficha"         , x.Ficha       },
+                { "Lat"           , x.Lat         },
+                { "Lng"           , x.Lng         },
+                
                 //Pedido por Rafa
                 { "AcceleratorPedalPosition", x.AcceleratorPedalPosition },
-                { "EngineSpeed" , x.EngineSpeed },
-                { "Speed"       , x.Speed       },
-                { "FuelLevel"   , x.FuelLevel   },
+                { "EngineSpeed"   , x.EngineSpeed },
+                { "Speed"         , x.Speed       },
+                { "FuelLevel"     , x.FuelLevel   },
                 //Fin pedido por Rafa
-                { "FechaLocal"  , x.FechaLocal  },
-                { "Recordedat"  , x.Recordedat  },
+
+                //Pedido por Rafa (otra vez)
+                { "FuelRate"      , x.FuelRate },
+                { "InstantFuelEco", x.InstantFuelEco },
+                //Fin pedido por Rafa (otra vez)
+
+                { "FechaLocal"    , x.FechaLocal  },
+                { "Recordedat"    , x.Recordedat  },
             };
         }
 
