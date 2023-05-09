@@ -1071,8 +1071,8 @@ namespace QPApp
             try
             {
                 var sLineas = string.Join(',', lineasOrdenadas.Select(ln => ln.ToString()).ToArray());
-                var sDesde = desde.ToString("yyyy/MM/dd");
-                var sHasta = hasta.ToString("yyyy/MM/dd");
+                var sDesde = desde.ToString("yyyy-MM-dd");
+                var sHasta = hasta.ToString("yyyy-MM-dd");
 
                 var httpClient = new HttpClient();
                 var url = $"http://192.168.201.74:5100/FichasXLinea?lineas={sLineas}&desde={sDesde}&hasta={sHasta}";
@@ -1222,42 +1222,53 @@ namespace QPApp
 
             var ret = new Dictionary<int, List<PuntoHistorico>>();
 
-            foreach (var sLine in File.ReadLines(pathArchivoLocal).Skip(1))
+            var countLines = 0;
+            foreach (var sLine in File.ReadLines(pathArchivoLocal)
+                .Select(l => l.Trim('\0'))
+                .Skip(1)
+            )
             {
-                var partes = sLine.Split(';');
-                
-                if (partes.Length < lenMin)
+                try
+                {
+                    var partes = sLine.Trim().Split(';');
+
+                    if (partes.Length < lenMin)
+                    {
+                        continue;
+                    }
+
+                    var key = int.Parse(partes[posFic]);
+                    var lat = double.Parse(partes[posLat], CultureInfo.InvariantCulture);
+                    var lng = double.Parse(partes[posLng], CultureInfo.InvariantCulture);
+                    var fec = DateTime.Parse(partes[posFec]);
+
+                    if (key == 0)
+                    {
+                        continue;
+                    }
+
+                    if (soloEstaFicha != 0 && soloEstaFicha != key)
+                    {
+                        continue;
+                    }
+
+                    if (!ret.ContainsKey(key))
+                    {
+                        ret.Add(key, new List<PuntoHistorico>());
+                    }
+
+                    ret[key].Add(new PuntoHistorico
+                    {
+                        Alt = 0,
+                        Lat = lat,
+                        Lng = lng,
+                        Fecha = fec,
+                    });
+                }
+                catch
                 {
                     continue;
                 }
-
-                var key = int       .Parse(partes[posFic]);
-                var lat = double    .Parse(partes[posLat], CultureInfo.InvariantCulture);
-                var lng = double    .Parse(partes[posLng], CultureInfo.InvariantCulture);
-                var fec = DateTime  .Parse(partes[posFec]);
-
-                if (key == 0)
-                {
-                    continue;
-                }
-
-                if (soloEstaFicha != 0 && soloEstaFicha != key)
-                {
-                    continue;
-                }
-
-                if (! ret.ContainsKey(key))
-                { 
-                    ret.Add(key, new List<PuntoHistorico>());
-                }
-
-                ret[key].Add(new PuntoHistorico
-                {
-                    Alt = 0,
-                    Lat = lat,
-                    Lng = lng,
-                    Fecha = fec,
-                });
             }
 
             return ret;
