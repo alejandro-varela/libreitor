@@ -13,75 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Datos\0127\" />
-    <Folder Include="Datos\0159\" />
-    <Folder Include="Datos\0163\" />
-    <Folder Include="Datos\0165\" />
-    <Folder Include="Datos\0166\" />
-    <Folder Include="Datos\0167\" />
-    <Folder Include="Datos\0021\" />
-    <Folder Include="Datos\0001\" />
-    <Folder Include="Datos\0103\" />
-    <Folder Include="Datos\0100\" />
-    <Folder Include="Datos\0101\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Datos\0001\verrec00001820220725000000.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Datos\0021\verrec00003820210817000000.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Datos\0021\verrec00003920210901000000.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Datos\0021\verrec00004020210904000000.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Datos\0100\verrec00004420220322000000.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Datos\0101\verrec00002020220328000000.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Datos\0103\verrec00004020220622000000.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Datos\0127\verrec00002120220204000000.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Datos\0159\verrec00003220201026114000.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Datos\0159\verrec00003320220801000000.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Datos\0159\verrec00003420220912000000.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Datos\0163\verrec00003720211016000000.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Datos\0163\verrec00003820220801000000.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Datos\0163\verrec00003920220912000000.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Datos\0165\verrec00003520211001000000.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Datos\0166\verrec00005020220321000000.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Datos\0167\verrec00003220211231000000.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

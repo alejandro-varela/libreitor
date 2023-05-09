@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 
 diasAtras=$1
 
@@ -36,17 +36,23 @@ archi=$(dotnet qpapp/QPApp.dll desde=$desde modo=picobus lineas=159,163 tipoPunt
         dotnet qpapp/QPApp.dll desde=$desde modo=picobus lineas=159,163 tipoPuntas=PuntaLinea radioPuntas=500 granularidad=20 cotaDesde=-3h cotaHasta=3h
         subirArchiIfExit0 $? $archi
 
+# Línea 127 Linea 41 - driveup
+archi=$(dotnet qpapp/QPApp.dll desde=$desde modo=driveup lineas=127 tipoPuntas=PuntaLinea radioPuntas=500 granularidad=20 cotaDesde=-3h cotaHasta=3h soloNombreArchivo=true)
+        dotnet qpapp/QPApp.dll desde=$desde modo=driveup lineas=127 tipoPuntas=PuntaLinea radioPuntas=500 granularidad=20 cotaDesde=-3h cotaHasta=3h
+        subirArchiIfExit0 $? $archi
+
 # Línea 100 (CP) - tenobus-smgps
-archi=$(dotnet qpapp/QPApp.dll desde=$desde modo=driveup lineas=100 tipoPuntas=PuntaLinea radioPuntas=300 granularidad=20 cotaDesde=-3h cotaHasta=3h soloNombreArchivo=true)
-        dotnet qpapp/QPApp.dll desde=$desde modo=driveup lineas=100 tipoPuntas=PuntaLinea radioPuntas=300 granularidad=20 cotaDesde=-3h cotaHasta=3h
+archi=$(dotnet qpapp/QPApp.dll desde=$desde modo=tecnobussmgps lineas=100 tipoPuntas=PuntaLinea radioPuntas=300 granularidad=20 cotaDesde=-3h cotaHasta=3h soloNombreArchivo=true)
+        dotnet qpapp/QPApp.dll desde=$desde modo=tecnobussmgps lineas=100 tipoPuntas=PuntaLinea radioPuntas=300 granularidad=20 cotaDesde=-3h cotaHasta=3h
         subirArchiIfExit0 $? $archi
 
 # Línea 101 (CN) - tenobus-smgps
-archi=$(dotnet qpapp/QPApp.dll desde=$desde modo=driveup lineas=101 tipoPuntas=PuntaLinea radioPuntas=300 granularidad=20 cotaDesde=-3h cotaHasta=3h soloNombreArchivo=true)
-        dotnet qpapp/QPApp.dll desde=$desde modo=driveup lineas=101 tipoPuntas=PuntaLinea radioPuntas=300 granularidad=20 cotaDesde=-3h cotaHasta=3h
+archi=$(dotnet qpapp/QPApp.dll desde=$desde modo=tecnobussmgps lineas=101 tipoPuntas=PuntaLinea radioPuntas=300 granularidad=20 cotaDesde=-3h cotaHasta=3h soloNombreArchivo=true)
+        dotnet qpapp/QPApp.dll desde=$desde modo=tecnobussmgps lineas=101 tipoPuntas=PuntaLinea radioPuntas=300 granularidad=20 cotaDesde=-3h cotaHasta=3h
         subirArchiIfExit0 $? $archi
 
 # Línea 21 (35/9) - tenobus-smgps
-archi=$(dotnet qpapp/QPApp.dll desde=$desde modo=driveup lineas=21 tipoPuntas=PuntaLinea radioPuntas=300 granularidad=20 cotaDesde=-3h cotaHasta=3h soloNombreArchivo=true)
-        dotnet qpapp/QPApp.dll desde=$desde modo=driveup lineas=21 tipoPuntas=PuntaLinea radioPuntas=300 granularidad=20 cotaDesde=-3h cotaHasta=3h
+archi=$(dotnet qpapp/QPApp.dll desde=$desde modo=tecnobussmgps lineas=21 tipoPuntas=PuntaLinea radioPuntas=300 granularidad=20 cotaDesde=-3h cotaHasta=3h soloNombreArchivo=true)
+        dotnet qpapp/QPApp.dll desde=$desde modo=tecnobussmgps lineas=21 tipoPuntas=PuntaLinea radioPuntas=300 granularidad=20 cotaDesde=-3h cotaHasta=3h
         subirArchiIfExit0 $? $archi
+

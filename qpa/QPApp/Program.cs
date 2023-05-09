@@ -198,8 +198,21 @@ namespace QPApp
 
             #endregion
 
-            // TODO: acá tendríamos que hacer que baje los recorridos mas actualizados para la fecha "desde"
             #region Recuperación de Puntos Teóricos (Recorridos)
+            //// Actualizo los puntos teóricos
+            //Console.WriteLine("Verificando Recorridos Teóricos");
+            //RetVal<string> retValPuntosTeoricosActualizados = ActualizarLosPuntosTeoricos(
+            //    desde  : desde.AddDays(masDias), 
+            //    lineas : lineasOrdenadas,
+            //    repoDir: "\\\\sm-gps-1\\repositorio" //TODO: hardcodeado
+            //);
+            //if (!retValPuntosTeoricosActualizados.IsOk)
+            //{
+            //    Console.WriteLine(retValPuntosTeoricosActualizados.ErrorMessage);
+            //    return 1;
+            //}
+
+            // Proceso los puntos teóricos
             Console.WriteLine("Buscando Recorridos Teóricos");
             List<RecorridoLinBan> recorridosTeoricos = null;
             try
@@ -400,6 +413,136 @@ namespace QPApp
             #endregion
 
             return 0;
+        }
+
+        // Devuelve la fecha de activacion de un archivo 
+        static DateTime GetVerRecDateTime(
+                string fileNameWithoutExtension,
+                DateTimeKind dateTimeKind = DateTimeKind.Local
+            )
+        {
+            // verrec00003420220912000000
+            //             AAAAMMDDhhmmss
+            // 01234567890123456789012345
+            // 0         1         2
+
+            var year   = int.Parse(fileNameWithoutExtension.Substring(12, 4));
+            var month  = int.Parse(fileNameWithoutExtension.Substring(16, 2));
+            var day    = int.Parse(fileNameWithoutExtension.Substring(18, 2));
+            var hour   = int.Parse(fileNameWithoutExtension.Substring(20, 2));
+            var minute = int.Parse(fileNameWithoutExtension.Substring(22, 2));
+            var second = int.Parse(fileNameWithoutExtension.Substring(24, 2));
+
+            var fechaArchivo = new DateTime(
+                year, month, day, hour, minute, second, dateTimeKind
+            );
+
+            return fechaArchivo;
+        }
+
+        // Actualiza los puntos teóricos (recorridos)
+        private static RetVal<string> ActualizarLosPuntosTeoricos(
+            DateTime  desde, 
+            List<int> lineas,
+            string    repoDir
+        )
+        {
+            var selectedPaths = new List<string>();
+
+            foreach (int lineaX in lineas)
+            {
+                var paths    = new List<string>();
+                var dirLinea = Path.Combine(repoDir, $"{lineaX:0000}");
+
+                try
+                {
+                    foreach (var pathX in Directory.EnumerateFiles(dirLinea, "verrec*.zip"))
+                    {
+                        paths.Add(pathX);
+                    }
+                }
+                catch (Exception exx)
+                {
+                    return new RetVal<string>
+                    {
+                        IsOk = false,
+                        ErrorException = exx,
+                    };
+                }
+
+                var pathsOrdenados = paths
+                    .OrderBy(p => p)
+                    .ToList ()
+                ;
+
+                if (!pathsOrdenados.Any())
+                {
+                    return new RetVal<string>
+                    {
+                        ErrorMessage = $"No hay archivos para la línea {lineaX}",
+                        IsOk = false,
+                    };
+                }
+
+                if (GetVerRecDateTime(Path.GetFileNameWithoutExtension(paths.First())) > desde)
+                {
+                    return new RetVal<string>
+                    {
+                        ErrorMessage = $"No hay versiones de recorrido para esta fecha (todas son mas nuevas)",
+                        IsOk = false,
+                    };
+                }
+
+                var selectedPath = paths.First();
+                
+                foreach (var pathOrdenadoX in pathsOrdenados)
+                {
+                    var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(pathOrdenadoX);
+
+                    if (fileNameWithoutExtension.Length < 25)
+                    {
+                        return new RetVal<string>
+                        {
+                            IsOk = false,
+                            ErrorMessage = "Archivo con menos de 25 caracteres de nombre"
+                        };
+                    }
+
+                    var currentFileDateTime = GetVerRecDateTime(fileNameWithoutExtension);
+
+                    if (currentFileDateTime > desde)
+                    {
+                        break;
+                    }
+
+                    selectedPath = pathOrdenadoX;
+                }
+
+                selectedPaths.Add(selectedPath);
+            }
+
+            // ahora me fijo si los archivos existen en el directorio en donde los guardo...
+            // si no existen los copio
+
+            foreach (var selectedPathX in selectedPaths)
+            {
+                var fileNameX = Path.GetFileName(selectedPathX);
+                var lineaX = Path.GetDirectoryName(selectedPathX).Split(new char[] { '/', '\\' }).Last();
+                
+                var dirLocal = $"./Datos/{lineaX}";
+                if (!Directory.Exists(dirLocal))
+                {
+                    Directory.CreateDirectory(dirLocal);
+                }
+
+                var pathLocal = $"{dirLocal}/{fileNameX}";
+                if (!File.Exists(pathLocal))
+                {
+                    File.Copy(selectedPathX, pathLocal, true);
+                }
+            }
+
+            return new RetVal<string> { IsOk = true };
         }
 
         private static int ParsearCotaASegundos(string sRepresentacionCota)
@@ -832,7 +975,11 @@ namespace QPApp
             // vm-coches = 192.168.201.74
             var url = $"http://192.168.201.74:5006/BoletosXIdentSUBE_KvpList?desde={fechaDesde.Year:0000}-{fechaDesde.Month:00}-{fechaDesde.Day:00}";
 
-            var httpClient = new HttpClient();
+            var httpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromMinutes(10)
+            };
+
             var response = await httpClient.GetAsync(url);
             
             if (response.StatusCode == HttpStatusCode.OK)
@@ -852,7 +999,7 @@ namespace QPApp
                 {
                     IsOk = false,
                 };
-            }            
+            }
         }
 
         public class EmpresaInternoFicha
@@ -923,8 +1070,12 @@ namespace QPApp
         {
             try
             {
+                var sLineas = string.Join(',', lineasOrdenadas.Select(ln => ln.ToString()).ToArray());
+                var sDesde = desde.ToString("yyyy/MM/dd");
+                var sHasta = hasta.ToString("yyyy/MM/dd");
+
                 var httpClient = new HttpClient();
-                var url = "http://192.168.201.74:5100/FichasXLinea?lineas=100&desde=2022-11-29&hasta=2022-11-30";
+                var url = $"http://192.168.201.74:5100/FichasXLinea?lineas={sLineas}&desde={sDesde}&hasta={sHasta}";
                 var response = await httpClient.GetAsync(url);
 
                 if (response.StatusCode == HttpStatusCode.OK)
