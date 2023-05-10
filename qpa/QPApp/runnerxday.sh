@@ -51,6 +51,11 @@ archi=$(dotnet qpapp/QPApp.dll desde=$desde modo=tecnobussmgps lineas=101 tipoPu
         dotnet qpapp/QPApp.dll desde=$desde modo=tecnobussmgps lineas=101 tipoPuntas=PuntaLinea radioPuntas=300 granularidad=20 cotaDesde=-3h cotaHasta=3h
         subirArchiIfExit0 $? $archi
 
+# Línea 103 (EXPRESO) - tecnobus-smgps
+archi=$(dotnet qpapp/QPApp.dll desde=$desde modo=tecnobussmgps lineas=103 tipoPuntas=PuntaLinea radioPuntas=300 granularidad=20 cotaDesde=-3h cotaHasta=3h soloNombreArchivo=true)
+        dotnet qpapp/QPApp.dll desde=$desde modo=tecnobussmgps lineas=103 tipoPuntas=PuntaLinea radioPuntas=300 granularidad=20 cotaDesde=-3h cotaHasta=3h
+        subirArchiIfExit0 $? $archi
+
 # Línea 21 (35/9) - tenobus-smgps
 archi=$(dotnet qpapp/QPApp.dll desde=$desde modo=tecnobussmgps lineas=21 tipoPuntas=PuntaLinea radioPuntas=300 granularidad=20 cotaDesde=-3h cotaHasta=3h soloNombreArchivo=true)
         dotnet qpapp/QPApp.dll desde=$desde modo=tecnobussmgps lineas=21 tipoPuntas=PuntaLinea radioPuntas=300 granularidad=20 cotaDesde=-3h cotaHasta=3h
