@@ -268,6 +268,8 @@ namespace VHR
 
             cmbModoHistorico.SelectedIndex = 0;
             cmbLargoSubRango.SelectedIndex = 5;
+
+            lvwBanderas.Enabled = false;
         }
 
         DateTime ConstruirFechaHoraDesde()
@@ -550,6 +552,8 @@ namespace VHR
 
         private async void BtnAceptarDatosBasicos_Click(object sender, EventArgs e)
         {
+            lvwBanderas.Enabled = false;
+
             bool ok = await BasicDataController_OnCargarPuntos(this, new EventArgs());
 
             if (ok)
@@ -557,6 +561,7 @@ namespace VHR
                 // cosas visibles...
                 panMediaController.Visible = true;
                 panSidePanel.Visible = true;
+                lvwBanderas.Enabled = true;
             }
         }
 

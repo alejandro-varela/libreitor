@@ -61,6 +61,10 @@ namespace VHR
             this.chBan = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chEstilo = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.panBasicData = new System.Windows.Forms.Panel();
+            this.lvwBanderas = new System.Windows.Forms.ListView();
+            this.chCodBan = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chAbrBan = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chDesBan = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.dtpHoraDesde = new System.Windows.Forms.DateTimePicker();
             this.dtpHoraHasta = new System.Windows.Forms.DateTimePicker();
             this.dtpFechaHasta = new System.Windows.Forms.DateTimePicker();
@@ -76,6 +80,7 @@ namespace VHR
             this.lblTitLineas = new System.Windows.Forms.Label();
             this.lblTitFicha = new System.Windows.Forms.Label();
             this.basicDataController = new VHR.TimeController();
+            this.chVisible = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             ((System.ComponentModel.ISupportInitialize)(this.picMain)).BeginInit();
             this.panMediaController.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picActividad)).BeginInit();
@@ -381,6 +386,7 @@ namespace VHR
             // panBasicData
             // 
             this.panBasicData.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.panBasicData.Controls.Add(this.lvwBanderas);
             this.panBasicData.Controls.Add(this.dtpHoraDesde);
             this.panBasicData.Controls.Add(this.dtpHoraHasta);
             this.panBasicData.Controls.Add(this.dtpFechaHasta);
@@ -397,6 +403,35 @@ namespace VHR
             this.panBasicData.Controls.Add(this.lblTitFicha);
             resources.ApplyResources(this.panBasicData, "panBasicData");
             this.panBasicData.Name = "panBasicData";
+            // 
+            // lvwBanderas
+            // 
+            this.lvwBanderas.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.lvwBanderas.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.chVisible,
+            this.chCodBan,
+            this.chAbrBan,
+            this.chDesBan});
+            this.lvwBanderas.FullRowSelect = true;
+            this.lvwBanderas.GridLines = true;
+            this.lvwBanderas.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.lvwBanderas.HideSelection = false;
+            resources.ApplyResources(this.lvwBanderas, "lvwBanderas");
+            this.lvwBanderas.Name = "lvwBanderas";
+            this.lvwBanderas.UseCompatibleStateImageBehavior = false;
+            this.lvwBanderas.View = System.Windows.Forms.View.Details;
+            // 
+            // chCodBan
+            // 
+            resources.ApplyResources(this.chCodBan, "chCodBan");
+            // 
+            // chAbrBan
+            // 
+            resources.ApplyResources(this.chAbrBan, "chAbrBan");
+            // 
+            // chDesBan
+            // 
+            resources.ApplyResources(this.chDesBan, "chDesBan");
             // 
             // dtpHoraDesde
             // 
@@ -502,6 +537,10 @@ namespace VHR
             resources.ApplyResources(this.basicDataController, "basicDataController");
             this.basicDataController.Name = "basicDataController";
             // 
+            // chVisible
+            // 
+            resources.ApplyResources(this.chVisible, "chVisible");
+            // 
             // FrmMain
             // 
             resources.ApplyResources(this, "$this");
@@ -575,6 +614,11 @@ namespace VHR
         private System.Windows.Forms.Label lblTitHasta;
         private System.Windows.Forms.DateTimePicker dtpHoraHasta;
         private System.Windows.Forms.DateTimePicker dtpHoraDesde;
+        private System.Windows.Forms.ListView lvwBanderas;
+        private System.Windows.Forms.ColumnHeader chCodBan;
+        private System.Windows.Forms.ColumnHeader chAbrBan;
+        private System.Windows.Forms.ColumnHeader chDesBan;
+        private System.Windows.Forms.ColumnHeader chVisible;
     }
 }
 

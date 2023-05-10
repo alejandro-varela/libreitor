@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using Comun;
@@ -16,9 +17,222 @@ namespace PintorRecorridosGenerico
     {
         public static void Main()
         {
-            var lineas = new List<int> { 167 };
-            var date = DateTime.Now;
+            var xxx = new
+            {
+                Pepe = 1234   ,
+                Pipo = "hola!",
+                Zapa = false  ,
+            };
 
+            UnaFunca(xxx);
+
+            var lineas = new List<int> { 159, 163 };
+            var date = DateTime.Now.AddDays(10);
+
+            List<BoletoComun> boletos = GetBoletos();
+
+            var cantTodosLosBoletos = boletos.Count();
+            var filtrados = boletos.Where(bol => bol.Latitud != 0 && bol.Longitud != 0);
+            var cantFiltrados = filtrados.Count();
+            var cantUnicos = filtrados
+                .Select(bol => $"{bol.Latitud}-{bol.Longitud}")
+                .Distinct()
+                .Count()
+            ;
+
+            var pintor = MakePintorBoletosYRecorridoTeorico(
+                lineas,
+                date,
+                new List<BoletoComun>(),
+                163,
+                2772,
+                true,
+                50
+            );
+
+            using var bitmap = pintor.Render();
+            bitmap.Save($"reco_2772.png", ImageFormat.Png);
+        }
+
+        static void UnaFunca(object xxx)
+        {
+            dynamic zzz = xxx;
+            Console.WriteLine(zzz.Pepo);
+        }
+
+        static PintorDeRecorrido MakePintorBoletosYRecorridoTeorico(
+            IEnumerable<int> lineas,
+            DateTime date,
+            IEnumerable<BoletoComun> boletos, 
+            int lineaRecoTeorico, 
+            int banderaRecoTeorico,
+            bool agregarPuntosDeLosBoletos = false,
+            int granularidad = 20,
+            string dirRecorridos = "../../../../Datos/ZipRepo/"
+        )
+        {
+            if (!lineas.Contains(lineaRecoTeorico))
+            {
+                lineas = lineas
+                    .Append(lineaRecoTeorico)
+                ;
+            }
+
+            var recorridosRBus = Recorrido.LeerRecorridosPorArchivos(dirRecorridos, lineas.ToArray(), date);
+
+            var todosLosPuntosRec = recorridosRBus
+                .SelectMany(
+                    (reco) => reco.Puntos.HacerGranular(granularidad),
+                    (reco, punto) => new PuntoRecorridoLinBan(punto, reco.Linea, reco.Bandera)
+                )
+                .ToList()
+            ;
+
+            if (agregarPuntosDeLosBoletos)
+            {
+                var puntosDeLosBoletos = boletos
+                    .Where(bol => bol.Latitud != 0 && bol.Longitud != 0)
+                    .Select(bol => new PuntoRecorridoLinBan { Lat=bol.Latitud, Lng=bol.Longitud })
+                ;
+                todosLosPuntosRec.AddRange(puntosDeLosBoletos);
+            }
+
+            // topes
+            var topes2D = Topes2D.CreateFromPuntos(todosLosPuntosRec);
+
+            // puntas 
+            var puntas = PuntasDeLinea.GetPuntasNombradas(recorridosRBus, 500);
+
+            // historia?
+            var camino2770 = GetCaminoPorBandera(puntas, recorridosRBus, 2770);
+            MostrarCamino(camino2770);
+
+            var camino2772 = GetCaminoPorBandera(puntas, recorridosRBus, 2772);
+            MostrarCamino(camino2772);
+
+            // pinturitas
+            var pintor = new PintorDeRecorrido(topes2D, granularidad);
+
+            pintor
+                .SetColorFondo(Color.Gray)
+                .PintarPuntos(recorridosRBus.Where(reco => reco.Linea == lineaRecoTeorico && reco.Bandera == banderaRecoTeorico).First().Puntos.HacerGranular(granularidad), Color.LimeGreen, 3)
+                .PintarPuntos(todosLosPuntosRec, Color.DarkGray)
+                .PintarPuntos(boletos.Select(bol => new Punto { Lat=bol.Latitud, Lng=bol.Longitud }), Color.Fuchsia, 3)
+            ;
+
+            return pintor;
+        }
+
+        private static void MostrarCamino(Camino<PuntoRecorrido> camino)
+        {
+            Console.WriteLine(camino.DescriptionRaw);
+
+            foreach (Grupoide<PuntoRecorrido> grupoideX in camino.Grupoides)
+            {
+                Console.WriteLine($"\t{grupoideX.Nombre}");
+                foreach (PuntoCamino<PuntoRecorrido> xxx in grupoideX.Nodos)
+                {
+                    Console.WriteLine($"\t\t{xxx.PuntaDeLinea.Nombre} {MostrarPunto(xxx.PuntoAsociado)}");
+                }
+            }
+        }
+
+        static Camino<PuntoRecorrido> GetCaminoPorBandera(IEnumerable<PuntaLinea> puntas, IEnumerable<RecorridoLinBan> recorridos, int bandera)
+        {
+            return GetCamino
+            (
+                puntas,
+                recorridos.Where(r => r.Bandera == bandera).FirstOrDefault()
+            );
+        }
+
+        static Camino<PuntoRecorrido> GetCamino(IEnumerable<PuntaLinea> puntas, RecorridoLinBan recorrido)
+        {
+            return GetCamino(puntas, recorrido.Puntos);
+        }
+
+        static Camino<T> GetCamino<T>(IEnumerable<PuntaLinea> puntas, IEnumerable<T> puntos)
+            where T : Punto
+        {
+            return Camino<T>.CreateFromPuntos(puntas, puntos);
+        }
+
+        static string MostrarPunto(Punto p)
+        {
+            var sLat = p.Lat.ToString(CultureInfo.InvariantCulture);
+            var sLng = p.Lng.ToString(CultureInfo.InvariantCulture);
+            return $"{sLat},{sLng}";
+        }
+
+        static void PintarBoletosYRecorridoTeorico(IEnumerable<BoletoComun> boletos, RecorridoLinBan recorridoTeorico)
+        {
+            var lineas = new int[] { 166 };
+            var date = DateTime.Now;
+            var dirRecorridos = "../../../../Datos/ZipRepo/";
+            var granularidad = 20;
+
+            var recorridosRBus = Recorrido.LeerRecorridosPorArchivos(dirRecorridos, lineas, date);
+
+            var todosLosPuntosRec = recorridosRBus
+                .SelectMany(
+                    (reco) => reco.Puntos.HacerGranular(granularidad),
+                    (reco, punto) => new PuntoRecorridoLinBan(punto, reco.Linea, reco.Bandera)
+                )
+                .ToList()
+            ;
+
+            // topes
+            var topes2D = Topes2D.CreateFromPuntos(todosLosPuntosRec);
+
+            // pinturitas
+            var pintor = new PintorDeRecorrido(topes2D, granularidad);
+
+            pintor
+                .SetColorFondo(Color.Gray)
+                .PintarPuntos(recorridosRBus.Where(reco => reco.Linea == 166 && reco.Bandera == 1082).First().Puntos.HacerGranular(granularidad), Color.LimeGreen, 3)
+                .PintarPuntos(todosLosPuntosRec, Color.DarkGray)
+            //.PintarPunto(pBoleto, Color.Fuchsia, 3);
+            ;
+
+            // imagen
+            using var bitmap = pintor.Render();
+            bitmap.Save($"boleto_en_reco_out.png", ImageFormat.Png);
+        }
+
+
+        static void PintarRecorridos(int[] lineas, DateTime date, string dirRecorridos, int granularidad)
+        {
+            // recorridos y puntos
+            var recorridosRBus = Recorrido.LeerRecorridosPorArchivos(dirRecorridos, lineas, date);
+
+            var todosLosPuntosRec = recorridosRBus
+                .SelectMany(
+                    (reco) => reco.Puntos.HacerGranular(granularidad),
+                    (reco, punto) => new PuntoRecorridoLinBan(punto, reco.Linea, reco.Bandera)
+                )
+                .ToList()
+            ;
+
+            // topes
+            var topes2D = Topes2D.CreateFromPuntos(todosLosPuntosRec);
+
+            // pinturitas
+            var pintor = new PintorDeRecorrido(topes2D, granularidad);
+
+            pintor
+                .SetColorFondo(Color.Gray)
+                .PintarPuntos(recorridosRBus.Where(reco => reco.Linea == 166 && reco.Bandera == 1082).First().Puntos.HacerGranular(granularidad), Color.LimeGreen, 3)
+                .PintarPuntos(todosLosPuntosRec, Color.DarkGray)
+                //.PintarPunto(pBoleto, Color.Fuchsia, 3);
+            ;
+
+            // imagen
+            using var bitmap = pintor.Render();
+            bitmap.Save($"boleto_en_reco_out.png", ImageFormat.Png);
+        }
+
+        private static List<BoletoComun> GetBoletos()
+        {
             #region boletos
             var boletosStringBuilder = new StringBuilder();
             boletosStringBuilder.AppendLine("[");
@@ -806,356 +1020,10 @@ namespace PintorRecorridosGenerico
             boletosStringBuilder.AppendLine("    \"Longitud\": -58.73539");
             boletosStringBuilder.AppendLine("  }");
             boletosStringBuilder.AppendLine("]");
-            var boletos = JsonConvert.DeserializeObject<List<BoletoComun>>( boletosStringBuilder.ToString() );
+            var boletos = JsonConvert.DeserializeObject<List<BoletoComun>>(boletosStringBuilder.ToString());
             #endregion boletos
 
-            var cantTodosLosBoletos = boletos.Count();
-            var filtrados = boletos.Where(bol => bol.Latitud != 0 && bol.Longitud != 0);
-            var cantFiltrados = filtrados.Count();
-            var cantUnicos = filtrados
-                .Select(bol => $"{bol.Latitud}-{bol.Longitud}")
-                .Distinct()
-                .Count()
-            ;
-
-            var pintor = MakePintorBoletosYRecorridoTeorico(lineas, date, filtrados, 167, 3083, true, 20);
-
-            using var bitmap = pintor.Render();
-            bitmap.Save($"boleto_en_reco_out.png", ImageFormat.Png);
+            return boletos;
         }
-
-        static PintorDeRecorrido MakePintorBoletosYRecorridoTeorico(
-            IEnumerable<int> lineas,
-            DateTime date,
-            IEnumerable<BoletoComun> boletos, 
-            int lineaRecoTeorico, 
-            int banderaRecoTeorico,
-            bool agregarPuntosDeLosBoletos = false,
-            int granularidad = 20,
-            string dirRecorridos = "../../../../Datos/ZipRepo/"
-        )
-        {
-            if (!lineas.Contains(lineaRecoTeorico))
-            {
-                lineas = lineas
-                    .Append(lineaRecoTeorico)
-                ;
-            }
-
-            var recorridosRBus = Recorrido.LeerRecorridosPorArchivos(dirRecorridos, lineas.ToArray(), date);
-
-            var todosLosPuntosRec = recorridosRBus
-                .SelectMany(
-                    (reco) => reco.Puntos.HacerGranular(granularidad),
-                    (reco, punto) => new PuntoRecorridoLinBan(punto, reco.Linea, reco.Bandera)
-                )
-                .ToList()
-            ;
-
-            if (agregarPuntosDeLosBoletos)
-            {
-                var puntosDeLosBoletos = boletos
-                    .Where(bol => bol.Latitud != 0 && bol.Longitud != 0)
-                    .Select(bol => new PuntoRecorridoLinBan { Lat=bol.Latitud, Lng=bol.Longitud })
-                ;
-                todosLosPuntosRec.AddRange(puntosDeLosBoletos);
-            }
-
-            // topes
-            var topes2D = Topes2D.CreateFromPuntos(todosLosPuntosRec);
-
-            // pinturitas
-            var pintor = new PintorDeRecorrido(topes2D, granularidad);
-
-            pintor
-                .SetColorFondo(Color.Gray)
-                .PintarPuntos(recorridosRBus.Where(reco => reco.Linea == lineaRecoTeorico && reco.Bandera == banderaRecoTeorico).First().Puntos.HacerGranular(granularidad), Color.LimeGreen, 3)
-                .PintarPuntos(todosLosPuntosRec, Color.DarkGray)
-                .PintarPuntos(boletos.Select(bol => new Punto { Lat=bol.Latitud, Lng=bol.Longitud }), Color.Fuchsia, 3)
-            ;
-
-            return pintor;
-        }
-
-        static void PintarBoletosYRecorridoTeorico(IEnumerable<BoletoComun> boletos, RecorridoLinBan recorridoTeorico)
-        {
-            var lineas = new int[] { 166 };
-            var date = DateTime.Now;
-            var dirRecorridos = "../../../../Datos/ZipRepo/";
-            var granularidad = 20;
-
-            var recorridosRBus = Recorrido.LeerRecorridosPorArchivos(dirRecorridos, lineas, date);
-
-            var todosLosPuntosRec = recorridosRBus
-                .SelectMany(
-                    (reco) => reco.Puntos.HacerGranular(granularidad),
-                    (reco, punto) => new PuntoRecorridoLinBan(punto, reco.Linea, reco.Bandera)
-                )
-                .ToList()
-            ;
-
-            // topes
-            var topes2D = Topes2D.CreateFromPuntos(todosLosPuntosRec);
-
-            // pinturitas
-            var pintor = new PintorDeRecorrido(topes2D, granularidad);
-
-            pintor
-                .SetColorFondo(Color.Gray)
-                .PintarPuntos(recorridosRBus.Where(reco => reco.Linea == 166 && reco.Bandera == 1082).First().Puntos.HacerGranular(granularidad), Color.LimeGreen, 3)
-                .PintarPuntos(todosLosPuntosRec, Color.DarkGray)
-            //.PintarPunto(pBoleto, Color.Fuchsia, 3);
-            ;
-
-            // imagen
-            using var bitmap = pintor.Render();
-            bitmap.Save($"boleto_en_reco_out.png", ImageFormat.Png);
-        }
-
-
-        static void PintarRecorridos(int[] lineas, DateTime date, string dirRecorridos, int granularidad)
-        {
-            // recorridos y puntos
-            var recorridosRBus = Recorrido.LeerRecorridosPorArchivos(dirRecorridos, lineas, date);
-
-            var todosLosPuntosRec = recorridosRBus
-                .SelectMany(
-                    (reco) => reco.Puntos.HacerGranular(granularidad),
-                    (reco, punto) => new PuntoRecorridoLinBan(punto, reco.Linea, reco.Bandera)
-                )
-                .ToList()
-            ;
-
-            // topes
-            var topes2D = Topes2D.CreateFromPuntos(todosLosPuntosRec);
-
-            // pinturitas
-            var pintor = new PintorDeRecorrido(topes2D, granularidad);
-
-            pintor
-                .SetColorFondo(Color.Gray)
-                .PintarPuntos(recorridosRBus.Where(reco => reco.Linea == 166 && reco.Bandera == 1082).First().Puntos.HacerGranular(granularidad), Color.LimeGreen, 3)
-                .PintarPuntos(todosLosPuntosRec, Color.DarkGray)
-                //.PintarPunto(pBoleto, Color.Fuchsia, 3);
-            ;
-
-            // imagen
-            using var bitmap = pintor.Render();
-            bitmap.Save($"boleto_en_reco_out.png", ImageFormat.Png);
-        }
-
-        /*
-        static void Main_(string[] args)
-        {
-            // params:
-            var lineas = new int[] { 159, 163 };
-            var date = DateTime.Now;
-            var dir = "../../../../Datos/ZipRepo/";
-            var granu = 20;
-            var radioPuntas = 200;
-
-            // recorridos y puntos
-            var recorridosRBus = Recorrido.LeerRecorridosPorArchivos(dir, lineas, date);
-
-            var todosLosPuntosRec = recorridosRBus
-                .SelectMany(
-                    (reco) => reco.Puntos.HacerGranular(granu),
-                    (reco, punto) => new PuntoRecorridoLinBan(punto, reco.Linea, reco.Bandera)
-                )
-                .ToList()
-            ;
-
-            // puntas de línea
-            var puntas = PuntasDeLinea.GetPuntasNombradas(
-                recorridosRBus,
-                radioPuntas
-            );
-
-            var puntas2 = PuntasDeLinea2.GetPuntasDeLinea(
-                recorridosRBus,                     // una lista de recorridos
-                radioPuntas,                        // el radio de detección de cada item de la punta de línea (puede ser mas que uno)
-                radioAgrupacion: radioPuntas * 2    // la máxima distancia que pueden tener las puntas de línea para ser incluidas en un mismo grupo entre si
-            )
-                .ToList()
-            ;
-
-            var puntas2Nombradas = PuntasDeLinea2.GetPuntasNombradas(
-                recorridosRBus,
-                radioPuntas,
-                radioAgrupacion: radioPuntas * 2
-            );
-
-
-            var indexxx = 0;
-            foreach (var ppp in puntas2)
-            {
-                ppp.Nombre = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[indexxx].ToString();
-                indexxx += 1;
-            }
-
-            var queseya = Camino<Punto>.CreateFromPuntos(puntas, recorridosRBus[17].Puntos);
-            var queseyo = Camino<Punto>.CreateFromPuntos(puntas2, recorridosRBus[17].Puntos);
-
-            // inicializar objetos
-            var topes2D = Topes2D.CreateFromPuntos(todosLosPuntosRec);
-
-            // pintar (ver problema index 6)
-            foreach (var rec in recorridosRBus)
-            {
-                var pintor = new PintorDeRecorrido(topes2D, granu)
-
-                    //.SetColorFondo(Color.Aquamarine)
-                    .SetColorFondo(Color.Gray)
-
-                    //.PintarPuntos(recorridosRBus.Select(rec => rec.PuntoSalida), Color.Fuchsia, 15)
-                    //.PintarPuntos(recorridosRBus.Select(rec => rec.PuntoLlegada), Color.Fuchsia, 15)
-
-                    //.PintarPuntos(rec.Puntos, Color.Lime, 3)
-                    .PintarPuntos(todosLosPuntosRec.Where(pr => pr.Linea == 159), Color.DarkGray)
-                    .PintarPuntos(todosLosPuntosRec.Where(pr => pr.Linea == 163), Color.DarkGray)
-                    .PintarPuntos(todosLosPuntosRec.Where(pr => pr.Linea == 165), Color.DarkGray)
-                    .PintarPuntos(todosLosPuntosRec.Where(pr => pr.Linea == 166), Color.DarkGray)
-                    .PintarPuntos(todosLosPuntosRec.Where(pr => pr.Linea == 167), Color.DarkGray)
-
-                //.PintarRadio(recorridosRBus[index].Puntos.First(), Color.Yellow, 800 / granu)
-                //.PintarRadio(recorridosRBus[index].Puntos.Last (), Color.Yellow, 800 / granu)
-                //.PintarRadios(puntas.Select(pu => pu.Punto), Color.Aqua, radioPuntas / granu)
-                //.PintarRadiosNombrados(puntas.Select(pu => (pu.Punto, pu.Nombre)), Color.LightBlue, radioPuntas / (granu / 2))
-
-                ;
-
-                var random = new Random(Environment.TickCount);
-                var colori = 40;
-                foreach (PuntaLinea2 pun2 in puntas2)
-                {
-                    //var colorRandom = Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
-                    var colorRandom = Color.FromKnownColor((KnownColor)colori);
-                    pintor.PintarPuntos(pun2.Puntos, Color.FromArgb(255, colorRandom), radioPuntas * 2 / granu);
-                    pintor.PintarPuntos(pun2.Puntos, Color.Black, 3);
-                    pintor.PintarPuntos(pun2.Puntos, Color.White, 1);
-                    colori += 1;
-                }
-
-                pintor.PintarPuntos(rec.Puntos, Color.FromArgb(50, Color.Lime), 3);
-
-                pintor.PintarPunto(rec.Puntos.First(), Color.Fuchsia, 5);
-                pintor.PintarPunto(rec.Puntos.Last(), Color.Blue, 5);
-
-                using (var bitmap = pintor.Render())
-                {
-                    bitmap.Save($"rec_{rec.Linea:0000}_{rec.Bandera:0000}.png", ImageFormat.Png);
-                }
-
-                int fin = 0;
-
-            }
-
-
-
-            static void Main(string[] args)
-        {
-            // params:
-            var lineas      = new int[] { 159, 163 };
-            var date        = DateTime.Now;
-            var dir         = "../../../../Datos/ZipRepo/";
-            var granu       = 20;
-            var radioPuntas = 200;
-
-            // recorridos y puntos
-            var recorridosRBus = Recorrido.LeerRecorridosPorArchivos(dir, lineas, date);
-
-            var todosLosPuntosRec = recorridosRBus
-                .SelectMany(
-                    (reco) => reco.Puntos.HacerGranular(granu),
-                    (reco, punto) => new PuntoRecorridoLinBan(punto, reco.Linea, reco.Bandera)
-                )
-                .ToList()
-            ;
-
-            // puntas de línea
-            var puntas = PuntasDeLinea.GetPuntasNombradas(
-                recorridosRBus, 
-                radioPuntas
-            );
-
-            var puntas2 = PuntasDeLinea2.GetPuntasDeLinea(
-                recorridosRBus,                     // una lista de recorridos
-                radioPuntas,                        // el radio de detección de cada item de la punta de línea (puede ser mas que uno)
-                radioAgrupacion: radioPuntas * 2    // la máxima distancia que pueden tener las puntas de línea para ser incluidas en un mismo grupo entre si
-            )
-                .ToList()
-            ;
-
-            var puntas2Nombradas = PuntasDeLinea2.GetPuntasNombradas(
-                recorridosRBus,
-                radioPuntas,
-                radioAgrupacion: radioPuntas * 2
-            );
-
-
-            var indexxx = 0;
-            foreach (var ppp in puntas2)
-            {
-                ppp.Nombre = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[indexxx].ToString();
-                indexxx += 1;
-            }
-
-            var queseya = Camino<Punto>.CreateFromPuntos(puntas , recorridosRBus[17].Puntos);
-            var queseyo = Camino<Punto>.CreateFromPuntos(puntas2, recorridosRBus[17].Puntos);
-
-            // inicializar objetos
-            var topes2D = Topes2D.CreateFromPuntos(todosLosPuntosRec);
-
-            // pintar (ver problema index 6)
-            foreach (var rec in recorridosRBus)
-            {
-                var pintor = new PintorDeRecorrido(topes2D, granu)
-
-                    //.SetColorFondo(Color.Aquamarine)
-                    .SetColorFondo(Color.Gray)
-
-                    //.PintarPuntos(recorridosRBus.Select(rec => rec.PuntoSalida), Color.Fuchsia, 15)
-                    //.PintarPuntos(recorridosRBus.Select(rec => rec.PuntoLlegada), Color.Fuchsia, 15)
-
-                    //.PintarPuntos(rec.Puntos, Color.Lime, 3)
-                    .PintarPuntos(todosLosPuntosRec.Where(pr => pr.Linea == 159), Color.DarkGray)
-                    .PintarPuntos(todosLosPuntosRec.Where(pr => pr.Linea == 163), Color.DarkGray)
-                    .PintarPuntos(todosLosPuntosRec.Where(pr => pr.Linea == 165), Color.DarkGray)
-                    .PintarPuntos(todosLosPuntosRec.Where(pr => pr.Linea == 166), Color.DarkGray)
-                    .PintarPuntos(todosLosPuntosRec.Where(pr => pr.Linea == 167), Color.DarkGray)
-
-                //.PintarRadio(recorridosRBus[index].Puntos.First(), Color.Yellow, 800 / granu)
-                //.PintarRadio(recorridosRBus[index].Puntos.Last (), Color.Yellow, 800 / granu)
-                //.PintarRadios(puntas.Select(pu => pu.Punto), Color.Aqua, radioPuntas / granu)
-                //.PintarRadiosNombrados(puntas.Select(pu => (pu.Punto, pu.Nombre)), Color.LightBlue, radioPuntas / (granu / 2))
-
-                ;
-
-                var random = new Random(Environment.TickCount);
-                var colori = 40;
-                foreach (PuntaLinea2 pun2 in puntas2)
-                {
-                    //var colorRandom = Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
-                    var colorRandom = Color.FromKnownColor((KnownColor)colori);
-                    pintor.PintarPuntos(pun2.Puntos, Color.FromArgb(255, colorRandom), radioPuntas * 2 / granu);
-                    pintor.PintarPuntos(pun2.Puntos, Color.Black, 3);
-                    pintor.PintarPuntos(pun2.Puntos, Color.White, 1);
-                    colori += 1;
-                }
-
-                pintor.PintarPuntos(rec.Puntos, Color.FromArgb(50, Color.Lime), 3);
-
-                pintor.PintarPunto(rec.Puntos.First(), Color.Fuchsia, 5);
-                pintor.PintarPunto(rec.Puntos.Last(), Color.Blue, 5);
-
-                using (var bitmap = pintor.Render())
-                {
-                    bitmap.Save($"rec_{rec.Linea:0000}_{rec.Bandera:0000}.png", ImageFormat.Png);
-                }
-
-                int fin = 0;
-            }
-        }
-        */
     }
 }

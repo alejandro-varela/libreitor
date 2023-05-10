@@ -370,10 +370,24 @@ namespace QPACreator
 
             foreach (var subCamino in qpaResult.SubCaminos.ToArray().Reverse())
             {
-                // empresa e ident sube...
-                var empresaSUBE = empresaInternoSUBEXFichas[ficha].Item1;
-                var internoSUBE = empresaInternoSUBEXFichas[ficha].Item2;
+                // empresa e ident sube
+                // muchas veces la ficha no está como clave del diccionario "empresaInternoSUBEXFichas"
+                // asi que intentamos recuperar los valores adentro de un try catch
+                // si algo falla continuamos el bucle
 
+                int empresaSUBE = 0;
+                int internoSUBE = 0;
+
+                try
+                {
+                    empresaSUBE = empresaInternoSUBEXFichas[ficha].Item1;
+                    internoSUBE = empresaInternoSUBEXFichas[ficha].Item2;
+                }
+                catch
+                {
+                    continue;
+                }
+                
                 // linea y bandera
                 var linBanPuns = subCamino
                     .LineasBanderasPuntuaciones

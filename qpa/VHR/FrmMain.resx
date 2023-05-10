@@ -1126,11 +1126,56 @@
   <data name="&gt;&gt;panSidePanel.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
+  <data name="chVisible.Text" xml:space="preserve">
+    <value>Visible</value>
+  </data>
+  <data name="chVisible.Width" type="System.Int32, mscorlib">
+    <value>46</value>
+  </data>
+  <data name="chCodBan.Text" xml:space="preserve">
+    <value>Cod</value>
+  </data>
+  <data name="chCodBan.Width" type="System.Int32, mscorlib">
+    <value>50</value>
+  </data>
+  <data name="chAbrBan.Text" xml:space="preserve">
+    <value>Abrev</value>
+  </data>
+  <data name="chAbrBan.Width" type="System.Int32, mscorlib">
+    <value>50</value>
+  </data>
+  <data name="chDesBan.Text" xml:space="preserve">
+    <value>Descr</value>
+  </data>
+  <data name="chDesBan.Width" type="System.Int32, mscorlib">
+    <value>200</value>
+  </data>
+  <data name="lvwBanderas.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1149, 4</value>
+  </data>
+  <data name="lvwBanderas.Size" type="System.Drawing.Size, System.Drawing">
+    <value>418, 117</value>
+  </data>
+  <data name="lvwBanderas.TabIndex" type="System.Int32, mscorlib">
+    <value>15</value>
+  </data>
+  <data name="&gt;&gt;lvwBanderas.Name" xml:space="preserve">
+    <value>lvwBanderas</value>
+  </data>
+  <data name="&gt;&gt;lvwBanderas.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ListView, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lvwBanderas.Parent" xml:space="preserve">
+    <value>panBasicData</value>
+  </data>
+  <data name="&gt;&gt;lvwBanderas.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
   <data name="dtpHoraDesde.Font" type="System.Drawing.Font, System.Drawing">
     <value>Microsoft Sans Serif, 12pt</value>
   </data>
   <data name="dtpHoraDesde.Location" type="System.Drawing.Point, System.Drawing">
-    <value>977, 10</value>
+    <value>801, 10</value>
   </data>
   <data name="dtpHoraDesde.Size" type="System.Drawing.Size, System.Drawing">
     <value>122, 26</value>
@@ -1148,13 +1193,13 @@
     <value>panBasicData</value>
   </data>
   <data name="&gt;&gt;dtpHoraDesde.ZOrder" xml:space="preserve">
-    <value>0</value>
+    <value>1</value>
   </data>
   <data name="dtpHoraHasta.Font" type="System.Drawing.Font, System.Drawing">
     <value>Microsoft Sans Serif, 12pt</value>
   </data>
   <data name="dtpHoraHasta.Location" type="System.Drawing.Point, System.Drawing">
-    <value>977, 43</value>
+    <value>801, 43</value>
   </data>
   <data name="dtpHoraHasta.Size" type="System.Drawing.Size, System.Drawing">
     <value>122, 26</value>
@@ -1172,7 +1217,7 @@
     <value>panBasicData</value>
   </data>
   <data name="&gt;&gt;dtpHoraHasta.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>2</value>
   </data>
   <data name="dtpFechaHasta.CalendarFont" type="System.Drawing.Font, System.Drawing">
     <value>Microsoft Sans Serif, 20.1428585pt</value>
@@ -1184,7 +1229,7 @@
     <value>Microsoft Sans Serif, 12pt</value>
   </data>
   <data name="dtpFechaHasta.Location" type="System.Drawing.Point, System.Drawing">
-    <value>670, 43</value>
+    <value>494, 43</value>
   </data>
   <data name="dtpFechaHasta.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
@@ -1205,7 +1250,7 @@
     <value>panBasicData</value>
   </data>
   <data name="&gt;&gt;dtpFechaHasta.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>3</value>
   </data>
   <data name="lblTitHasta.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -1217,7 +1262,7 @@
     <value>NoControl</value>
   </data>
   <data name="lblTitHasta.Location" type="System.Drawing.Point, System.Drawing">
-    <value>614, 44</value>
+    <value>438, 44</value>
   </data>
   <data name="lblTitHasta.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 0, 2, 0</value>
@@ -1241,7 +1286,7 @@
     <value>panBasicData</value>
   </data>
   <data name="&gt;&gt;lblTitHasta.ZOrder" xml:space="preserve">
-    <value>3</value>
+    <value>4</value>
   </data>
   <data name="btnAceptarDatosBasicos.Font" type="System.Drawing.Font, System.Drawing">
     <value>Microsoft Sans Serif, 12pt</value>
@@ -1250,7 +1295,7 @@
     <value>NoControl</value>
   </data>
   <data name="btnAceptarDatosBasicos.Location" type="System.Drawing.Point, System.Drawing">
-    <value>1157, 3</value>
+    <value>928, 4</value>
   </data>
   <data name="btnAceptarDatosBasicos.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
@@ -1274,7 +1319,7 @@
     <value>panBasicData</value>
   </data>
   <data name="&gt;&gt;btnAceptarDatosBasicos.ZOrder" xml:space="preserve">
-    <value>4</value>
+    <value>5</value>
   </data>
   <data name="dtpFechaDesde.CalendarFont" type="System.Drawing.Font, System.Drawing">
     <value>Microsoft Sans Serif, 20.1428585pt</value>
@@ -1286,7 +1331,7 @@
     <value>Microsoft Sans Serif, 12pt</value>
   </data>
   <data name="dtpFechaDesde.Location" type="System.Drawing.Point, System.Drawing">
-    <value>670, 10</value>
+    <value>494, 10</value>
   </data>
   <data name="dtpFechaDesde.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
@@ -1307,13 +1352,13 @@
     <value>panBasicData</value>
   </data>
   <data name="&gt;&gt;dtpFechaDesde.ZOrder" xml:space="preserve">
-    <value>5</value>
+    <value>6</value>
   </data>
   <data name="txtFichas.Font" type="System.Drawing.Font, System.Drawing">
     <value>Courier New, 15.8571434pt</value>
   </data>
   <data name="txtFichas.Location" type="System.Drawing.Point, System.Drawing">
-    <value>518, 7</value>
+    <value>334, 33</value>
   </data>
   <data name="txtFichas.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
@@ -1334,13 +1379,13 @@
     <value>panBasicData</value>
   </data>
   <data name="&gt;&gt;txtFichas.ZOrder" xml:space="preserve">
-    <value>6</value>
+    <value>7</value>
   </data>
   <data name="txtLineas.Font" type="System.Drawing.Font, System.Drawing">
     <value>Courier New, 15.8571434pt</value>
   </data>
   <data name="txtLineas.Location" type="System.Drawing.Point, System.Drawing">
-    <value>280, 7</value>
+    <value>143, 33</value>
   </data>
   <data name="txtLineas.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
@@ -1361,7 +1406,7 @@
     <value>panBasicData</value>
   </data>
   <data name="&gt;&gt;txtLineas.ZOrder" xml:space="preserve">
-    <value>7</value>
+    <value>8</value>
   </data>
   <data name="cmbLineas.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
@@ -1370,7 +1415,7 @@
     <value>Courier New, 15.8571434pt</value>
   </data>
   <data name="cmbLineas.Location" type="System.Drawing.Point, System.Drawing">
-    <value>280, 7</value>
+    <value>143, 33</value>
   </data>
   <data name="cmbLineas.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
@@ -1391,7 +1436,7 @@
     <value>panBasicData</value>
   </data>
   <data name="&gt;&gt;cmbLineas.ZOrder" xml:space="preserve">
-    <value>8</value>
+    <value>9</value>
   </data>
   <data name="cmbModoHistorico.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
@@ -1406,7 +1451,7 @@
     <value>PicoBus</value>
   </data>
   <data name="cmbModoHistorico.Location" type="System.Drawing.Point, System.Drawing">
-    <value>92, 7</value>
+    <value>9, 33</value>
   </data>
   <data name="cmbModoHistorico.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
@@ -1427,7 +1472,7 @@
     <value>panBasicData</value>
   </data>
   <data name="&gt;&gt;cmbModoHistorico.ZOrder" xml:space="preserve">
-    <value>9</value>
+    <value>10</value>
   </data>
   <data name="lblTitDesde.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -1439,7 +1484,7 @@
     <value>NoControl</value>
   </data>
   <data name="lblTitDesde.Location" type="System.Drawing.Point, System.Drawing">
-    <value>614, 11</value>
+    <value>438, 11</value>
   </data>
   <data name="lblTitDesde.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 0, 2, 0</value>
@@ -1463,7 +1508,7 @@
     <value>panBasicData</value>
   </data>
   <data name="&gt;&gt;lblTitDesde.ZOrder" xml:space="preserve">
-    <value>10</value>
+    <value>11</value>
   </data>
   <data name="lblTitModoHistorico.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -1475,7 +1520,7 @@
     <value>NoControl</value>
   </data>
   <data name="lblTitModoHistorico.Location" type="System.Drawing.Point, System.Drawing">
-    <value>5, 11</value>
+    <value>8, 11</value>
   </data>
   <data name="lblTitModoHistorico.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 0, 2, 0</value>
@@ -1499,7 +1544,7 @@
     <value>panBasicData</value>
   </data>
   <data name="&gt;&gt;lblTitModoHistorico.ZOrder" xml:space="preserve">
-    <value>11</value>
+    <value>12</value>
   </data>
   <data name="lblTitLineas.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -1511,7 +1556,7 @@
     <value>NoControl</value>
   </data>
   <data name="lblTitLineas.Location" type="System.Drawing.Point, System.Drawing">
-    <value>224, 11</value>
+    <value>139, 11</value>
   </data>
   <data name="lblTitLineas.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 0, 2, 0</value>
@@ -1535,7 +1580,7 @@
     <value>panBasicData</value>
   </data>
   <data name="&gt;&gt;lblTitLineas.ZOrder" xml:space="preserve">
-    <value>12</value>
+    <value>13</value>
   </data>
   <data name="lblTitFicha.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -1547,7 +1592,7 @@
     <value>NoControl</value>
   </data>
   <data name="lblTitFicha.Location" type="System.Drawing.Point, System.Drawing">
-    <value>470, 11</value>
+    <value>330, 11</value>
   </data>
   <data name="lblTitFicha.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 0, 2, 0</value>
@@ -1571,7 +1616,7 @@
     <value>panBasicData</value>
   </data>
   <data name="&gt;&gt;lblTitFicha.ZOrder" xml:space="preserve">
-    <value>13</value>
+    <value>14</value>
   </data>
   <data name="panBasicData.Location" type="System.Drawing.Point, System.Drawing">
     <value>3, 3</value>
@@ -1580,7 +1625,7 @@
     <value>2, 2, 2, 2</value>
   </data>
   <data name="panBasicData.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1239, 77</value>
+    <value>1570, 124</value>
   </data>
   <data name="panBasicData.TabIndex" type="System.Int32, mscorlib">
     <value>10</value>
@@ -1634,7 +1679,7 @@
     <value>6, 13</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>1323, 550</value>
+    <value>1584, 761</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -1884,6 +1929,9 @@
         5u74AwAAAABJRU5ErkJggg==
 </value>
   </data>
+  <data name="$this.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
   <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
     <value>CenterScreen</value>
   </data>
@@ -1900,6 +1948,30 @@
     <value>chEstilo</value>
   </data>
   <data name="&gt;&gt;chEstilo.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;chCodBan.Name" xml:space="preserve">
+    <value>chCodBan</value>
+  </data>
+  <data name="&gt;&gt;chCodBan.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;chAbrBan.Name" xml:space="preserve">
+    <value>chAbrBan</value>
+  </data>
+  <data name="&gt;&gt;chAbrBan.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;chDesBan.Name" xml:space="preserve">
+    <value>chDesBan</value>
+  </data>
+  <data name="&gt;&gt;chDesBan.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;chVisible.Name" xml:space="preserve">
+    <value>chVisible</value>
+  </data>
+  <data name="&gt;&gt;chVisible.Type" xml:space="preserve">
     <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">

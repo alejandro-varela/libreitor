@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Comun;
+using Newtonsoft.Json;
 
 /*
 la ficha 1234 hizo los siguientes recorridos el dia bla/bla:
@@ -37,6 +38,10 @@ namespace LibQPA
             Dictionary<string, List<KeyValuePair<int, int>>> recoPatterns
         )
         {
+            //string allRecoPatterns = JsonConvert.SerializeObject(recoPatterns, Formatting.Indented);
+            //allRecoPatterns += "\r\n";
+            //allRecoPatterns += JsonConvert.SerializeObject(recoPatterns.Keys.ToList(), Formatting.Indented);
+
             // camino histórico
             var caminoHistorico = Camino<PuntoHistorico>.CreateFromPuntos(puntasNombradas, puntosHistoricos);
             //Console.WriteLine(caminoHistorico.DescriptionRawSinRuido);
