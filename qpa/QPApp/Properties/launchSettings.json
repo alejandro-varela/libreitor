@@ -2,7 +2,7 @@
   "profiles": {
     "QPApp": {
       "commandName": "Project",
-      "commandLineArgs": "lineas=21 modo=tecnobussmgps desde=2023-04-02 granularidad=20 radioPuntas=500 cotaDesde=-3h cotaHasta=3h"
+      "commandLineArgs": "lineas=159,163 modo=driveup desde=2023-04-28 granularidad=20 radioPuntas=500 cotaDesde=-3h cotaHasta=3h"
     }
   }
 }

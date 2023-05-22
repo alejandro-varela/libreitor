@@ -22,6 +22,7 @@ namespace QPApp
     public partial class Program
     {
         static bool _usarHttps = false;
+
         public static string DirReportes { get; private set; }
         public static string DirBajados { get; private set; }
         public static string DirDatos { get; private set; }
@@ -57,7 +58,11 @@ namespace QPApp
             string sCotaDesde = ArgsHelper.SafeGetArgVal(misArgs, "cotaDesde", "0s");
             int segsCotaDesde = ParsearCotaASegundos(sCotaDesde);
             var desdeConCota = desde.AddSeconds(segsCotaDesde);
-            
+
+            // desde (override fecha desde para recorridos teóricos)
+            string sDesdeRecos = ArgsHelper.SafeGetArgVal(misArgs, "desderecos", desde.ToString("yyyy-MM-ddTHH:mm:ss"));
+            DateTime desdeRecos = DateTime.Parse(sDesdeRecos);
+
             // hasta
             string sHasta = ArgsHelper.SafeGetArgVal(misArgs, "hasta", desde.AddHours(24).ToString("yyyy-MM-ddTHH:mm:ss"));
             DateTime hasta = DateTime.Parse(sHasta);
@@ -133,20 +138,12 @@ namespace QPApp
 
             // tipo punta de línea
             string sTipoPuntaLinea = ArgsHelper.SafeGetArgVal(misArgs, "tipoPuntas", "PuntaLinea");
-            Type tipoPuntaLinea;
-
-            switch (sTipoPuntaLinea.ToLower())
+            Type tipoPuntaLinea = sTipoPuntaLinea.ToLower() switch
             {
-                case "puntalinea":
-                    tipoPuntaLinea = typeof(PuntaLinea);
-                    break;
-                case "puntalinea2":
-                    tipoPuntaLinea = typeof(PuntaLinea2);
-                    break;
-                default:
-                    tipoPuntaLinea = typeof(PuntaLinea);
-                    break;
-            }
+                "puntalinea"  => typeof(PuntaLinea),
+                "puntalinea2" => typeof(PuntaLinea2),
+                _ => typeof(PuntaLinea),
+            };
             #endregion
 
             #region Compruebo si los parámetros son válidos
@@ -154,6 +151,42 @@ namespace QPApp
             {
                 Console.WriteLine("Error: debe especificar al menos un código de línea");
                 MostrarUso();
+                return 1;
+            }
+            #endregion
+
+            #region Obtengo versiones de recorridos por línea
+            Dictionary<int, int> versionesXLinea = null;
+            try
+            {
+                RetVal<List<RecorridoLinBan>> retvalRecorridosTeoricos = await DameRecorridosTeoricos(
+                    desdeRecos, 
+                    lineasOrdenadas, 
+                    granularidad, 
+                    conPuntos: false
+                );
+                
+                if (!retvalRecorridosTeoricos.IsOk)
+                {
+                    Console.WriteLine(retvalRecorridosTeoricos.ErrorMessage);
+                    return 1;
+                }
+
+                var paresLineaVersion = retvalRecorridosTeoricos.Value
+                    .Select  (recox => (recox.Linea, recox.Version))
+                    .Distinct()
+                    .ToList  ()
+                ;
+
+                versionesXLinea = paresLineaVersion
+                    .ToDictionary(par => par.Linea, par => par.Version)
+                ;
+
+                int foo = 0;
+            }
+            catch (Exception exx)
+            {
+                Console.WriteLine(exx.Message);
                 return 1;
             }
             #endregion
@@ -171,7 +204,8 @@ namespace QPApp
                 granularidad,
                 lineasOrdenadas,
                 ficha,
-                omitirBoletos
+                omitirBoletos,
+                versionesXLinea
             );
 
             var pathArchivoReporteSinExtension = Path.Combine(DirReportes, nombreArchivoReporteSinExtension);
@@ -218,7 +252,7 @@ namespace QPApp
             try
             {
                 RetVal<List<RecorridoLinBan>> retvalRecorridosTeoricos =
-                    await DameRecorridosTeoricos(desde, lineasOrdenadas, granularidad);
+                    await DameRecorridosTeoricos(desdeRecos, lineasOrdenadas, granularidad);
 
                 if (!retvalRecorridosTeoricos.IsOk)
                 {
@@ -691,11 +725,10 @@ namespace QPApp
             int             granularidad,
             IEnumerable<int>lineas,
             int             ficha,
-            bool            omitirBoletos
+            bool            omitirBoletos,
+            Dictionary<int, int> versionesXLinea
         )
         {
-            // Antes tenía este formato: $"Reporte_{idReporte}_Desde_{desde:yyyyMMdd}_Hasta_{hasta:yyyyMMdd}_Lineas_{sLineasOrdenadas}";
-
             StringBuilder sbNombre = new StringBuilder();
             const string SEPARADOR_VARIABLES = "__";
             const string SEPARADOR_ARGUMENTO = "_";
@@ -720,7 +753,7 @@ namespace QPApp
 
             sbNombre.Append("LIN");
             sbNombre.Append(SEPARADOR_ARGUMENTO);
-            sbNombre.Append(string.Join(SEPARADOR_ARGUMENTO, lineas.OrderBy(l => l).ToArray()));
+            sbNombre.Append(string.Join(SEPARADOR_ARGUMENTO, lineas.ToArray()));
 
             sbNombre.Append(SEPARADOR_VARIABLES);
 
@@ -737,6 +770,18 @@ namespace QPApp
             sbNombre.Append(SEPARADOR_ARGUMENTO);
             var cotaHastaDescr = (segsCotaHasta >= 0 ? "A" : "S") + SegundosADescripcionDHMS(Math.Abs(segsCotaHasta));
             sbNombre.Append(cotaHastaDescr);
+
+            sbNombre.Append(SEPARADOR_VARIABLES);
+
+            sbNombre.Append("VREC");
+            sbNombre.Append(SEPARADOR_ARGUMENTO);
+            var versionesDeLineas = new List<int>();
+            foreach (var lineaX in lineas)
+            {
+                versionesDeLineas.Add(versionesXLinea[lineaX]);
+            }
+            var sVersionesDeLineas = string.Join(SEPARADOR_ARGUMENTO, versionesDeLineas.ToArray());
+            sbNombre.Append(sVersionesDeLineas);
 
             if (omitirBoletos)
             {
@@ -799,7 +844,8 @@ namespace QPApp
         private async static Task<RetVal<List<RecorridoLinBan>>> DameRecorridosTeoricos(
             DateTime    desde,
             List<int>   lineasOrdenadas,
-            int         granularidad
+            int         granularidad,
+            bool        conPuntos = true
         )
         {
             try
@@ -811,8 +857,9 @@ namespace QPApp
 
                 var recorridosTeoricos = proveedorRecorridosTeoricos.Get(new QPAProvRecoParams()
                 {
-                    LineasPosibles = lineasOrdenadas.ToArray(),
-                    FechaVigencia = desde
+                    LineasPosibles  = lineasOrdenadas.ToArray(),
+                    FechaVigencia   = desde,
+                    ConPuntos       = conPuntos,
                 })
                     .Where(reco => filtro.EsRecorridoPermitido(reco.Linea, reco.Bandera))
                     .Select(reco => SanitizarRecorrido(reco, granularidad))
@@ -1163,6 +1210,8 @@ namespace QPApp
                 Bandera = reco.Bandera,
                 Linea   = reco.Linea,
                 Puntos  = reco.Puntos.HacerGranular(granularidad),
+                Version = reco.Version,
+                FechaActivacion = reco.FechaActivacion,
             };
         }
 

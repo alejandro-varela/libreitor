@@ -18,10 +18,10 @@ namespace LibQPA.ProveedoresTecnobus
 
         public IEnumerable<RecorridoLinBan> Get(QPAProvRecoParams getParams)
         {
-            return LeerRecorridos(DirRepoLocal, getParams.LineasPosibles, getParams.FechaVigencia);
+            return LeerRecorridos(DirRepoLocal, getParams.LineasPosibles, getParams.FechaVigencia, getParams.ConPuntos);
         }
 
-        public static List<RecorridoLinBan> LeerRecorridos(string dir, int[] codLineas, DateTime vigenteEn)
+        public static List<RecorridoLinBan> LeerRecorridos(string dir, int[] codLineas, DateTime vigenteEn, bool conPuntos = true)
         {
             // los archivos estan guardados con el formato verrec
             // nombre vvvvvv yyyy MM dd hh mm ss
@@ -33,16 +33,26 @@ namespace LibQPA.ProveedoresTecnobus
 
             foreach (var dirLinea in dirsLineas)
             {
-                var pathVersionRecorridos = Directory
-                    .GetFiles(dirLinea)
-                    .Where(path => Path.GetFileName(path).StartsWith("verrec"))
-                    .Where(path => path.EndsWith(".zip"))
+                if (!Directory.Exists(dirLinea))
+                {
+                    throw new Exception($"No existe el directorio {dirLinea}");
+                }
+
+                var files = Directory.GetFiles(dirLinea, "verrec*.zip");
+
+                var pathVersionRecorridos = files
                     .Where(path => GetVerFecha(Path.GetFileName(path)) <= vigenteEn)
                     .OrderByDescending(path => path)
                     .FirstOrDefault()
                 ;
 
-                foreach (var recorridoLinBan in LeerRecorridosFromZippedVerRec(pathVersionRecorridos))
+                if (string.IsNullOrEmpty(pathVersionRecorridos) || 
+                    !File.Exists(pathVersionRecorridos))
+                {
+                    throw new Exception($"No existe archivo de recorridos en {dirLinea} para la fecha de vigencia {vigenteEn}");
+                }
+
+                foreach (var recorridoLinBan in LeerRecorridosFromZippedVerRec(pathVersionRecorridos, conPuntos))
                 {
                     //yield return recorridoLinBan;
                     ret.Add(recorridoLinBan);
@@ -59,17 +69,33 @@ namespace LibQPA.ProveedoresTecnobus
             // verrec 000034 2015 12 24 00 00 00
 
             return new DateTime(
-                year: int.Parse(fileName.Substring(12, 4)),
-                month: int.Parse(fileName.Substring(16, 2)),
-                day: int.Parse(fileName.Substring(18, 2)),
-                hour: int.Parse(fileName.Substring(20, 2)),
+                year  : int.Parse(fileName.Substring(12, 4)),
+                month : int.Parse(fileName.Substring(16, 2)),
+                day   : int.Parse(fileName.Substring(18, 2)),
+                hour  : int.Parse(fileName.Substring(20, 2)),
                 minute: int.Parse(fileName.Substring(22, 2)),
                 second: int.Parse(fileName.Substring(24, 2))
             );
         }
 
-        static List<RecorridoLinBan> LeerRecorridosFromZippedVerRec(string pathZippedVerRec)
+        static List<RecorridoLinBan> LeerRecorridosFromZippedVerRec(string pathZippedVerRec, bool conPuntos = true)
         {
+            // 012345678901234567890123456789
+            // 0         1         2
+            // verrec00003420220912000000.zip
+            var verFileName = Path.GetFileName(pathZippedVerRec);
+            int version = int.Parse(verFileName.Substring(10, 2));
+
+            var fechaActivacion = new DateTime(
+                year: int.Parse(verFileName.Substring(12, 4)),
+                month: int.Parse(verFileName.Substring(16, 2)),
+                day: int.Parse(verFileName.Substring(18, 2)),
+                hour: int.Parse(verFileName.Substring(20, 2)),
+                minute: int.Parse(verFileName.Substring(22, 2)),
+                second: int.Parse(verFileName.Substring(24, 2)),
+                kind: DateTimeKind.Local
+            );
+
             var ret = new List<RecorridoLinBan>();
 
             using (FileStream zipStream = File.OpenRead(pathZippedVerRec))
@@ -81,19 +107,31 @@ namespace LibQPA.ProveedoresTecnobus
                         if (entry.Name.StartsWith("r"))
                         {
                             // 0123456789012
+                            // 0         1
                             // rLLLLBBBB.txt
                             int linea = int.Parse(entry.Name.Substring(1, 4));
                             int bandera = int.Parse(entry.Name.Substring(5, 4));
-
+                            
                             using (Stream entryStream = entry.Open())
                             {
-                                var puntosRecorrido = RecorridosParser.ReadFile(entryStream);
+                                List<PuntoRecorrido> puntosRecorrido;
+
+                                if (conPuntos)
+                                {
+                                    puntosRecorrido = RecorridosParser.ReadFile(entryStream);
+                                }
+                                else
+                                {
+                                    puntosRecorrido = new List<PuntoRecorrido>();
+                                }
 
                                 var recoLinBan = new RecorridoLinBan
                                 {
-                                    Linea = linea,
+                                    Version = version,
+                                    FechaActivacion = fechaActivacion,
+                                    Linea   = linea,
                                     Bandera = bandera,
-                                    Puntos = puntosRecorrido,
+                                    Puntos  = puntosRecorrido,
                                 };
 
                                 //yield return recoLinBan;

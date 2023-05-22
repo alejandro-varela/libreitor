@@ -7,5 +7,6 @@ namespace LibQPA
     {
         public int[] LineasPosibles { get; set; }
         public DateTime FechaVigencia { get; set; }
+        public bool ConPuntos { get; set; } = true;
     }
 }
