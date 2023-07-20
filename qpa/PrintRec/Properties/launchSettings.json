@@ -2,7 +2,7 @@
   "profiles": {
     "PrintRec": {
       "commandName": "Project",
-      "commandLineArgs": "datadir=\"C:\\Users\\avarela\\Desktop\\recs\" pathways=[{\\\"linea\\\":163,\\\"bandera\\\":3466,\\\"color\\\":\\\"Lime\\\",\\\"stroke\\\":5}] startDate=\"2023-05-31T00:00:00\" endPointRadius=750 outputfilename=\"ban_3466.png\""
+      "commandLineArgs": "datadir=\"C:\\Users\\avarela\\Desktop\\recs\" pathways=[{\\\"linea\\\":163,\\\"bandera\\\":3465,\\\"color\\\":\\\"Lime\\\",\\\"stroke\\\":5}] startDate=\"2023-05-31T00:00:00\" endPointRadius=750 outputfilename=\"ban_3465.png\""
     }
   }
 }

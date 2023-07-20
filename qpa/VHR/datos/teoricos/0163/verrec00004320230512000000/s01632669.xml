@@ -1,0 +1,103 @@
+<?xml version="1.0" standalone="yes"?>
+<Sector>
+  <xs:schema id="Sector" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xs:element name="Sector" msdata:IsDataSet="true" msdata:Locale="">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="S" msdata:Locale="">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Calle" type="xs:string" minOccurs="0" />
+                <xs:element name="Lat" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Lon" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Dis" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Cta" type="xs:int" minOccurs="0" />
+                <xs:element name="CodSec" type="xs:int" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <S>
+    <Calle>MORE</Calle>
+    <Lat>34.642796</Lat>
+    <Lon>58.814866</Lon>
+    <Dis>1670.562</Dis>
+    <Cta>1</Cta>
+    <CodSec>23</CodSec>
+  </S>
+  <S>
+    <Calle>MFIER</Calle>
+    <Lat>34.647946</Lat>
+    <Lon>58.798418</Lon>
+    <Dis>1856.556</Dis>
+    <Cta>78</Cta>
+    <CodSec>23</CodSec>
+  </S>
+  <S>
+    <Calle>INDEP</Calle>
+    <Lat>34.646865</Lat>
+    <Lon>58.788924</Lon>
+    <Dis>2416.701</Dis>
+    <Cta>198</Cta>
+    <CodSec>23</CodSec>
+  </S>
+  <S>
+    <Calle>P.GAO</Calle>
+    <Lat>34.627609</Lat>
+    <Lon>58.778784</Lon>
+    <Dis>2837.284</Dis>
+    <Cta>341</Cta>
+    <CodSec>22</CodSec>
+  </S>
+  <S>
+    <Calle>PFIZR</Calle>
+    <Lat>34.605137</Lat>
+    <Lon>58.765053</Lon>
+    <Dis>2656.613</Dis>
+    <Cta>525</Cta>
+    <CodSec>21</CodSec>
+  </S>
+  <S>
+    <Calle>CCAST</Calle>
+    <Lat>34.585740</Lat>
+    <Lon>58.749753</Lon>
+    <Dis>1923.049</Dis>
+    <Cta>692</Cta>
+    <CodSec>20</CodSec>
+  </S>
+  <S>
+    <Calle>SBRIG</Calle>
+    <Lat>34.570249</Lat>
+    <Lon>58.743063</Lon>
+    <Dis>1100.307</Dis>
+    <Cta>809</Cta>
+    <CodSec>19</CodSec>
+  </S>
+  <S>
+    <Calle>PROSA</Calle>
+    <Lat>34.562926</Lat>
+    <Lon>58.735548</Lon>
+    <Dis>2671.317</Dis>
+    <Cta>880</Cta>
+    <CodSec>19</CodSec>
+  </S>
+  <S>
+    <Calle>FARIA</Calle>
+    <Lat>34.545640</Lat>
+    <Lon>58.715617</Lon>
+    <Dis>2221.750</Dis>
+    <Cta>1046</Cta>
+    <CodSec>18</CodSec>
+  </S>
+  <S>
+    <Calle>LEMOS</Calle>
+    <Lat>34.531859</Lat>
+    <Lon>58.702205</Lon>
+    <Dis>0</Dis>
+    <Cta>1187</Cta>
+    <CodSec>17</CodSec>
+  </S>
+</Sector>

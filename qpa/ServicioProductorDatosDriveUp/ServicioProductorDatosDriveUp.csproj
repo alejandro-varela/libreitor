@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>dotnet-ServicioProductorDatosDriveUp-EB6A94F2-C693-4EF5-8435-AE92315ABF2E</UserSecretsId>
   </PropertyGroup>
 

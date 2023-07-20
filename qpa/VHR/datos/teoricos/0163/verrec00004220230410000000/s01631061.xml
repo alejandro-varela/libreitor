@@ -1,0 +1,111 @@
+<?xml version="1.0" standalone="yes"?>
+<Sector>
+  <xs:schema id="Sector" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xs:element name="Sector" msdata:IsDataSet="true" msdata:Locale="">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="S" msdata:Locale="">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Calle" type="xs:string" minOccurs="0" />
+                <xs:element name="Lat" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Lon" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Dis" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Cta" type="xs:int" minOccurs="0" />
+                <xs:element name="CodSec" type="xs:int" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <S>
+    <Calle>SAAVE</Calle>
+    <Lat>34.537521</Lat>
+    <Lon>58.476547</Lon>
+    <Dis>598.495</Dis>
+    <Cta>1</Cta>
+    <CodSec>6</CodSec>
+  </S>
+  <S>
+    <Calle>ZAPIO</Calle>
+    <Lat>34.540669</Lat>
+    <Lon>58.480854</Lon>
+    <Dis>9446.296</Dis>
+    <Cta>36</Cta>
+    <CodSec>6</CodSec>
+  </S>
+  <S>
+    <Calle>MARQ2</Calle>
+    <Lat>34.495551</Lat>
+    <Lon>58.554880</Lon>
+    <Dis>8122.729</Dis>
+    <Cta>526</Cta>
+    <CodSec>6</CodSec>
+  </S>
+  <S>
+    <Calle>SFER1</Calle>
+    <Lat>34.435394</Lat>
+    <Lon>58.566887</Lon>
+    <Dis>2516.378</Dis>
+    <Cta>1006</Cta>
+    <CodSec>6</CodSec>
+  </S>
+  <S>
+    <Calle>QUINT</Calle>
+    <Lat>34.447340</Lat>
+    <Lon>58.546943</Lon>
+    <Dis>793.966</Dis>
+    <Cta>1146</Cta>
+    <CodSec>6</CodSec>
+  </S>
+  <S>
+    <Calle>E.VIC</Calle>
+    <Lat>34.451825</Lat>
+    <Lon>58.540273</Lon>
+    <Dis>3250.609</Dis>
+    <Cta>1191</Cta>
+    <CodSec>5</CodSec>
+  </S>
+  <S>
+    <Calle>E.SIS</Calle>
+    <Lat>34.471889</Lat>
+    <Lon>58.515055</Lon>
+    <Dis>2202.465</Dis>
+    <Cta>1374</Cta>
+    <CodSec>4</CodSec>
+  </S>
+  <S>
+    <Calle>E.MAR</Calle>
+    <Lat>34.488062</Lat>
+    <Lon>58.501428</Lon>
+    <Dis>2927.058</Dis>
+    <Cta>1504</Cta>
+    <CodSec>3</CodSec>
+  </S>
+  <S>
+    <Calle>E.MIT</Calle>
+    <Lat>34.512304</Lat>
+    <Lon>58.489938</Lon>
+    <Dis>1406.946</Dis>
+    <Cta>1768</Cta>
+    <CodSec>2</CodSec>
+  </S>
+  <S>
+    <Calle>SMAR.</Calle>
+    <Lat>34.523846</Lat>
+    <Lon>58.483829</Lon>
+    <Dis>1582.752</Dis>
+    <Cta>1840</Cta>
+    <CodSec>2</CodSec>
+  </S>
+  <S>
+    <Calle>SAAV1</Calle>
+    <Lat>34.536808</Lat>
+    <Lon>58.477062</Lon>
+    <Dis>0</Dis>
+    <Cta>1921</Cta>
+    <CodSec>1</CodSec>
+  </S>
+</Sector>

@@ -1,0 +1,103 @@
+<?xml version="1.0" standalone="yes"?>
+<Sector>
+  <xs:schema id="Sector" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xs:element name="Sector" msdata:IsDataSet="true" msdata:Locale="">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="S" msdata:Locale="">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Calle" type="xs:string" minOccurs="0" />
+                <xs:element name="Lat" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Lon" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Dis" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Cta" type="xs:int" minOccurs="0" />
+                <xs:element name="CodSec" type="xs:int" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <S>
+    <Calle>MORE</Calle>
+    <Lat>34.642653</Lat>
+    <Lon>58.815553</Lon>
+    <Dis>1731.171</Dis>
+    <Cta>1</Cta>
+    <CodSec>23</CodSec>
+  </S>
+  <S>
+    <Calle>MFIER</Calle>
+    <Lat>34.647946</Lat>
+    <Lon>58.798418</Lon>
+    <Dis>1381.489</Dis>
+    <Cta>82</Cta>
+    <CodSec>23</CodSec>
+  </S>
+  <S>
+    <Calle>MOREN</Calle>
+    <Lat>34.649977</Lat>
+    <Lon>58.789708</Lon>
+    <Dis>3064.436</Dis>
+    <Cta>174</Cta>
+    <CodSec>23</CodSec>
+  </S>
+  <S>
+    <Calle>AcOES</Calle>
+    <Lat>34.632746</Lat>
+    <Lon>58.794521</Lon>
+    <Dis>5100.457</Dis>
+    <Cta>367</Cta>
+    <CodSec>23</CodSec>
+  </S>
+  <S>
+    <Calle>LREJA</Calle>
+    <Lat>34.619256</Lat>
+    <Lon>58.837968</Lon>
+    <Dis>2874.056</Dis>
+    <Cta>660</Cta>
+    <CodSec>30</CodSec>
+  </S>
+  <S>
+    <Calle>PTEAL</Calle>
+    <Lat>34.610719</Lat>
+    <Lon>58.867334</Lon>
+    <Dis>4149.315</Dis>
+    <Cta>822</Cta>
+    <CodSec>31</CodSec>
+  </S>
+  <S>
+    <Calle>CMALV</Calle>
+    <Lat>34.601340</Lat>
+    <Lon>58.906099</Lon>
+    <Dis>3603.534</Dis>
+    <Cta>1105</Cta>
+    <CodSec>31</CodSec>
+  </S>
+  <S>
+    <Calle>RODR2</Calle>
+    <Lat>34.593976</Lat>
+    <Lon>58.944053</Lon>
+    <Dis>744.683</Dis>
+    <Cta>1286</Cta>
+    <CodSec>32</CodSec>
+  </S>
+  <S>
+    <Calle>RODR1</Calle>
+    <Lat>34.592140</Lat>
+    <Lon>58.951558</Lon>
+    <Dis>1769.025</Dis>
+    <Cta>1341</Cta>
+    <CodSec>32</CodSec>
+  </S>
+  <S>
+    <Calle>PteCa</Calle>
+    <Lat>34.587870</Lat>
+    <Lon>58.970111</Lon>
+    <Dis>0</Dis>
+    <Cta>1434</Cta>
+    <CodSec>32</CodSec>
+  </S>
+</Sector>

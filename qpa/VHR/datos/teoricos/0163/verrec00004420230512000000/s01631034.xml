@@ -1,0 +1,39 @@
+<?xml version="1.0" standalone="yes"?>
+<Sector>
+  <xs:schema id="Sector" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xs:element name="Sector" msdata:IsDataSet="true" msdata:Locale="">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="S" msdata:Locale="">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Calle" type="xs:string" minOccurs="0" />
+                <xs:element name="Lat" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Lon" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Dis" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Cta" type="xs:int" minOccurs="0" />
+                <xs:element name="CodSec" type="xs:int" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <S>
+    <Calle>MORE</Calle>
+    <Lat>34.642371</Lat>
+    <Lon>58.815381</Lon>
+    <Dis>41864.507</Dis>
+    <Cta>1</Cta>
+    <CodSec>1</CodSec>
+  </S>
+  <S>
+    <Calle>SAAVE</Calle>
+    <Lat>34.537503</Lat>
+    <Lon>58.475619</Lon>
+    <Dis>0</Dis>
+    <Cta>2291</Cta>
+    <CodSec>1</CodSec>
+  </S>
+</Sector>

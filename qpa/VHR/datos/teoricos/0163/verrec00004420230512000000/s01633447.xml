@@ -1,0 +1,111 @@
+<?xml version="1.0" standalone="yes"?>
+<Sector>
+  <xs:schema id="Sector" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xs:element name="Sector" msdata:IsDataSet="true" msdata:Locale="">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="S" msdata:Locale="">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Calle" type="xs:string" minOccurs="0" />
+                <xs:element name="Lat" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Lon" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Dis" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Cta" type="xs:int" minOccurs="0" />
+                <xs:element name="CodSec" type="xs:int" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <S>
+    <Calle>SAAVE</Calle>
+    <Lat>34.537500</Lat>
+    <Lon>58.475610</Lon>
+    <Dis>1683.179</Dis>
+    <Cta>1</Cta>
+    <CodSec>1</CodSec>
+  </S>
+  <S>
+    <Calle>ZAPIO</Calle>
+    <Lat>34.540668</Lat>
+    <Lon>58.480967</Lon>
+    <Dis>2896.045</Dis>
+    <Cta>100</Cta>
+    <CodSec>1</CodSec>
+  </S>
+  <S>
+    <Calle>SMART</Calle>
+    <Lat>34.533984</Lat>
+    <Lon>58.502632</Lon>
+    <Dis>3926.171</Dis>
+    <Cta>304</Cta>
+    <CodSec>11</CodSec>
+  </S>
+  <S>
+    <Calle>EDISO</Calle>
+    <Lat>34.507843</Lat>
+    <Lon>58.530042</Lon>
+    <Dis>1348.643</Dis>
+    <Cta>541</Cta>
+    <CodSec>12</CodSec>
+  </S>
+  <S>
+    <Calle>THAME</Calle>
+    <Lat>34.501799</Lat>
+    <Lon>58.542448</Lon>
+    <Dis>1017.946</Dis>
+    <Cta>626</Cta>
+    <CodSec>12</CodSec>
+  </S>
+  <S>
+    <Calle>MARQ2</Calle>
+    <Lat>34.496948</Lat>
+    <Lon>58.551645</Lon>
+    <Dis>422.297</Dis>
+    <Cta>688</Cta>
+    <CodSec>13</CodSec>
+  </S>
+  <S>
+    <Calle>MARQ1</Calle>
+    <Lat>34.494638</Lat>
+    <Lon>58.555011</Lon>
+    <Dis>987.337</Dis>
+    <Cta>721</Cta>
+    <CodSec>13</CodSec>
+  </S>
+  <S>
+    <Calle>JSMAR</Calle>
+    <Lat>34.491371</Lat>
+    <Lon>58.564524</Lon>
+    <Dis>1912.976</Dis>
+    <Cta>787</Cta>
+    <CodSec>13</CodSec>
+  </S>
+  <S>
+    <Calle>BLGNE</Calle>
+    <Lat>34.487821</Lat>
+    <Lon>58.584577</Lon>
+    <Dis>2253.375</Dis>
+    <Cta>917</Cta>
+    <CodSec>13</CodSec>
+  </S>
+  <S>
+    <Calle>R2022</Calle>
+    <Lat>34.485877</Lat>
+    <Lon>58.608822</Lon>
+    <Dis>1039.221</Dis>
+    <Cta>1034</Cta>
+    <CodSec>14</CodSec>
+  </S>
+  <S>
+    <Calle>PANAM</Calle>
+    <Lat>34.487479</Lat>
+    <Lon>58.619168</Lon>
+    <Dis>0</Dis>
+    <Cta>1100</Cta>
+    <CodSec>14</CodSec>
+  </S>
+</Sector>

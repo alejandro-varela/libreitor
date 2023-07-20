@@ -1,0 +1,103 @@
+<?xml version="1.0" standalone="yes"?>
+<Sector>
+  <xs:schema id="Sector" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xs:element name="Sector" msdata:IsDataSet="true" msdata:Locale="">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="S" msdata:Locale="">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Calle" type="xs:string" minOccurs="0" />
+                <xs:element name="Lat" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Lon" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Dis" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Cta" type="xs:int" minOccurs="0" />
+                <xs:element name="CodSec" type="xs:int" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <S>
+    <Calle>PANAM</Calle>
+    <Lat>34.488171</Lat>
+    <Lon>58.620272</Lon>
+    <Dis>1206.907</Dis>
+    <Cta>1</Cta>
+    <CodSec>14</CodSec>
+  </S>
+  <S>
+    <Calle>R2022</Calle>
+    <Lat>34.486531</Lat>
+    <Lon>58.608104</Lon>
+    <Dis>2086.662</Dis>
+    <Cta>79</Cta>
+    <CodSec>14</CodSec>
+  </S>
+  <S>
+    <Calle>BLGNE</Calle>
+    <Lat>34.488117</Lat>
+    <Lon>58.585496</Lon>
+    <Dis>1953.726</Dis>
+    <Cta>182</Cta>
+    <CodSec>14</CodSec>
+  </S>
+  <S>
+    <Calle>JSMAR</Calle>
+    <Lat>34.491740</Lat>
+    <Lon>58.565125</Lon>
+    <Dis>896.437</Dis>
+    <Cta>320</Cta>
+    <CodSec>14</CodSec>
+  </S>
+  <S>
+    <Calle>MARQ1</Calle>
+    <Lat>34.495714</Lat>
+    <Lon>58.556935</Lon>
+    <Dis>1487.190</Dis>
+    <Cta>373</Cta>
+    <CodSec>13</CodSec>
+  </S>
+  <S>
+    <Calle>THAME</Calle>
+    <Lat>34.502094</Lat>
+    <Lon>58.543466</Lon>
+    <Dis>987.225</Dis>
+    <Cta>465</Cta>
+    <CodSec>13</CodSec>
+  </S>
+  <S>
+    <Calle>EDISO</Calle>
+    <Lat>34.506586</Lat>
+    <Lon>58.534209</Lon>
+    <Dis>4179.202</Dis>
+    <Cta>522</Cta>
+    <CodSec>12</CodSec>
+  </S>
+  <S>
+    <Calle>SMART</Calle>
+    <Lat>34.533593</Lat>
+    <Lon>58.504169</Lon>
+    <Dis>3273.156</Dis>
+    <Cta>790</Cta>
+    <CodSec>11</CodSec>
+  </S>
+  <S>
+    <Calle>ZAPIO</Calle>
+    <Lat>34.541992</Lat>
+    <Lon>58.481164</Lon>
+    <Dis>828.305</Dis>
+    <Cta>1033</Cta>
+    <CodSec>11</CodSec>
+  </S>
+  <S>
+    <Calle>SAAVE</Calle>
+    <Lat>34.537927</Lat>
+    <Lon>58.475263</Lon>
+    <Dis>0</Dis>
+    <Cta>1090</Cta>
+    <CodSec>1</CodSec>
+  </S>
+</Sector>

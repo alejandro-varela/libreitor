@@ -1,0 +1,143 @@
+<?xml version="1.0" standalone="yes"?>
+<Sector>
+  <xs:schema id="Sector" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xs:element name="Sector" msdata:IsDataSet="true" msdata:Locale="">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="S" msdata:Locale="">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Calle" type="xs:string" minOccurs="0" />
+                <xs:element name="Lat" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Lon" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Dis" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Cta" type="xs:int" minOccurs="0" />
+                <xs:element name="CodSec" type="xs:int" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <S>
+    <Calle>MORE</Calle>
+    <Lat>34.642653</Lat>
+    <Lon>58.815553</Lon>
+    <Dis>1731.171</Dis>
+    <Cta>1</Cta>
+    <CodSec>23</CodSec>
+  </S>
+  <S>
+    <Calle>MFIER</Calle>
+    <Lat>34.647946</Lat>
+    <Lon>58.798418</Lon>
+    <Dis>1386.942</Dis>
+    <Cta>82</Cta>
+    <CodSec>23</CodSec>
+  </S>
+  <S>
+    <Calle>MOREN</Calle>
+    <Lat>34.649977</Lat>
+    <Lon>58.789708</Lon>
+    <Dis>3064.729</Dis>
+    <Cta>172</Cta>
+    <CodSec>23</CodSec>
+  </S>
+  <S>
+    <Calle>AcOES</Calle>
+    <Lat>34.632746</Lat>
+    <Lon>58.794521</Lon>
+    <Dis>4299.949</Dis>
+    <Cta>360</Cta>
+    <CodSec>23</CodSec>
+  </S>
+  <S>
+    <Calle>LREJA</Calle>
+    <Lat>34.619256</Lat>
+    <Lon>58.837968</Lon>
+    <Dis>2871.102</Dis>
+    <Cta>587</Cta>
+    <CodSec>30</CodSec>
+  </S>
+  <S>
+    <Calle>PTEAL</Calle>
+    <Lat>34.610719</Lat>
+    <Lon>58.867334</Lon>
+    <Dis>4148.619</Dis>
+    <Cta>747</Cta>
+    <CodSec>31</CodSec>
+  </S>
+  <S>
+    <Calle>CMALV</Calle>
+    <Lat>34.601340</Lat>
+    <Lon>58.906099</Lon>
+    <Dis>3601.623</Dis>
+    <Cta>1026</Cta>
+    <CodSec>31</CodSec>
+  </S>
+  <S>
+    <Calle>RODR2</Calle>
+    <Lat>34.593976</Lat>
+    <Lon>58.944053</Lon>
+    <Dis>746.365</Dis>
+    <Cta>1198</Cta>
+    <CodSec>32</CodSec>
+  </S>
+  <S>
+    <Calle>RODR1</Calle>
+    <Lat>34.592140</Lat>
+    <Lon>58.951558</Lon>
+    <Dis>5290.535</Dis>
+    <Cta>1241</Cta>
+    <CodSec>32</CodSec>
+  </S>
+  <S>
+    <Calle>PEAJ2</Calle>
+    <Lat>34.580173</Lat>
+    <Lon>59.006275</Lon>
+    <Dis>298.343</Dis>
+    <Cta>1533</Cta>
+    <CodSec>33</CodSec>
+  </S>
+  <S>
+    <Calle>PEAJ1</Calle>
+    <Lat>34.579485</Lat>
+    <Lon>59.009300</Lon>
+    <Dis>2535.804</Dis>
+    <Cta>1550</Cta>
+    <CodSec>33</CodSec>
+  </S>
+  <S>
+    <Calle>CRUT6</Calle>
+    <Lat>34.573957</Lat>
+    <Lon>59.035727</Lon>
+    <Dis>4707.478</Dis>
+    <Cta>1698</Cta>
+    <CodSec>33</CodSec>
+  </S>
+  <S>
+    <Calle>CRUT7</Calle>
+    <Lat>34.576780</Lat>
+    <Lon>59.082639</Lon>
+    <Dis>3800.564</Dis>
+    <Cta>1955</Cta>
+    <CodSec>34</CodSec>
+  </S>
+  <S>
+    <Calle>PELLE</Calle>
+    <Lat>34.561097</Lat>
+    <Lon>59.108013</Lon>
+    <Dis>1911.676</Dis>
+    <Cta>2190</Cta>
+    <CodSec>34</CodSec>
+  </S>
+  <S>
+    <Calle>LUJAN</Calle>
+    <Lat>34.559823</Lat>
+    <Lon>59.120102</Lon>
+    <Dis>0</Dis>
+    <Cta>2358</Cta>
+    <CodSec>35</CodSec>
+  </S>
+</Sector>

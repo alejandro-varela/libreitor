@@ -1,0 +1,79 @@
+<?xml version="1.0" standalone="yes"?>
+<Sector>
+  <xs:schema id="Sector" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xs:element name="Sector" msdata:IsDataSet="true" msdata:Locale="">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="S" msdata:Locale="">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Calle" type="xs:string" minOccurs="0" />
+                <xs:element name="Lat" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Lon" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Dis" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Cta" type="xs:int" minOccurs="0" />
+                <xs:element name="CodSec" type="xs:int" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <S>
+    <Calle>CMALV</Calle>
+    <Lat>34.600483</Lat>
+    <Lon>58.903028</Lon>
+    <Dis>4296.224</Dis>
+    <Cta>1</Cta>
+    <CodSec>31</CodSec>
+  </S>
+  <S>
+    <Calle>PTEAL</Calle>
+    <Lat>34.610820</Lat>
+    <Lon>58.868166</Lon>
+    <Dis>2481.116</Dis>
+    <Cta>294</Cta>
+    <CodSec>30</CodSec>
+  </S>
+  <S>
+    <Calle>LREJA</Calle>
+    <Lat>34.618189</Lat>
+    <Lon>58.842688</Lon>
+    <Dis>4723.321</Dis>
+    <Cta>445</Cta>
+    <CodSec>30</CodSec>
+  </S>
+  <S>
+    <Calle>VICTO</Calle>
+    <Lat>34.632572</Lat>
+    <Lon>58.795309</Lon>
+    <Dis>2199.352</Dis>
+    <Cta>690</Cta>
+    <CodSec>30</CodSec>
+  </S>
+  <S>
+    <Calle>INDEP</Calle>
+    <Lat>34.646388</Lat>
+    <Lon>58.790265</Lon>
+    <Dis>1233.612</Dis>
+    <Cta>830</Cta>
+    <CodSec>23</CodSec>
+  </S>
+  <S>
+    <Calle>PIOVN</Calle>
+    <Lat>34.647472</Lat>
+    <Lon>58.799903</Lon>
+    <Dis>1529.991</Dis>
+    <Cta>900</Cta>
+    <CodSec>23</CodSec>
+  </S>
+  <S>
+    <Calle>MORE</Calle>
+    <Lat>34.643237</Lat>
+    <Lon>58.815588</Lon>
+    <Dis>0</Dis>
+    <Cta>975</Cta>
+    <CodSec>23</CodSec>
+  </S>
+</Sector>

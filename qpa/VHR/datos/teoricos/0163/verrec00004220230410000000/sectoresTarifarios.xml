@@ -1,0 +1,143 @@
+<?xml version="1.0" standalone="yes"?>
+<SectorTarifarioExportacion>
+  <xs:schema id="SectorTarifarioExportacion" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xs:element name="SectorTarifarioExportacion" msdata:IsDataSet="true" msdata:Locale="">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="S" msdata:Locale="">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Sec" type="xs:string" minOccurs="0" />
+                <xs:element name="CodSec" type="xs:int" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <S>
+    <Sec>Pos..</Sec>
+    <CodSec>1</CodSec>
+  </S>
+  <S>
+    <Sec>202-Maipu</Sec>
+    <CodSec>16</CodSec>
+  </S>
+  <S>
+    <Sec>Acc.Tigre</Sec>
+    <CodSec>7</CodSec>
+  </S>
+  <S>
+    <Sec>Av. Edison</Sec>
+    <CodSec>12</CodSec>
+  </S>
+  <S>
+    <Sec>Av.Marquez</Sec>
+    <CodSec>13</CodSec>
+  </S>
+  <S>
+    <Sec>C.Castelar</Sec>
+    <CodSec>20</CodSec>
+  </S>
+  <S>
+    <Sec>Canal S.F.</Sec>
+    <CodSec>6</CodSec>
+  </S>
+  <S>
+    <Sec>Cocarsa</Sec>
+    <CodSec>8</CodSec>
+  </S>
+  <S>
+    <Sec>DonTorcuat</Sec>
+    <CodSec>15</CodSec>
+  </S>
+  <S>
+    <Sec>E.Martinez</Sec>
+    <CodSec>3</CodSec>
+  </S>
+  <S>
+    <Sec>E.Victoria</Sec>
+    <CodSec>5</CodSec>
+  </S>
+  <S>
+    <Sec>Est. Lemos</Sec>
+    <CodSec>17</CodSec>
+  </S>
+  <S>
+    <Sec>Est. Mitre</Sec>
+    <CodSec>2</CodSec>
+  </S>
+  <S>
+    <Sec>Est. Lujan</Sec>
+    <CodSec>35</CodSec>
+  </S>
+  <S>
+    <Sec>Est.Moreno</Sec>
+    <CodSec>23</CodSec>
+  </S>
+  <S>
+    <Sec>La Reja</Sec>
+    <CodSec>30</CodSec>
+  </S>
+  <S>
+    <Sec>Acc.TigreV</Sec>
+    <CodSec>9</CodSec>
+  </S>
+  <S>
+    <Sec>Lab.Pfizer</Sec>
+    <CodSec>21</CodSec>
+  </S>
+  <S>
+    <Sec>Malvinas</Sec>
+    <CodSec>31</CodSec>
+  </S>
+  <S>
+    <Sec>P.Saavedra</Sec>
+    <CodSec>1</CodSec>
+  </S>
+  <S>
+    <Sec>Pana y 202</Sec>
+    <CodSec>14</CodSec>
+  </S>
+  <S>
+    <Sec>Parq.Gaona</Sec>
+    <CodSec>22</CodSec>
+  </S>
+  <S>
+    <Sec>Rodriguez</Sec>
+    <CodSec>32</CodSec>
+  </S>
+  <S>
+    <Sec>Ruta 6</Sec>
+    <CodSec>33</CodSec>
+  </S>
+  <S>
+    <Sec>Ruta 7 y 5</Sec>
+    <CodSec>34</CodSec>
+  </S>
+  <S>
+    <Sec>San Isidro</Sec>
+    <CodSec>4</CodSec>
+  </S>
+  <S>
+    <Sec>San Martin</Sec>
+    <CodSec>11</CodSec>
+  </S>
+  <S>
+    <Sec>San Miguel</Sec>
+    <CodSec>18</CodSec>
+  </S>
+  <S>
+    <Sec>Sta.Brigid</Sec>
+    <CodSec>19</CodSec>
+  </S>
+  <S>
+    <Sec>Moreno</Sec>
+    <CodSec>1</CodSec>
+  </S>
+  <S>
+    <Sec>Avella-202</Sec>
+    <CodSec>10</CodSec>
+  </S>
+</SectorTarifarioExportacion>

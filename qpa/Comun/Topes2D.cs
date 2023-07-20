@@ -171,5 +171,51 @@ namespace Comun
             var maxIndexCasilleroVertical = Convert.ToInt32(Math.Ceiling(this.AlturaMts / granularidad));
             return maxIndexCasilleroVertical + 1; // N + 1
         }
+
+        public static Topes2D CreateFromTopes(params Topes2D[] grupoTopes2D)
+        {
+            if (grupoTopes2D == null || grupoTopes2D.Length == 0)
+            {
+                return new Topes2D();
+            }
+
+            if (grupoTopes2D.Length == 1)
+            {
+                return grupoTopes2D[0];
+            }
+
+            // Ok si pasaron bien los argumentos...
+
+            Topes2D ret = grupoTopes2D[0];
+
+            foreach (var topx in grupoTopes2D.Skip(1))
+            {
+                // Left
+                if (topx.Left < ret.Left)
+                { 
+                    ret.Left = topx.Left;
+                }
+
+                // Right
+                if (topx.Right > ret.Right)
+                {
+                    ret.Right = topx.Right;
+                }
+
+                // Bottom
+                if (topx.Bottom < ret.Bottom)
+                { 
+                    ret.Bottom = topx.Bottom;
+                }
+
+                // Top
+                if (topx.Top > ret.Top)
+                { 
+                    ret.Top = topx.Top;
+                }
+            }
+
+            return ret;
+        }
     }
 }

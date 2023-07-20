@@ -1,0 +1,79 @@
+<?xml version="1.0" standalone="yes"?>
+<Sector>
+  <xs:schema id="Sector" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xs:element name="Sector" msdata:IsDataSet="true" msdata:Locale="">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="S" msdata:Locale="">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Calle" type="xs:string" minOccurs="0" />
+                <xs:element name="Lat" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Lon" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Dis" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Cta" type="xs:int" minOccurs="0" />
+                <xs:element name="CodSec" type="xs:int" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <S>
+    <Calle>MORE</Calle>
+    <Lat>34.642831</Lat>
+    <Lon>58.815342</Lon>
+    <Dis>1683.350</Dis>
+    <Cta>1</Cta>
+    <CodSec>23</CodSec>
+  </S>
+  <S>
+    <Calle>MFIER</Calle>
+    <Lat>34.647841</Lat>
+    <Lon>58.798591</Lon>
+    <Dis>1101.950</Dis>
+    <Cta>83</Cta>
+    <CodSec>23</CodSec>
+  </S>
+  <S>
+    <Calle>MOREN</Calle>
+    <Lat>34.650008</Lat>
+    <Lon>58.789773</Lon>
+    <Dis>3142.126</Dis>
+    <Cta>146</Cta>
+    <CodSec>23</CodSec>
+  </S>
+  <S>
+    <Calle>AcOES</Calle>
+    <Lat>34.632524</Lat>
+    <Lon>58.795227</Lon>
+    <Dis>4220.025</Dis>
+    <Cta>349</Cta>
+    <CodSec>23</CodSec>
+  </S>
+  <S>
+    <Calle>LREJA</Calle>
+    <Lat>34.619339</Lat>
+    <Lon>58.837830</Lon>
+    <Dis>2805.885</Dis>
+    <Cta>581</Cta>
+    <CodSec>30</CodSec>
+  </S>
+  <S>
+    <Calle>PTEAL</Calle>
+    <Lat>34.611135</Lat>
+    <Lon>58.866456</Lon>
+    <Dis>3914.426</Dis>
+    <Cta>741</Cta>
+    <CodSec>31</CodSec>
+  </S>
+  <S>
+    <Calle>CMALV</Calle>
+    <Lat>34.599879</Lat>
+    <Lon>58.902566</Lon>
+    <Dis>0</Dis>
+    <Cta>1011</Cta>
+    <CodSec>31</CodSec>
+  </S>
+</Sector>

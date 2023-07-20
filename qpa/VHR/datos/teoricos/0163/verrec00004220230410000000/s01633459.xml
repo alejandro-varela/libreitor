@@ -1,0 +1,103 @@
+<?xml version="1.0" standalone="yes"?>
+<Sector>
+  <xs:schema id="Sector" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xs:element name="Sector" msdata:IsDataSet="true" msdata:Locale="">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="S" msdata:Locale="">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Calle" type="xs:string" minOccurs="0" />
+                <xs:element name="Lat" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Lon" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Dis" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Cta" type="xs:int" minOccurs="0" />
+                <xs:element name="CodSec" type="xs:int" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <S>
+    <Calle>PteCa</Calle>
+    <Lat>34.588472</Lat>
+    <Lon>58.969622</Lon>
+    <Dis>1738.267</Dis>
+    <Cta>1</Cta>
+    <CodSec>32</CodSec>
+  </S>
+  <S>
+    <Calle>RODR1</Calle>
+    <Lat>34.592388</Lat>
+    <Lon>58.951396</Lon>
+    <Dis>712.048</Dis>
+    <Cta>88</Cta>
+    <CodSec>32</CodSec>
+  </S>
+  <S>
+    <Calle>RODR2</Calle>
+    <Lat>34.594207</Lat>
+    <Lon>58.944111</Lon>
+    <Dis>3597.603</Dis>
+    <Cta>136</Cta>
+    <CodSec>32</CodSec>
+  </S>
+  <S>
+    <Calle>CMALV</Calle>
+    <Lat>34.601572</Lat>
+    <Lon>58.906160</Lon>
+    <Dis>4177.318</Dis>
+    <Cta>311</Cta>
+    <CodSec>31</CodSec>
+  </S>
+  <S>
+    <Calle>PTEAL</Calle>
+    <Lat>34.610908</Lat>
+    <Lon>58.867770</Lon>
+    <Dis>2546.513</Dis>
+    <Cta>591</Cta>
+    <CodSec>30</CodSec>
+  </S>
+  <S>
+    <Calle>LREJA</Calle>
+    <Lat>34.618520</Lat>
+    <Lon>58.841586</Lon>
+    <Dis>4644.323</Dis>
+    <Cta>741</Cta>
+    <CodSec>30</CodSec>
+  </S>
+  <S>
+    <Calle>VICTO</Calle>
+    <Lat>34.633046</Lat>
+    <Lon>58.794765</Lon>
+    <Dis>2126.428</Dis>
+    <Cta>995</Cta>
+    <CodSec>30</CodSec>
+  </S>
+  <S>
+    <Calle>INDEP</Calle>
+    <Lat>34.646467</Lat>
+    <Lon>58.790303</Lon>
+    <Dis>1180.438</Dis>
+    <Cta>1129</Cta>
+    <CodSec>23</CodSec>
+  </S>
+  <S>
+    <Calle>PIOVN</Calle>
+    <Lat>34.647524</Lat>
+    <Lon>58.799697</Lon>
+    <Dis>1520.690</Dis>
+    <Cta>1196</Cta>
+    <CodSec>23</CodSec>
+  </S>
+  <S>
+    <Calle>MORE</Calle>
+    <Lat>34.643138</Lat>
+    <Lon>58.815409</Lon>
+    <Dis>0</Dis>
+    <Cta>1266</Cta>
+    <CodSec>23</CodSec>
+  </S>
+</Sector>

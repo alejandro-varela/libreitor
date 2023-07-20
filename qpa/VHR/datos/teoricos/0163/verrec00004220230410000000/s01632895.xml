@@ -1,0 +1,143 @@
+<?xml version="1.0" standalone="yes"?>
+<Sector>
+  <xs:schema id="Sector" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xs:element name="Sector" msdata:IsDataSet="true" msdata:Locale="">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="S" msdata:Locale="">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Calle" type="xs:string" minOccurs="0" />
+                <xs:element name="Lat" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Lon" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Dis" type="xs:decimal" minOccurs="0" />
+                <xs:element name="Cta" type="xs:int" minOccurs="0" />
+                <xs:element name="CodSec" type="xs:int" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <S>
+    <Calle>CHIN2</Calle>
+    <Lat>34.499134</Lat>
+    <Lon>58.640880</Lon>
+    <Dis>906.237</Dis>
+    <Cta>1</Cta>
+    <CodSec>15</CodSec>
+  </S>
+  <S>
+    <Calle>DTORC</Calle>
+    <Lat>34.503343</Lat>
+    <Lon>58.649205</Lon>
+    <Dis>3679.062</Dis>
+    <Cta>55</Cta>
+    <CodSec>15</CodSec>
+  </S>
+  <S>
+    <Calle>LOREN</Calle>
+    <Lat>34.523988</Lat>
+    <Lon>58.680014</Lon>
+    <Dis>1849.156</Dis>
+    <Cta>246</Cta>
+    <CodSec>16</CodSec>
+  </S>
+  <S>
+    <Calle>ESCLE</Calle>
+    <Lat>34.526836</Lat>
+    <Lon>58.694908</Lon>
+    <Dis>866.245</Dis>
+    <Cta>367</Cta>
+    <CodSec>16</CodSec>
+  </S>
+  <S>
+    <Calle>ROLEM</Calle>
+    <Lat>34.531786</Lat>
+    <Lon>58.701603</Lon>
+    <Dis>1354.818</Dis>
+    <Cta>435</Cta>
+    <CodSec>17</CodSec>
+  </S>
+  <S>
+    <Calle>DELIA</Calle>
+    <Lat>34.539537</Lat>
+    <Lon>58.711730</Lon>
+    <Dis>441.009</Dis>
+    <Cta>520</Cta>
+    <CodSec>18</CodSec>
+  </S>
+  <S>
+    <Calle>ALEM.</Calle>
+    <Lat>34.542507</Lat>
+    <Lon>58.714846</Lon>
+    <Dis>2878.629</Dis>
+    <Cta>546</Cta>
+    <CodSec>18</CodSec>
+  </S>
+  <S>
+    <Calle>PROSA</Calle>
+    <Lat>34.561102</Lat>
+    <Lon>58.733309</Lon>
+    <Dis>1083.340</Dis>
+    <Cta>708</Cta>
+    <CodSec>18</CodSec>
+  </S>
+  <S>
+    <Calle>SBRIG</Calle>
+    <Lat>34.567749</Lat>
+    <Lon>58.741723</Lon>
+    <Dis>1902.166</Dis>
+    <Cta>776</Cta>
+    <CodSec>19</CodSec>
+  </S>
+  <S>
+    <Calle>CCAST</Calle>
+    <Lat>34.583460</Lat>
+    <Lon>58.747464</Lon>
+    <Dis>2588.604</Dis>
+    <Cta>900</Cta>
+    <CodSec>20</CodSec>
+  </S>
+  <S>
+    <Calle>PFIZR</Calle>
+    <Lat>34.602575</Lat>
+    <Lon>58.761921</Lon>
+    <Dis>2902.196</Dis>
+    <Cta>1070</Cta>
+    <CodSec>21</CodSec>
+  </S>
+  <S>
+    <Calle>P.GAO</Calle>
+    <Lat>34.624820</Lat>
+    <Lon>58.777010</Lon>
+    <Dis>2741.542</Dis>
+    <Cta>1251</Cta>
+    <CodSec>22</CodSec>
+  </S>
+  <S>
+    <Calle>INDEP</Calle>
+    <Lat>34.646304</Lat>
+    <Lon>58.790287</Lon>
+    <Dis>1230.907</Dis>
+    <Cta>1422</Cta>
+    <CodSec>23</CodSec>
+  </S>
+  <S>
+    <Calle>PIOVN</Calle>
+    <Lat>34.647450</Lat>
+    <Lon>58.800032</Lon>
+    <Dis>1902.601</Dis>
+    <Cta>1491</Cta>
+    <CodSec>23</CodSec>
+  </S>
+  <S>
+    <Calle>MORE</Calle>
+    <Lat>34.641863</Lat>
+    <Lon>58.819644</Lon>
+    <Dis>0</Dis>
+    <Cta>1582</Cta>
+    <CodSec>23</CodSec>
+  </S>
+</Sector>
