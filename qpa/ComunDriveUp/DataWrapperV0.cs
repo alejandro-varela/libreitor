@@ -6,5 +6,9 @@ namespace ComunDriveUp
 	{
 		public DateTime RecvUtc { get; set; }
 		public DatosDriveUp Data { get; set; }
+		public double GetDiffRecvRecordInSeconds()
+		{
+			return (RecvUtc - Data.Recordedat).TotalSeconds;
+		}
     }
 }

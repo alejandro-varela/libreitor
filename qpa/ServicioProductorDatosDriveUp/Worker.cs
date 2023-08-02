@@ -71,6 +71,7 @@ namespace ServicioProductorDatosDriveUp
 
             _logger.LogInformation("Output");
             _logger.LogInformation($"\tBaseDir               : {_options.OutputConfig.BaseDir}");
+            _logger.LogInformation($"\tMaxSegsBack           : {_options.OutputConfig.MaxSegsBack}");
             
             _logger.LogInformation("--------------------------------------");
             
@@ -140,8 +141,9 @@ namespace ServicioProductorDatosDriveUp
                     using var stream = await httpClient.GetStreamAsync(requestUri);
 
                     // leo el stream 
-                    var buff = new byte[maxReadBuffer];
-                    int read = 0;
+                    var buff  = new byte[maxReadBuffer];
+                    var sobraAnterior = string.Empty;
+                    int read  = 0;
 
                     while (!stoppingToken.IsCancellationRequested)
                     {
@@ -162,13 +164,31 @@ namespace ServicioProductorDatosDriveUp
                                 break;
                             }
 
-                            var stringa = codificacion.GetString(buff, 0, read);
-                            var partes  = stringa.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-                            cntobjs += partes.Length;
+                            var datosCrudosLeidos = codificacion.GetString(buff, 0, read);
+                            var datosCrudosMasSobraAnterior = sobraAnterior + datosCrudosLeidos;
+
+                            if (!string.IsNullOrEmpty( sobraAnterior ))
+                            {
+                                _logger.LogInformation($"Se fusiona: {sobraAnterior}\r\n +++ \r\n{ datosCrudosLeidos }");
+                                sobraAnterior = string.Empty;
+                            }
+
+                            var partes  = datosCrudosMasSobraAnterior.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                            var lstPartesOk = new List<string>(partes);
+
+                            if (lstPartesOk.Count > 0 && !EsJsonValido(lstPartesOk[^1]))
+                            {
+                                sobraAnterior = lstPartesOk[^1];
+                                lstPartesOk.Remove(lstPartesOk[^1]);
+
+                                _logger.LogInformation($"Sobra: {sobraAnterior}");
+                            }
+
+                            cntobjs += lstPartesOk.Count;
 
                             _logger.LogDebug($"\tPartes: {partes.Length}");
 
-                            foreach (var parteX in partes)
+                            foreach (var parteX in lstPartesOk)
                             {
                                 _logger.LogDebug($"\t\t{parteX}");
 
@@ -199,6 +219,8 @@ namespace ServicioProductorDatosDriveUp
                             canTokSrc.Dispose();
                         }
                     }
+
+                    await Task.Delay(1000, stoppingToken);
                 }
                 catch (Exception exx)
                 {
@@ -228,61 +250,64 @@ namespace ServicioProductorDatosDriveUp
             }
         }
 
-        private void Procesar(string sJson, FileTimeHelper fileTimeHelper)
+        private void Procesar(string? sJson, FileTimeHelper fileTimeHelper)
         {
             try
             {
+                if (sJson == null)
+                {
+                    _logger.LogError("Worker.Procesar: json nulo");
+                    return;
+                }
+
                 var driveupData = JsonConvert.DeserializeObject<DatosDriveUp>(sJson);
 
-                DataWrapperV0 dataWrapperV0 = new DataWrapperV0
+                if (driveupData == null)
+                {
+                    return;
+                }
+
+                DataWrapperV0 dataWrapperV0 = new()
                 {
                     RecvUtc = DateTime.UtcNow,
-                    Data = driveupData,
+                    Data    = driveupData,
                 };
 
+                var age = dataWrapperV0.RecvUtc - dataWrapperV0.Data.Recordedat;
+
+                ConsoleColor color = age.TotalSeconds >= 0 ? ConsoleColor.Green : ConsoleColor.Red;
+                Console.ForegroundColor = color;
+                Console.Write($"age ==> {age.TotalSeconds} secs recv={dataWrapperV0.RecvUtc.ToLocalTime():HH:mm:ss} reco={dataWrapperV0.Data.Recordedat.ToLocalTime():HH:mm:ss}");
+                if (dataWrapperV0.RecvUtc.Hour != dataWrapperV0.Data.Recordedat.Hour)
+                {
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.Write("ARCHIVO DIFERENTEEE");
+                }
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Gray;
+
+                if (age.TotalSeconds > _options.OutputConfig.MaxSegsBack)
+                {
+                    return;
+                }
+
+                var recordedatLocal = dataWrapperV0.Data.Recordedat.ToLocalTime();
                 var jsonV0 = JsonConvert.SerializeObject(dataWrapperV0);
 
                 if (jsonV0 == null)
                 {
-                    // tiro una except...
-                    // TODO:
+                    return;
                 }
-                else
-                {
-                    // eso es lo que vamos a evitar...
-                    // la escritura será directa
-                    // _datosRecibidos?.Enqueue(dataWrapperV0);
 
-                    // escribo directo en el archivo...
-                    int ficha = 0;
-                    
-                    if (dataWrapperV0.Data != null)
-                    {
-                        ficha = dataWrapperV0.Data.Ficha;
-                    }
-                    
-                    //redis.HashSet("DU-WrappedDataXFicha", ficha, jsonV0);
-                    //redis.HashSet("DU-WrappedDataXPlate", dataWrapperV0.Data.Plate, jsonV0);
-
-                    // escribo los datos en archivos
-                    var (escrArchOk, escrArchExx) = fileTimeHelper.WriteToFile(
-                        _options.OutputConfig.BaseDir, DateTime.Now, $"{jsonV0}\r\n"
-                    );
-
-                    if (escrArchOk)
-                    {
-                        //redis.StringSet("DU-LastFSWrite-Ok-DateTime", DateTime.Now.ToString("yyyy-MM-ss HH:mm:ss"));
-                    }
-                    else
-                    {
-                        //redis.StringSet("DU-LastFSWrite-Err-DateTime", DateTime.Now.ToString("yyyy-MM-ss HH:mm:ss"));
-                        //redis.StringSet("DU-LastFSWrite-Err-Description", (escrArchExx?.ToString() ?? ""));
-                    }
-                }
+                var (escrArchOk, escrArchExx) = fileTimeHelper.WriteToFile(
+                    directorioBase: _options.OutputConfig.BaseDir,
+                    dateTime: recordedatLocal,
+                    data: $"{jsonV0}\r\n"
+                );
             }
-            catch
+            catch (Exception exx)
             {
-                //_logger.LogError("No pude procesar: " + sJson);
+                _logger.LogError(exx.ToString());
             }
         }
 

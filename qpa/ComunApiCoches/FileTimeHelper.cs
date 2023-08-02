@@ -34,7 +34,7 @@ namespace ComunApiCoches
             return path;
         }
 
-        public Tuple<bool, Exception> WriteToFile(string directorioBase, DateTime dateTime, string sData)
+        public Tuple<bool, Exception> WriteToFile(string directorioBase, DateTime dateTime, string data)
         {
             try
             {
@@ -53,7 +53,7 @@ namespace ComunApiCoches
                         }
                     }
 
-                    File.AppendAllText(path, sData);
+                    File.AppendAllText(path, data);
                 }
 
                 return new Tuple<bool, Exception>(true, null);

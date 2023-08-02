@@ -22,6 +22,7 @@ namespace ServicioProductorDatosDriveUp
     public class OutputConfig
     { 
         public string BaseDir { get; set; }
+        public int MaxSegsBack { get; set; } = 86400;
     }
 
     public class ProxyCredentials
