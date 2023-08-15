@@ -9,6 +9,7 @@ namespace ComunStreams
     {
         TextReader          _streamReader;
         Func<string, string>_transformer;
+        Func<string>        _getCurrentFile = () => "";
         List<byte>          _sobra = new List<byte>(128 * 1024);
 
         public string NewLine { get; set; } = "\n";
@@ -18,10 +19,11 @@ namespace ComunStreams
             return s;
         }
 
-        public TransStream(TextReader streamReader, Func<string, string> transformer)
+        public TransStream(TextReader streamReader, Func<string, string> transformer, Func<string> getCurrentFile = null)
         {
-            _streamReader = streamReader;
-            _transformer = transformer ?? Identidad;
+            _streamReader   = streamReader;
+            _transformer    = transformer ?? Identidad;
+            _getCurrentFile = getCurrentFile ?? (() => "");
         }
 
         public override int Read(byte[] buffer, int offset, int count)
@@ -31,6 +33,7 @@ namespace ComunStreams
                 while (_sobra.Count < count)
                 {
                     var sLine = _streamReader.ReadLine();
+                    var sFile = _getCurrentFile();
 
                     if (sLine == null)
                     {

@@ -23,6 +23,8 @@ namespace ComunStreams
 
         public BOMSkippingStrategy SkipBOM { get; set; } = BOMSkippingStrategy.SkipAlways;
 
+        public string CurrentFile { get; private set; }
+
         // main buffer
         // [0123456789] vacio sin iniciar, len = 0, ptr = 0
         //  ^  
@@ -74,6 +76,8 @@ namespace ComunStreams
 
                 if (System.IO.File.Exists(_archivos[_archivoIndex]))
                 {
+                    CurrentFile = _archivos[_archivoIndex];
+
                     using (FileStream fs = File.OpenRead(_archivos[_archivoIndex]))
                     {
                         // adelanto el puntero del stream hasta lo que ya leí...
@@ -163,7 +167,7 @@ namespace ComunStreams
         public override long Length => 0L;
 
         public override long Position { get => 0L; set => _ = value; }
-
+        
         public override void Flush() { }
 
         public override long Seek(long offset, SeekOrigin origin) => 0L;
