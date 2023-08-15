@@ -95,7 +95,7 @@ namespace ApiCochesTecnobusSmGps.Controllers
             return File(transStream, "text/csv", fName);
         }
 
-        private string FuncionTransformadora(string sRenglon)
+        private string FuncionTransformadora(string sRenglon, string sCurrentFile)
         {
             // 0000;1111111111111111;2222222222222222;3333333333333333333
             // 4241;33.0381507873535;60.6574440002441;2022-11-09 05:00:03
