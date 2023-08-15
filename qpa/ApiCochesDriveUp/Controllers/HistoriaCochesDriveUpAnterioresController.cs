@@ -1,9 +1,7 @@
 ﻿using ComunApiCoches;
 using ComunDriveUp;
 using ComunStreams;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -13,7 +11,7 @@ using System.Text;
 
 namespace ApiCochesDriveUp.Controllers
 {
-    // ej ayer https://vm-coches:5001/HistoriaCochesDriveupAnteriores?diasMenos=1&formato=csv
+    // ej ayer http://server:5000/HistoriaCochesDriveupAnteriores?diasMenos=1&formato=csv
 
     [Route("[controller]")]
     [ApiController]
@@ -23,7 +21,7 @@ namespace ApiCochesDriveUp.Controllers
         private ApiOptions _apiOptions;
 
         public HistoriaCochesDriveUpAnterioresController(
-            ILogger<HistoriaCochesDriveUpAnterioresController> logger, 
+            ILogger<HistoriaCochesDriveUpAnterioresController> logger,
             ApiOptions apiOptions
         )
         {
@@ -42,8 +40,8 @@ namespace ApiCochesDriveUp.Controllers
             if (!formatoOk)
             {
                 return BadRequest(
-                    MensajesDeErrorHelper.CrearMensajeError($"El parámetro \"formato\" debe ser alguno de estos valores: { validador.FormatosPosibles }") +
-                    DameAyuda()
+                    MensajesDeErrorHelper.CrearMensajeError($"El parámetro \"formato\" debe ser alguno de estos valores: {validador.FormatosPosibles}") +
+                    GetHelpText()
                 );
             }
 
@@ -54,7 +52,7 @@ namespace ApiCochesDriveUp.Controllers
             {
                 return BadRequest(
                     MensajesDeErrorHelper.CrearMensajeError($"El parámetro diasMenos debe ser un número entero positivo pero era: {diasMenos}") +
-                    DameAyuda()
+                    GetHelpText()
                 );
             }
 
@@ -68,21 +66,21 @@ namespace ApiCochesDriveUp.Controllers
                 // tomo los paths de los archivos según desde hasta
                 var paths = FilesHelper
                     .GetPaths(_apiOptions.BaseDir, fechaDesde, fechaHasta)
-                    .Where   (path => System.IO.File.Exists(path))
-                    .ToList  ()
+                    .Where(path => System.IO.File.Exists(path))
+                    .ToList()
                 ;
 
                 // se lo paso a un bolsaStream -> streamReader -> transStream + convertidorCsv
-                BolsaStream  bolsa        = new BolsaStream (paths);
+                BolsaStream bolsa = new BolsaStream(paths);
                 StreamReader streamReader = new StreamReader(bolsa);
                 Func<string, string> convertirACSV = null;
 
                 if (formatoSanitizado == "csv")
                 {
                     //convertidorCSV = ConvertidorACsvConTitulo;
-                    var convertidorCSV = new ConvertidorCSV<DatosDriveUp> { 
-                        ConTitulo = true, 
-                        DatosADiccionario = DatosADiccionario 
+                    var convertidorCSV = new ConvertidorCSV<DatosDriveUp> {
+                        ConTitulo = true,
+                        DatosADiccionario = HistoriaHelper.DatosADiccionario
                     };
                     convertirACSV = convertidorCSV.Convertir;
                 }
@@ -92,7 +90,7 @@ namespace ApiCochesDriveUp.Controllers
                     var convertidorCSV = new ConvertidorCSV<DatosDriveUp>
                     {
                         ConTitulo = false,
-                        DatosADiccionario = DatosADiccionario
+                        DatosADiccionario = HistoriaHelper.DatosADiccionario
                     };
                     convertirACSV = convertidorCSV.Convertir;
                 }
@@ -106,26 +104,14 @@ namespace ApiCochesDriveUp.Controllers
                 // json
                 var retVals = FilesHelperForDriveup
                     .GetDatos(_apiOptions.BaseDir, fechaDesde, fechaHasta)
-                    .Select(x => DatosADiccionario(x))
+                    .Select(x => HistoriaHelper.DatosADiccionario(x))
                 ;
 
                 return Ok(retVals);
             }
         }
 
-        Dictionary<string, object> DatosADiccionario(DatosDriveUp x)
-        {
-            return new Dictionary<string, object>
-            {
-                { "Ficha"       , x.Ficha       },
-                { "Lat"         , x.Lat         },
-                { "Lng"         , x.Lng         },
-                { "FechaLocal"  , x.FechaLocal  },
-                { "Recordedat"  , x.Recordedat  },
-            };
-        }
-
-        string DameAyuda()
+        static string GetHelpText()
         {
             var sbHelp = new StringBuilder();
             sbHelp.AppendLine("");

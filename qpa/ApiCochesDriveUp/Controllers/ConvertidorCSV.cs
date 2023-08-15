@@ -21,6 +21,8 @@ namespace ApiCochesDriveUp.Controllers
                 // creo una instancia del json
                 var obj = JsonConvert.DeserializeObject<DataWrapperV0>(json);
 
+                // necesito la hora del archivo!!!
+
                 // creo un diccionario de esos datos
                 var dic = DatosADiccionario(obj.Data);
 
