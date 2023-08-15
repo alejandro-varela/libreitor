@@ -64,7 +64,7 @@ namespace ComunApiCoches
             }
         }
 
-        public static (bool, DateTime) GetFileDameTime(string fileName)
+        public static (bool, DateTime) GetFileDateTime(string fileName)
         {
             var regExpHora = new Regex("^h[0-9]{2}");
             var regExpDia  = new Regex("^d[0-9]{2}$");
