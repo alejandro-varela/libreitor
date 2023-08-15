@@ -74,7 +74,7 @@ namespace ApiCochesPicoBus.Controllers
                 // transformer...
                 var primeraVez = true;
                 var acomodador = new AcomodadorLineaCsvPicoBus1();
-                Func<string, string> transformer = (s) =>
+                Func<string, string, string> transformer = (s, sCurrentFile) =>
                 {
                     string ret = string.Empty;
                     if (primeraVez && formatoSanitizado == "csv")
@@ -95,9 +95,9 @@ namespace ApiCochesPicoBus.Controllers
                 };
 
                 // pongo los paths en un bolsaStream
-                var bolsaStream  = new BolsaStream (paths); // TODO: lo cambie para que no pinche cuando los archivos no existen
+                var bolsaStream  = new BolsaStream (paths);
                 var streamReader = new StreamReader(bolsaStream);
-                var transStream  = new TransStream (streamReader, transformer); // TODO: lo cambie para que no le de bola a los nulos
+                var transStream  = new TransStream (streamReader, transformer);
 
                 // return
                 var fName = $"picobus_{fechaDesde:yyyy_MM_dd}.csv";
