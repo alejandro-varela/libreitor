@@ -7,19 +7,19 @@ namespace ComunStreams
 {
     public class TransStream : Stream
     {
-        TextReader          _streamReader;
-        Func<string, string>_transformer;
-        Func<string>        _getCurrentFile = () => "";
-        List<byte>          _sobra = new List<byte>(128 * 1024);
+        TextReader                  _streamReader;
+        Func<string, string, string>_transformer;
+        Func<string>                _getCurrentFile = () => "";
+        List<byte>                  _sobra = new List<byte>(128 * 1024);
 
         public string NewLine { get; set; } = "\n";
 
-        static string Identidad(string s)
+        static string Identidad(string s, string sCurrentFile)
         {
             return s;
         }
 
-        public TransStream(TextReader streamReader, Func<string, string> transformer, Func<string> getCurrentFile = null)
+        public TransStream(TextReader streamReader, Func<string, string, string> transformer, Func<string> getCurrentFile = null)
         {
             _streamReader   = streamReader;
             _transformer    = transformer ?? Identidad;
@@ -41,7 +41,8 @@ namespace ComunStreams
                     }
                     else
                     {
-                        var sTransLine = _transformer(sLine);
+                        var sTransLine = _transformer(sLine, sFile);
+
                         if (!string.IsNullOrEmpty(sTransLine))
                         {
                             _sobra.AddRange(Encoding.UTF8.GetBytes(sTransLine));
