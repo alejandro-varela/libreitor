@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace ApiCochesDriveUp.Controllers
 {
-    public class ConvertidorCSV<TipoADiccionario>
+    public class ConvertidorCSV<T>
     {
         private bool _esPrimeraVez = true; // sirve para poner el título de las columnas
 
@@ -14,7 +14,7 @@ namespace ApiCochesDriveUp.Controllers
 
         public Func<DatosDriveUp, Dictionary<string, object>> DatosADiccionario { get; set; }
 
-        public string Convertir(string json)
+        public string Convertir(string json, string nombreArchivo)
         {
             try
             {
@@ -22,6 +22,7 @@ namespace ApiCochesDriveUp.Controllers
                 var obj = JsonConvert.DeserializeObject<DataWrapperV0>(json);
 
                 // necesito la hora del archivo!!!
+                int foo = 0;
 
                 // creo un diccionario de esos datos
                 var dic = DatosADiccionario(obj.Data);

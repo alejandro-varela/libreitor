@@ -73,7 +73,7 @@ namespace ApiCochesDriveUp.Controllers
                 // se lo paso a un bolsaStream -> streamReader -> transStream + convertidorCsv
                 BolsaStream bolsa = new BolsaStream(paths);
                 StreamReader streamReader = new StreamReader(bolsa);
-                Func<string, string> convertirACSV = null;
+                Func<string, string, string> convertirACSV = null;
 
                 if (formatoSanitizado == "csv")
                 {

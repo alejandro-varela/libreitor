@@ -82,7 +82,7 @@ namespace ApiCochesDriveUp
             // se lo paso a un bolsaStream -> streamReader -> transStream + convertidorCsv
             BolsaStream bolsa = new(paths);
             StreamReader streamReader = new(bolsa);
-            Func<string, string> convertirACSV = null;
+            Func<string, string, string> convertirACSV = null;
 
             var conTitulo = formato == "csv";
 
