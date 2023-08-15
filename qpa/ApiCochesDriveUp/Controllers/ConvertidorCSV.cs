@@ -1,4 +1,5 @@
-﻿using ComunDriveUp;
+﻿using ComunApiCoches;
+using ComunDriveUp;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -14,15 +15,20 @@ namespace ApiCochesDriveUp.Controllers
 
         public Func<DatosDriveUp, Dictionary<string, object>> DatosADiccionario { get; set; }
 
-        public string Convertir(string json, string nombreArchivo)
+        public string Convertir(string json, string filePath)
         {
             try
             {
                 // creo una instancia del json
                 var obj = JsonConvert.DeserializeObject<DataWrapperV0>(json);
 
-                // necesito la hora del archivo!!!
-                int foo = 0;
+                // fecha - hora que representa el archivo
+                var (okFileDateTime, fileDateTime) = FileTimeHelper.GetFileDateTime(filePath);
+
+                if (!okFileDateTime || (fileDateTime != obj.Data.FechaLocal))
+                {
+                    return string.Empty;
+                }
 
                 // creo un diccionario de esos datos
                 var dic = DatosADiccionario(obj.Data);
