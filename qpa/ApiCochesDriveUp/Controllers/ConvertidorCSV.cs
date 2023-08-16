@@ -25,9 +25,17 @@ namespace ApiCochesDriveUp.Controllers
                 // fecha - hora que representa el archivo
                 var (okFileDateTime, fileDateTime) = FileTimeHelper.GetFileDateTime(filePath);
 
-                if (!okFileDateTime || (fileDateTime != obj.Data.FechaLocal))
+                if (!okFileDateTime)
                 {
-                    return string.Empty;
+                    return "";
+                }
+
+                if (fileDateTime.Hour  != obj.Data.FechaLocal.Hour  ||
+                    fileDateTime.Day   != obj.Data.FechaLocal.Day   ||
+                    fileDateTime.Month != obj.Data.FechaLocal.Month ||
+                    fileDateTime.Year  != obj.Data.FechaLocal.Year)
+                {
+                    return "";
                 }
 
                 // creo un diccionario de esos datos

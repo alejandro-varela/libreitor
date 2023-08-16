@@ -275,16 +275,16 @@ namespace ServicioProductorDatosDriveUp
 
                 var age = dataWrapperV0.RecvUtc - dataWrapperV0.Data.Recordedat;
 
-                ConsoleColor color = age.TotalSeconds >= 0 ? ConsoleColor.Green : ConsoleColor.Red;
-                Console.ForegroundColor = color;
-                Console.Write($"age ==> {age.TotalSeconds} secs recv={dataWrapperV0.RecvUtc.ToLocalTime():HH:mm:ss} reco={dataWrapperV0.Data.Recordedat.ToLocalTime():HH:mm:ss}");
-                if (dataWrapperV0.RecvUtc.Hour != dataWrapperV0.Data.Recordedat.Hour)
-                {
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.Write("ARCHIVO DIFERENTEEE");
-                }
-                Console.WriteLine();
-                Console.ForegroundColor = ConsoleColor.Gray;
+                //ConsoleColor color = age.TotalSeconds >= 0 ? ConsoleColor.Green : ConsoleColor.Red;
+                //Console.ForegroundColor = color;
+                //Console.Write($"age ==> {age.TotalSeconds} secs recv={dataWrapperV0.RecvUtc.ToLocalTime():HH:mm:ss} reco={dataWrapperV0.Data.Recordedat.ToLocalTime():HH:mm:ss}");
+                //if (dataWrapperV0.RecvUtc.Hour != dataWrapperV0.Data.Recordedat.Hour)
+                //{
+                //    Console.ForegroundColor = ConsoleColor.Blue;
+                //    Console.Write("ARCHIVO DIFERENTEEE");
+                //}
+                //Console.WriteLine();
+                //Console.ForegroundColor = ConsoleColor.Gray;
 
                 if (age.TotalSeconds > _options.OutputConfig.MaxSegsBack)
                 {
