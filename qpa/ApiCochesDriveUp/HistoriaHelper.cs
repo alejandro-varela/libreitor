@@ -21,11 +21,6 @@ namespace ApiCochesDriveUp
                 { "FechaLocal"  , x.FechaLocal  },
                 { "Recordedat"  , x.Recordedat  },
             };
-
-            //return MapObjectToDict<DatosDriveUp>(
-            //    x, 
-            //    "Ficha,Lat,Lng,FechaLocal,Recordedat"
-            //);
         }
 
         public static Dictionary<K, V> MapObjectToDict<T, K, V>(
@@ -70,7 +65,12 @@ namespace ApiCochesDriveUp
             );
         }
 
-        public static TransStream GetCSVStream(string baseDir, string formato, DateTime fechaDesde, DateTime fechaHasta)
+        public static TransStream GetCSVStream(
+            string baseDir, 
+            string formato, 
+            DateTime fechaDesde, 
+            DateTime fechaHasta
+        )
         {
             // tomo los paths de los archivos según desde hasta
             var paths = FilesHelper
@@ -89,7 +89,9 @@ namespace ApiCochesDriveUp
             var convertidorCSV = new ConvertidorCSV<DatosDriveUp>
             {
                 ConTitulo = conTitulo,
-                DatosADiccionario = DatosADiccionario
+                DatosADiccionario = DatosADiccionario,
+                FechaDesde = fechaDesde,
+                FechaHasta = fechaHasta,
             };
 
             convertirACSV = convertidorCSV.Convertir;

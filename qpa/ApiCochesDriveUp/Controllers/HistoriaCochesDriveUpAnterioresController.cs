@@ -30,25 +30,26 @@ namespace ApiCochesDriveUp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get(string formato, string diasMenos, string filtro)
+        public IActionResult Get(string formato, string diasMenos)
         {
-            var validador = new ValidadorComun();
-
-            // formato => formatoSanitizado
-            var (formatoOk, formatoSanitizado) = validador.ProcesarFormato(formato);
-
-            if (!formatoOk)
+            // formato
+            if (string.IsNullOrEmpty(formato))
+            {
+                formato = "csv";
+            }
+            var formatosPosibles = new string[] { "csv", "csvnt" };
+            if (!formatosPosibles.Contains((formato ?? "").Trim().ToLower()))
             {
                 return BadRequest(
-                    MensajesDeErrorHelper.CrearMensajeError($"El parámetro \"formato\" debe ser alguno de estos valores: {validador.FormatosPosibles}") +
+                    MensajesDeErrorHelper.CrearMensajeError(
+                        $"El parámetro \"formato\" debe ser alguno de estos valores: {string.Join(',', formatosPosibles.ToArray())}") +
                     GetHelpText()
                 );
             }
 
-            // diasMenos => nDiasMenos
-            var (diasMenosOk, nDiasMenos) = validador.ProcesarDiasMenos(diasMenos);
-
-            if (!diasMenosOk)
+            // días menos
+            bool diasMenosParseOk = int.TryParse(diasMenos, out int nDiasMenos);
+            if (! diasMenosParseOk || nDiasMenos < 0)
             {
                 return BadRequest(
                     MensajesDeErrorHelper.CrearMensajeError($"El parámetro diasMenos debe ser un número entero positivo pero era: {diasMenos}") +
@@ -56,59 +57,21 @@ namespace ApiCochesDriveUp.Controllers
                 );
             }
 
-            // calculo fechas desde hasta según los días menos
+            // calculo fechas desde/hasta según los días menos
             DateTime fechaDesde = DateTime.Now.AddDays(-nDiasMenos).Date;
             DateTime fechaHasta = fechaDesde.AddDays(1);
 
-            // si el formato es csv o csvnt
-            if (formatoSanitizado == "csv" || formatoSanitizado == "csvnt")
-            {
-                // tomo los paths de los archivos según desde hasta
-                var paths = FilesHelper
-                    .GetPaths(_apiOptions.BaseDir, fechaDesde, fechaHasta)
-                    .Where(path => System.IO.File.Exists(path))
-                    .ToList()
-                ;
+            // crear stream y devolverlo
+            var csvStream = HistoriaHelper.GetCSVStream(
+                _apiOptions.BaseDir,
+                formato,
+                fechaDesde,
+                fechaHasta
+            );
 
-                // se lo paso a un bolsaStream -> streamReader -> transStream + convertidorCsv
-                BolsaStream bolsa = new BolsaStream(paths);
-                StreamReader streamReader = new StreamReader(bolsa);
-                Func<string, string, string> convertirACSV = null;
+            var fName = $"driveup_{fechaDesde:yyyy_MM_dd}.csv";
 
-                if (formatoSanitizado == "csv")
-                {
-                    //convertidorCSV = ConvertidorACsvConTitulo;
-                    var convertidorCSV = new ConvertidorCSV<DatosDriveUp> {
-                        ConTitulo = true,
-                        DatosADiccionario = HistoriaHelper.DatosADiccionario
-                    };
-                    convertirACSV = convertidorCSV.Convertir;
-                }
-                else if (formatoSanitizado == "csvnt")
-                {
-                    //convertidorCSV = ConvertidorACsvSinTitulo;
-                    var convertidorCSV = new ConvertidorCSV<DatosDriveUp>
-                    {
-                        ConTitulo = false,
-                        DatosADiccionario = HistoriaHelper.DatosADiccionario
-                    };
-                    convertirACSV = convertidorCSV.Convertir;
-                }
-
-                TransStream trans = new TransStream(streamReader, convertirACSV);
-                var fName = $"driveup_{fechaDesde:yyyy_MM_dd}.csv";
-                return File(trans, "text/csv", fName);
-            }
-            else
-            {
-                // json
-                var retVals = FilesHelperForDriveup
-                    .GetDatos(_apiOptions.BaseDir, fechaDesde, fechaHasta)
-                    .Select(x => HistoriaHelper.DatosADiccionario(x))
-                ;
-
-                return Ok(retVals);
-            }
+            return File(csvStream, "text/csv", fName);
         }
 
         static string GetHelpText()

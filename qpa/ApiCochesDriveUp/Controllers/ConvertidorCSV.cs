@@ -9,11 +9,11 @@ namespace ApiCochesDriveUp.Controllers
 {
     public class ConvertidorCSV<T>
     {
-        private bool _esPrimeraVez = true; // sirve para poner el título de las columnas
-
+        private bool _primeraVez = true; // sirve para poner el título de las columnas
         public bool ConTitulo { get; set; }
-
         public Func<DatosDriveUp, Dictionary<string, object>> DatosADiccionario { get; set; }
+        public DateTime FechaDesde { get; set; }
+        public DateTime FechaHasta { get; set; }
 
         public string Convertir(string json, string filePath)
         {
@@ -34,6 +34,12 @@ namespace ApiCochesDriveUp.Controllers
                     fileDateTime.Day   != obj.Data.FechaLocal.Day   ||
                     fileDateTime.Month != obj.Data.FechaLocal.Month ||
                     fileDateTime.Year  != obj.Data.FechaLocal.Year)
+                {
+                    return "";
+                }
+
+                if ((obj.Data.FechaLocal < FechaDesde) ||
+                    (obj.Data.FechaLocal > FechaHasta))
                 {
                     return "";
                 }
@@ -67,9 +73,9 @@ namespace ApiCochesDriveUp.Controllers
 
                 sRenglonCSV = string.Join(';', lstDatos.ToArray());
 
-                if (_esPrimeraVez && ConTitulo)
+                if (_primeraVez && ConTitulo)
                 {
-                    _esPrimeraVez = false;
+                    _primeraVez = false;
                     var tituloCSV = string.Join(';', dic.Keys);
                     return $"{tituloCSV}\n{sRenglonCSV}";
                 }

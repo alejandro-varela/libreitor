@@ -28,7 +28,11 @@ namespace ApiCochesDriveUp.Controllers
         [HttpGet]
         public IActionResult Get(string formato, string desde, string hasta)
         {
-            // validar formato
+            // formato
+            if (string.IsNullOrEmpty(formato))
+            {
+                formato = "csv";
+            }
             var formatosPosibles = new string[] { "csv", "csvnt" };
             if (!formatosPosibles.Contains((formato ?? "").Trim().ToLower()))
             {
@@ -39,7 +43,7 @@ namespace ApiCochesDriveUp.Controllers
                 );
             }
 
-            // validar fecha desde
+            // fecha desde
             if (!DateTime.TryParse(desde, out DateTime fechaDesde))
             {
                 return BadRequest(
@@ -48,7 +52,12 @@ namespace ApiCochesDriveUp.Controllers
                 );
             }
 
-            // validar fecha hasta
+            // fecha hasta
+            if (string.IsNullOrEmpty(hasta))
+            {
+                var fechaDesdeMasUnDia = fechaDesde.AddDays(1);
+                hasta = $"{fechaDesdeMasUnDia.Year:0000}-{fechaDesdeMasUnDia.Month:00}-{fechaDesdeMasUnDia.Day:00}T00:00:00";
+            }
             if (!DateTime.TryParse(hasta, out DateTime fechaHasta))
             {
                 return BadRequest(
@@ -58,7 +67,7 @@ namespace ApiCochesDriveUp.Controllers
             }
 
             // crear stream y devolverlo
-            var trans = HistoriaHelper.GetCSVStream(
+            var csvStream = HistoriaHelper.GetCSVStream(
                 _apiOptions.BaseDir, 
                 formato, 
                 fechaDesde, 
@@ -67,7 +76,7 @@ namespace ApiCochesDriveUp.Controllers
 
             var fName = $"driveup_desde_{fechaDesde:yyyy_MM_dd_HH_mm_ss}_hasta_{fechaHasta:yyyy_MM_dd_HH_mm_ss}.csv";
 
-            return File(trans, "text/csv", fName);
+            return File(csvStream, "text/csv", fName);
         }
 
         static string GetHelpText()
@@ -75,16 +84,21 @@ namespace ApiCochesDriveUp.Controllers
             var sbHelp = new StringBuilder();
             sbHelp.AppendLine("");
             sbHelp.AppendLine("Ejemplos de uso:");
-            sbHelp.AppendLine("    /HistoriaCochesDriveUp?formato=csv");
+            sbHelp.AppendLine("    /HistoriaCochesDriveUp?desde=2023-08-10");
             sbHelp.AppendLine("");
             sbHelp.AppendLine("Aclaraciones:");
-            sbHelp.AppendLine("    Parámetro \"Desde\":");
-            //sbHelp.AppendLine("        ej: diasMenos=1                    es todo el día de ayer");
-            //sbHelp.AppendLine("        ej: diasMenos=2                    es todo el día de anteayer");
-            //sbHelp.AppendLine("        y así sucesivamente");
-            sbHelp.AppendLine("    Parámetro \"Hasta\":");
-            //sbHelp.AppendLine("        ej: formato=csv                    csv con título (es el valor por defecto)");
-            //sbHelp.AppendLine("        ej: formato=csvnt                  csv sin título");
+            sbHelp.AppendLine("    Parámetro \"formato\":");
+            sbHelp.AppendLine("        csv con título (es el valor por defecto):");
+            sbHelp.AppendLine("          ej: formato=csv");
+            sbHelp.AppendLine("        csv sin título:");
+            sbHelp.AppendLine("          ej: formato=csvnt");
+            sbHelp.AppendLine("    Parámetro \"desde\":");
+            sbHelp.AppendLine("        ej: desde=2023-08-10");
+            //sbHelp.AppendLine("        ej: desde=2023-08-10T15:30:05");
+            sbHelp.AppendLine("    Parámetro \"hasta\":");
+            sbHelp.AppendLine("        ej: desde=2023-08-11");
+            //sbHelp.AppendLine("        ej: desde=2023-08-11T20:45:10");
+
             return sbHelp.ToString();
         }
     }
