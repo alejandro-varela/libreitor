@@ -1,0 +1,8 @@
+{
+  "image": "golang:1.21.0-bookworm",
+  "customizations": {
+    "vscode": {
+      "extensions": ["golang.go"]
+    }
+  }
+}
