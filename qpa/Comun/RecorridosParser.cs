@@ -17,20 +17,48 @@ namespace Comun
             }
         }
 
-        //public static IEnumerable<PuntoRecorrido> ReadFile(Stream stream)
         public static List<PuntoRecorrido> ReadFile(Stream stream)
         {
             var ret = new List<PuntoRecorrido>();
-            byte[] buffer = new byte[16];
+            
+            //byte[] buffer = new byte[16];
+            //while (16 == stream.Read(buffer, 0, buffer.Length))
+            //{
+            //    var p = PuntoRecorrido.CreateFromBuffer(buffer);
+            //    ret.Add(p);
+            //}
 
-            while (16 == stream.Read(buffer, 0, buffer.Length))
+            for (; ; )
             {
+                var buffer = ReadXBytes(16, stream);
+                if (buffer == null)
+                {
+                    break;
+                }
                 var p = PuntoRecorrido.CreateFromBuffer(buffer);
-                //yield return p;
                 ret.Add(p);
             }
 
             return ret;
+        }
+
+        public static byte[] ReadXBytes(int n, Stream stream)
+        {
+            byte[] buffer = new byte[n];
+
+            for (int i = 0; i < n; i++)
+            {
+                int leido = stream.ReadByte();
+
+                if (leido == -1)
+                {
+                    return null;
+                }
+
+                buffer[i] = (byte) leido;
+            }
+
+            return buffer;
         }
     }
 }
