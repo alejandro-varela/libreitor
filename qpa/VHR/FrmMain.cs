@@ -858,7 +858,8 @@ namespace VHR
             try
             {
                 recorridosTeoricos = RecorridoLinBan.LeerRecorridosPorArchivos(
-                    "./datos/teoricos/",
+                    //"./datos/teoricos/",
+                    "..\\..\\..\\Datos\\ZipRepo\\",
                     basicData.Lineas.ToArray(),
                     basicData.Desde
                 );

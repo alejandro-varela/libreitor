@@ -12,6 +12,8 @@
 
   <ItemGroup>
     <Folder Include="Vistas\MapaConLetras\20220720_MAPA203\" />
+    <Folder Include="Vistas\RecorridosLinea163Moreno\" />
+    <Folder Include="Vistas\RecorridosLinea41\" />
   </ItemGroup>
 
 </Project>

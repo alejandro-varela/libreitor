@@ -7,12 +7,97 @@ using System.IO;
 using System.Drawing.Imaging;
 using System.Drawing;
 using System.Globalization;
+using System.Text.RegularExpressions;
+using System.IO.Compression;
+using System.ComponentModel.DataAnnotations;
 
 namespace VisorManual
 {
     class Program
     {
         static void Main(string[] args)
+        {
+            // -Poner centroide comun en todas las versiones
+            // -Poner leyenda
+            // -Mostrar cambios en reporte
+            // -Mostrar cambios geométricamente
+
+            //var versiones = new HashSet<int> { 18, 19, 20, 21 };
+            //var dataDir   = "../../../../Datos/ZipRepo/0127";
+            //var outputDir = "../../../Vistas/RecorridosLinea41/";
+
+            var versiones = new HashSet<int> { 45, 46, 47 };
+            var dataDir   = "../../../../Datos/ZipRepo/0163";
+            var outputDir = "../../../Vistas/RecorridosLinea163Moreno/";
+
+            foreach (var verrecPath in Directory.GetFiles(dataDir, "verrec*.zip"))
+            {
+                // nombre de archivo de versión
+                // index   012345678901234567890123456789
+                // leyenda ppppppVVVVVVyyyyMMddHHmmss.ext
+                // ejemplo verrec00001820200203000000.zip
+
+                var fileName = Path.GetFileName(verrecPath);
+
+                if (!Regex.IsMatch(fileName, "^verrec[0-9]{20}\\.zip$"))
+                {
+                    continue;
+                }
+
+                var fileVersion = int.Parse(fileName.Substring(6, 6));
+
+                if (versiones.Contains(fileVersion))
+                {
+                    PintarRecorridos(
+                        version   : fileVersion,
+                        verrecPath: verrecPath,
+                        outputDir : outputDir
+                    );
+                }
+
+                int faa = 0;
+            }
+
+            int foo = 0;
+        }
+
+        static void PintarRecorridos(
+            int version,
+            string verrecPath, 
+            string outputDir
+        )
+        {
+            List<RecorridoLinBan> recorridos = Recorrido.LeerRecorridosFromZippedVerRec(verrecPath);
+            List<PuntoRecorrido> todosLosPuntos = recorridos.SelectMany(r => r.Puntos).ToList();
+            Topes2D topes2D = Topes2D.CreateFromPuntos(todosLosPuntos);
+            for (int i = 0; i < recorridos.Count; i++)
+            {
+                PintorDeRecorrido pintorDeRecorrido = new PintorDeRecorrido(topes2D, granularidad: 20);
+                pintorDeRecorrido.SetColorFondo(Color.Black);
+                for (int j = 0; j < recorridos.Count; j++)
+                {
+                    if (i == j)
+                    {
+                        continue;
+                    }
+                    pintorDeRecorrido.PintarPuntos(recorridos[j].Puntos, Color.Gray, size: 1);
+                }
+                pintorDeRecorrido.PintarPuntos(recorridos[i].Puntos, Color.Lime, size: 3);
+
+                var bmp = pintorDeRecorrido.Render();
+                var picFileName = string.Format(
+                    "r{0:0000}{1:0000}_v{2:000000}.png", 
+                    recorridos[i].Linea, 
+                    recorridos[i].Bandera,
+                    version
+                );
+                var pic = Path.Combine(outputDir, picFileName);
+                bmp.Save(filename: pic, ImageFormat.Png);
+            }
+            int foo = 0;
+        }
+
+        static void Main_MapaConLetras_20220720_Mapa203(string[] args)
         {
             var dirData = Path.GetFullPath("../../../Vistas/MapaConLetras/20220720_MAPA203/");
 

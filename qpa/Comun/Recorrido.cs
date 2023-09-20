@@ -78,7 +78,7 @@ namespace Comun
             );
         }
 
-        static List<RecorridoLinBan> LeerRecorridosFromZippedVerRec(string pathZippedVerRec)
+        public static List<RecorridoLinBan> LeerRecorridosFromZippedVerRec(string pathZippedVerRec)
         {
             var ret = new List<RecorridoLinBan>();
 

@@ -3,6 +3,8 @@ using ComunQPApp;
 using ComunSUBE;
 using LibQPA;
 using LibQPA.ProveedoresTecnobus;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
 using Newtonsoft.Json;
 using QPACreator;
 using System;
@@ -16,6 +18,7 @@ using System.Reflection;
 using System.Security.Authentication;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace QPApp
 {
@@ -31,7 +34,6 @@ namespace QPApp
         static async Task<int> Main(string[] args)
         {
             // TODO: hacer un programa que tenga un filesystemwatcher para lo de las versiones...
-            // TODO: poner una configuración como la gente
             // TODO: hacer que qpapp tome las versiones de recorridos mas nuevas
 
             #region Directorio de trabajo
@@ -144,6 +146,19 @@ namespace QPApp
                 "puntalinea2" => typeof(PuntaLinea2),
                 _ => typeof(PuntaLinea),
             };
+            #endregion
+
+            #region Configuración de la aplicación
+            IConfigurationRoot config = new ConfigurationBuilder()
+#if DEBUG
+                .AddJsonFile($"appsettings.Development.json", optional: true)
+#else
+                .AddJsonFile($"appsettings.json", optional: true)
+#endif
+                .Build()
+            ;
+
+            Configu configu = config.GetRequiredSection("Configu").Get<Configu>();
             #endregion
 
             #region Compruebo si los parámetros son válidos
@@ -269,7 +284,6 @@ namespace QPApp
             }
             #endregion
 
-            // TODO: acá tendríamos que poner las URLs en una configuración y pasarlas de manera externa
             #region Recuperación de Puntos Históricos (GPS)
             Console.WriteLine("Buscando Puntos Históricos");
             var puntosXIdentificador = new Dictionary<int, List<PuntoHistorico>>();
@@ -284,8 +298,14 @@ namespace QPApp
                 // calculo cuantos días he de bajar...
                 foreach (var (desdeX, hastaX) in DateTimeHelper.GetFromToDayPairs(desdeConCota, hastaConCota))
                 {
-                    RetVal<Dictionary<int, List<PuntoHistorico>>> retvalPuntosHistoricos =
-                        await DamePuntosHistoricosAsync(modo, desdeX, hastaX, lineasOrdenadas, ficha);
+                    RetVal<Dictionary<int, List<PuntoHistorico>>> retvalPuntosHistoricos = await DamePuntosHistoricosAsync(
+                        configu.UrlsPuntosHistoricos[modo],
+                        modo, 
+                        desdeX, 
+                        hastaX, 
+                        lineasOrdenadas, 
+                        ficha
+                    );
 
                     if (!retvalPuntosHistoricos.IsOk)
                     {
@@ -884,7 +904,8 @@ namespace QPApp
         }
 
         private static async Task<RetVal<Dictionary<int, List<PuntoHistorico>>>> DamePuntosHistoricosAsync(
-            string modo, 
+            string      url,
+            string      modo, 
             DateTime    desde, 
             DateTime    hasta,
             List<int>   lineasOrdenadas,
@@ -903,59 +924,39 @@ namespace QPApp
             {
                 // bajo el nuevo archivo
                 int diasMenos = Convert.ToInt32((DateTime.Now.Date.Subtract(desde.Date)).TotalDays);
-                Uri remoteUri = null;
 
-                // dependiendo del "modo" bajo de un lugar u otro
-                // vm-coches = 192.168.201.74
-                switch (modo.ToLower())
+                url = url.Replace("[[DIASMENOS]]", diasMenos.ToString());
+                url = url.Replace("[[FORMATO]]"  , "csv");
+                Uri remoteUri = new Uri(url);
+
+                //HttpClient httpClient = null;
+                //if (_usarHttps)
+                //{
+                //    var handler = new HttpClientHandler()
+                //    {
+                //        Proxy = new WebProxy("192.168.201.2:8080", true),
+                //        SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls11 | SslProtocols.Tls
+                //    };
+                //    handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+                //    httpClient = new HttpClient(handler);
+                //}
+                //else
+                //{
+                //    httpClient = new HttpClient();
+                //}
+
+                HttpClient httpClient = new HttpClient
                 {
-                    case "driveup":
-                        remoteUri = _usarHttps ?
-                            new Uri("https://192.168.201.74:5001/HistoriaCochesDriveUpAnteriores?diasMenos=" + diasMenos.ToString()) :
-                            new Uri("http://192.168.201.74:5000/HistoriaCochesDriveupAnteriores?diasMenos=" + diasMenos.ToString());
-                        break;
-                    case "picobus":
-                        remoteUri = _usarHttps?
-                            new Uri("https://192.168.201.74:5003/HistoriaCochesPicoBusAnteriores?formato=csv&diasMenos=" + diasMenos.ToString()):
-                            new Uri("http://192.168.201.74:5002/HistoriaCochesPicoBusAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());                        
-                        break;
-                    case "tecnobussmgps":
-                        remoteUri = _usarHttps ?
-                            new Uri("https://192.168.201.74:5005/HistoriaCochesTecnobusSmGpsAnteriores?formato=csv&diasMenos=" + diasMenos.ToString()):
-                            new Uri("http://192.168.201.74:5004/HistoriaCochesTecnobusSmGpsAnteriores?formato=csv&diasMenos=" + diasMenos.ToString());
-                        break;
-                    default:
-                        var errMsg = $"El modo '{modo}' no es válido";
-                        return new RetVal<Dictionary<int, List<PuntoHistorico>>>
-                        {
-                             ErrorMessage = errMsg,
-                             IsOk = false,
-                        };
-                }
+                    Timeout = TimeSpan.FromMinutes(10)
+                };
 
-                // bajar archivo...
-                HttpClient httpClient = null;
+                //var response = await httpClient.GetAsync(remoteUri);
+                //var sres = await response.Content.ReadAsStringAsync();
+                //File.WriteAllText(pathArchivoLocal, sres);
 
-                if (_usarHttps)
-                {
-                    var handler = new HttpClientHandler()
-                    {
-                        Proxy = new WebProxy("192.168.201.2:8080", true),
-                        SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls11 | SslProtocols.Tls
-                    };
-                    handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-                    httpClient = new HttpClient(handler);
-                }
-                else
-                {
-                    httpClient = new HttpClient();
-                }
-
-                httpClient.Timeout = TimeSpan.FromMinutes(10);
-
-                var pepe = await httpClient.GetAsync(remoteUri);
-                var sres = await pepe.Content.ReadAsStringAsync();
-                File.WriteAllText(pathArchivoLocal, sres);
+                using var responseStream = await httpClient.GetStreamAsync(url);
+                using var fileStream = File.Create(pathArchivoLocal);
+                responseStream.CopyTo(fileStream);
             }
 
             Console.WriteLine("Tratando de construir información histórica");
@@ -1019,33 +1020,74 @@ namespace QPApp
             DateTime fechaHasta
         )
         {
-            // vm-coches = 192.168.201.74
-            var url = $"http://192.168.201.74:5006/BoletosXIdentSUBE_KvpList?desde={fechaDesde.Year:0000}-{fechaDesde.Month:00}-{fechaDesde.Day:00}";
+            var sFechaDesde = $"{fechaDesde:yyyyMMdd}T{fechaDesde:HHmmss}";
+            var sFechaHasta = $"{fechaHasta:yyyyMMdd}T{fechaHasta:HHmmss}";
+            var nombreArchivoBoletos = $"Boletos_Desde_{sFechaDesde}_Hasta_{sFechaHasta}.json";
+            var pathArchivoBoletos = Path
+                .Combine(DirBajados, nombreArchivoBoletos)
+                .Replace('\\', '/')
+            ;
 
-            var httpClient = new HttpClient
+            try
             {
-                Timeout = TimeSpan.FromMinutes(10)
-            };
-
-            var response = await httpClient.GetAsync(url);
-            
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                var obj = JsonConvert.DeserializeObject<List<KeyValuePair<ParEmpresaInterno, List<BoletoComun>>>>(json);
-                var val = obj.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-                return new RetVal<Dictionary<ParEmpresaInterno, List<BoletoComun>>>
+                if (File.Exists(pathArchivoBoletos))
                 {
-                    IsOk = true,
-                    Value= val,
-                };
+                    var json = File.ReadAllText(pathArchivoBoletos);
+                    var obj = JsonConvert.DeserializeObject<List<KeyValuePair<ParEmpresaInterno, List<BoletoComun>>>>(json);
+                    var val = obj.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                    return new RetVal<Dictionary<ParEmpresaInterno, List<BoletoComun>>>
+                    {
+                        IsOk = true,
+                        Value = val,
+                    };
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return new RetVal<Dictionary<ParEmpresaInterno, List<BoletoComun>>>
+                if (File.Exists(pathArchivoBoletos))
                 {
-                    IsOk = false,
+                    File.Delete(pathArchivoBoletos);
+                }
+            }
+
+            try
+            {
+                var url = $"http://192.168.201.74:5006/BoletosXIdentSUBE_KvpList?desde={fechaDesde.Year:0000}-{fechaDesde.Month:00}-{fechaDesde.Day:00}";
+                var httpClient = new HttpClient
+                {
+                    Timeout = TimeSpan.FromMinutes(10)
                 };
+                var response = await httpClient.GetAsync(url);
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    if (File.Exists(pathArchivoBoletos))
+                    {
+                        File.Delete(pathArchivoBoletos);
+                    }
+                    File.WriteAllText(
+                        path     : pathArchivoBoletos,
+                        contents : json
+                    );
+                    var obj = JsonConvert.DeserializeObject<List<KeyValuePair<ParEmpresaInterno, List<BoletoComun>>>>(json);
+                    var val = obj.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                    return new RetVal<Dictionary<ParEmpresaInterno, List<BoletoComun>>>
+                    {
+                        IsOk = true,
+                        Value = val,
+                    };
+                }
+                else
+                {
+                    return new RetVal<Dictionary<ParEmpresaInterno, List<BoletoComun>>>
+                    {
+                        IsOk = false,
+                    };
+                }
+            }
+            catch
+            {
+                throw;
             }
         }
 
@@ -1193,6 +1235,8 @@ namespace QPApp
                 case 100: return true;
                 case 101: return true;
                 case 103: return true;
+                //case 159: return true;
+                //case 163: return true;
                 default: return false;
             }
         }

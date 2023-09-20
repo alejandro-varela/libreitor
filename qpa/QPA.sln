@@ -77,7 +77,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiReceptorReportesQPA", "A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VHR", "VHR\VHR.csproj", "{97822C9C-7588-4AC8-A341-BF5A2713C2B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrintRec", "PrintRec\PrintRec.csproj", "{A5CC6423-41E8-4541-BA0B-B5467FA15797}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrintRec", "PrintRec\PrintRec.csproj", "{A5CC6423-41E8-4541-BA0B-B5467FA15797}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExperimentosPuntasDeLinea", "ExperimentosPuntasDeLinea\ExperimentosPuntasDeLinea.csproj", "{B9D92293-9EEE-4FAA-B980-0E3168CB8F95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExperimentosPuntaDeLinea_3_1", "ExperimentosPuntaDeLinea_3_1\ExperimentosPuntaDeLinea_3_1.csproj", "{DA60E801-45F0-49B2-ADCC-6B068FF6A948}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -237,6 +241,14 @@ Global
 		{A5CC6423-41E8-4541-BA0B-B5467FA15797}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5CC6423-41E8-4541-BA0B-B5467FA15797}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5CC6423-41E8-4541-BA0B-B5467FA15797}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9D92293-9EEE-4FAA-B980-0E3168CB8F95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9D92293-9EEE-4FAA-B980-0E3168CB8F95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9D92293-9EEE-4FAA-B980-0E3168CB8F95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9D92293-9EEE-4FAA-B980-0E3168CB8F95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA60E801-45F0-49B2-ADCC-6B068FF6A948}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA60E801-45F0-49B2-ADCC-6B068FF6A948}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA60E801-45F0-49B2-ADCC-6B068FF6A948}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA60E801-45F0-49B2-ADCC-6B068FF6A948}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
